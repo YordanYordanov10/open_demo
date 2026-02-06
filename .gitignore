@@ -1,0 +1,7 @@
+/system/storage/cache/*
+/system/storage/logs/*
+/system/storage/session/*
+/system/storage/modification/*
+/image/cache/*
+config.php
+admin/config.php
