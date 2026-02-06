@@ -3,6 +3,7 @@
   <table class="table table-bordered table-hover">
     <thead>
       <tr>
+        <td class="text-center">{{ column_image }}</td>
         <td class="text-left">{{ column_name }}</td>
         <td class="text-left">{{ column_model }}</td>
         <td class="text-right">{{ column_quantity }}</td>
@@ -14,6 +15,12 @@
     
     {% for product in products %}
     <tr>
+      <td class="text-center">
+        {% if product.thumb %}
+          <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-thumbnail" />
+        {% else %}
+          <span class="img-thumbnail" style="width: 40px; height: 40px; display: inline-block;"></span>
+        {% endif %}
       <td class="text-left"><a href="{{ product.href }}">{{ product.name }}</a> {% for option in product.option %} <br/>
         &nbsp;<small> - {{ option.name }}: {{ option.value }}</small> {% endfor %}
         {% if product.recurring %} <br/>

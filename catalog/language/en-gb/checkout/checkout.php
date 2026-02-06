@@ -47,6 +47,7 @@ $_['column_model']                   = 'Model';
 $_['column_quantity']                = 'Quantity';
 $_['column_price']                   = 'Unit Price';
 $_['column_total']                   = 'Total';
+$_['column_image']                   = 'Image'; 
 
 // Entry
 $_['entry_email_address']            = 'E-Mail Address';

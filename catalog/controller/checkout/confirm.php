@@ -1,6 +1,8 @@
 <?php
 class ControllerCheckoutConfirm extends Controller {
 	public function index() {
+
+		 $this->load->model('tool/image');
 		$redirect = '';
 
 		if ($this->cart->hasShipping()) {
@@ -68,6 +70,12 @@ class ControllerCheckoutConfirm extends Controller {
 						$data['has_free_shipping'] = true;
 					
 					}
+
+				if ($product['image']) {
+					$image = $this->model_tool_image->resize($product['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_cart_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_cart_height'));
+				} else {
+					$image = '';
+				}
 				
 
 
@@ -115,6 +123,7 @@ class ControllerCheckoutConfirm extends Controller {
 				$data['products'][] = array(
 					'cart_id'    => $product['cart_id'],
 					'product_id' => $product['product_id'],
+					'thumb'     => $image,
 					'name'       => $product['name'],
 					'model'      => $product['model'],
 					'option'     => $option_data,

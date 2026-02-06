@@ -935,10 +935,19 @@ class ControllerSaleOrder extends Controller {
 
 			$products = $this->model_sale_order->getOrderProducts($this->request->get['order_id']);
 
+			$data['has_free_shipping'] = false;
+
+			
+
 			foreach ($products as $product) {
 				$option_data = array();
 
 				$options = $this->model_sale_order->getOrderOptions($this->request->get['order_id'], $product['order_product_id']);
+
+					if ($product['free_item_shipping']) {
+						$data['has_free_shipping'] = true;
+					
+					}
 
 				foreach ($options as $option) {
 					if ($option['type'] != 'file') {
@@ -991,6 +1000,11 @@ class ControllerSaleOrder extends Controller {
 			$totals = $this->model_sale_order->getOrderTotals($this->request->get['order_id']);
 
 			foreach ($totals as $total) {
+				
+				if($total['code'] == 'shipping' && $data['has_free_shipping']) {
+						continue;
+					}
+					
 				$data['totals'][] = array(
 					'title' => $total['title'],
 					'text'  => $this->currency->format($total['value'], $order_info['currency_code'], $order_info['currency_value'])
