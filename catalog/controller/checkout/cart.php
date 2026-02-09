@@ -55,6 +55,35 @@ class ControllerCheckoutCart extends Controller {
 
 			$data['products'] = array();
 
+			$gift_product_id = 51; // ID на подаръчния продукт
+			$has_gift_product = false;
+
+			foreach ($this->cart->getProducts() as $product) {
+				if ($product['product_id'] == $gift_product_id) {
+					$has_gift_product = true;
+					break;
+				}
+
+			}
+			$current_total = $this->cart->getSubTotal();
+
+			if($current_total >= 100 && !$has_gift_product) {
+					$this->cart->add($gift_product_id, 1);
+					$this->response->redirect($this->url->link('checkout/cart'));
+			}
+
+			if($current_total < 100 && $has_gift_product) {
+					foreach ($this->cart->getProducts() as $product) {
+						if ($product['product_id'] == $gift_product_id) {
+							$this->cart->remove($product['cart_id']);
+						}
+					}
+					$this->response->redirect($this->url->link('checkout/cart'));
+			
+			}
+
+			
+			
 			$products = $this->cart->getProducts();
 
 			foreach ($products as $product) {
@@ -146,8 +175,11 @@ class ControllerCheckoutCart extends Controller {
 					$product['promo_hint'] = false;
 				}
 
+				
+
 				$data['products'][] = array(
 					'cart_id'   => $product['cart_id'],
+					'product_id' => $product['product_id'],
 					'thumb'     => $image,
 					'name'      => $product['name'],
 					'model'     => $product['model'],
