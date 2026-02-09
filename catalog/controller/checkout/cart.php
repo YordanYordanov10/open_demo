@@ -214,6 +214,8 @@ class ControllerCheckoutCart extends Controller {
 				);
 			}
 
+			$data['min_order_reach'] = $this->cart->getSubTotal() >= 20;
+
 			$data['continue'] = $this->url->link('common/home');
 
 			$data['checkout'] = $this->url->link('checkout/checkout', '', true);

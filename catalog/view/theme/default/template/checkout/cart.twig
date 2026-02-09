@@ -165,9 +165,14 @@
 				<div class="pull-left">
 					<a href="{{ continue }}" class="btn btn-default">{{ button_shopping }}</a>
 				</div>
-				<div class="pull-right">
-					<a href="{{ checkout }}" class="btn btn-primary">{{ button_checkout }}</a>
-				</div>
+				{% if min_order_reach %}
+					<div class="pull-right">
+						<a href="{{ checkout }}" class="btn btn-primary">{{ button_checkout }}</a>
+					</div>
+				{% else %}
+					<div class="pull-right">
+						<button type="button" class="btn btn-primary" disabled>Минималната сума за поръчка е $ 20</button>
+				{% endif %}
 			</div>
 			{{ content_bottom }}</div>
 		{{ column_right }}</div>
