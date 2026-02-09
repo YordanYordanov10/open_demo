@@ -63,6 +63,13 @@
 										{% if product.thumb %}
 											<a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-thumbnail"/></a>
 										{% endif %}
+										{% if apple_product %}
+											<br/>
+											<span class="label label-success" style="font-size: 10px; background-color: #5cb85c; color: white; padding: 2px 5px; border-radius: 3px;">
+												<i class="fa fa-apple"></i>
+												Премиум продукт!
+											</span>
+										{% endif %}
 									</td>
 									<td class="text-left">
 										<a href="{{ product.href }}">{{ product.name }}</a>
@@ -136,6 +143,12 @@
 					
 
 				</div>
+				{% if weight_limit %}
+					<div class="alert alert-warning">
+						<i class="fa fa-exclamation-triangle"></i>
+						"Внимание: Вашата количка съдържа тежки продукти. Доставката може да отнеме повече време."
+					</div>
+				{% endif %}
 			</form>
 			{% if modules %}
 				<h2>{{ text_next }}</h2>

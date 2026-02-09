@@ -214,7 +214,41 @@ class ControllerCheckoutCart extends Controller {
 				);
 			}
 
+			// Проверка дали има продукти от производителя с ID 8 (Apple) в количката и доабвяне на поле с Премиум продукт, ако има такъв продукт.
+			$this->load->model('catalog/product');
+
+			$data['apple_product'] = false;
+
+			foreach ($products as $product) {
+				$product_info = $this->model_catalog_product->getProduct($product['product_id']);
+				if ($product_info && $product_info['manufacturer_id'] == 8) {
+				$data['apple_product'] = true;
+					break;
+			} 
+
+			}
+			
+
+			// Проверка дали общата сума на поръчката е по-голяма или равна на 20, за да се активира бутонът за плащане
 			$data['min_order_reach'] = $this->cart->getSubTotal() >= 20;
+
+			
+
+			// Ако намерим поне един продукт, който надвишава 5 кг, ще зададем флага за тежестта на поръчката
+			$data['weight_limit'] = false;
+
+			foreach ($products as $product) {
+				if ($product['weight'] > 5) {
+					$data['weight_limit'] = true;
+					break; 
+				}
+			}
+
+			// Вземане на общо тегло на поръчката и проиверка дали надвишава 5 кг
+			// foreach ($products as $product) {
+			// 	$data['weight_limit'] = $this->cart->getWeight() > 5;
+			// }
+			
 
 			$data['continue'] = $this->url->link('common/home');
 
