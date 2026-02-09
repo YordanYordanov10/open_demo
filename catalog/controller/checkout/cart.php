@@ -139,6 +139,13 @@ class ControllerCheckoutCart extends Controller {
 					$product['is_apple_product'] = false;
 				}
 
+				// Проверка дали количеството на продукта е 2 или повече и добавяне на поле за промоционален текст, ако условието е изпълнено.
+				if ($product['quantity'] >= 1) {
+					$product['promo_hint'] = true; // Добавяне на флаг за промоционален текст
+				} else {
+					$product['promo_hint'] = false;
+				}
+
 				$data['products'][] = array(
 					'cart_id'   => $product['cart_id'],
 					'thumb'     => $image,
@@ -147,6 +154,7 @@ class ControllerCheckoutCart extends Controller {
 					'option'    => $option_data,
 					'recurring' => $recurring,
 					'quantity'  => $product['quantity'],
+					'promo_hint' => $product['promo_hint'], // Добавяне на поле за промоционален текст
 					'stock'     => $product['stock'] ? true : !(!$this->config->get('config_stock_checkout') || $this->config->get('config_stock_warning')),
 					'reward'    => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
 					'is_apple_product' => $product['is_apple_product'], // Добавяне на флаг за премиум продукт
