@@ -63,7 +63,7 @@
 										{% if product.thumb %}
 											<a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-thumbnail"/></a>
 										{% endif %}
-										{% if apple_product %}
+										{% if product.is_apple_product %}
 											<br/>
 											<span class="label label-success" style="font-size: 10px; background-color: #5cb85c; color: white; padding: 2px 5px; border-radius: 3px;">
 												<i class="fa fa-apple"></i>
@@ -184,7 +184,7 @@
 					</div>
 				{% else %}
 					<div class="pull-right">
-						<button type="button" class="btn btn-primary" disabled>Минималната сума за поръчка е $ 20</button>
+						<button type="button" class="btn btn-primary" disabled>Минималната сума за поръчка е {{ config_min_order }} $</button>
 				{% endif %}
 			</div>
 			{{ content_bottom }}</div>

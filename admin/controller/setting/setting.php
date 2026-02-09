@@ -23,6 +23,12 @@ class ControllerSettingSetting extends Controller {
 			$this->response->redirect($this->url->link('setting/store', 'user_token=' . $this->session->data['user_token'], true));
 		}
 		
+		if (isset($this->request->post['config_min_order'])) {
+    	$data['config_min_order'] = $this->request->post['config_min_order'];
+		} else {
+   		 $data['config_min_order'] = $this->config->get('config_min_order');
+		}
+
 		if (isset($this->error['warning'])) {
 			$data['error_warning'] = $this->error['warning'];
 		} else {

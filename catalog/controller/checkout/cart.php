@@ -130,6 +130,15 @@ class ControllerCheckoutCart extends Controller {
 					}
 				}
 
+				// Проверка дали има продукти от производителя с ID 8 (Apple) в количката и доабвяне на поле с Премиум продукт, ако има такъв продукт.
+				$this->load->model('catalog/product');
+				$product_info = $this->model_catalog_product->getProduct($product['product_id']);
+				if ($product_info && $product_info['manufacturer_id'] == 8) {
+					$product['is_apple_product'] = true; // Добавяне на флаг за премиум продукт
+				} else {
+					$product['is_apple_product'] = false;
+				}
+
 				$data['products'][] = array(
 					'cart_id'   => $product['cart_id'],
 					'thumb'     => $image,
@@ -140,6 +149,7 @@ class ControllerCheckoutCart extends Controller {
 					'quantity'  => $product['quantity'],
 					'stock'     => $product['stock'] ? true : !(!$this->config->get('config_stock_checkout') || $this->config->get('config_stock_warning')),
 					'reward'    => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
+					'is_apple_product' => $product['is_apple_product'], // Добавяне на флаг за премиум продукт
 					'free_item_shipping' => $product['free_item_shipping'],
 					'price'     => $price,
 					'total'     => $total,
@@ -214,24 +224,12 @@ class ControllerCheckoutCart extends Controller {
 				);
 			}
 
-			// Проверка дали има продукти от производителя с ID 8 (Apple) в количката и доабвяне на поле с Премиум продукт, ако има такъв продукт.
-			$this->load->model('catalog/product');
-
-			$data['apple_product'] = false;
-
-			foreach ($products as $product) {
-				$product_info = $this->model_catalog_product->getProduct($product['product_id']);
-				if ($product_info && $product_info['manufacturer_id'] == 8) {
-				$data['apple_product'] = true;
-					break;
-			} 
-
-			}
 			
 
-			// Проверка дали общата сума на поръчката е по-голяма или равна на 20, за да се активира бутонът за плащане
-			$data['min_order_reach'] = $this->cart->getSubTotal() >= 20;
-
+			// Проверка дали общата сума на поръчката е по-голяма или равна на определена сума, за да се активира бутонът за плащане
+			$min_order_limit = $this->config->get('config_min_order');
+			$data['min_order_reach'] = ($this->cart->getSubTotal() >= (float)$min_order_limit);
+			$data['config_min_order'] = $min_order_limit;
 			
 
 			// Ако намерим поне един продукт, който надвишава 5 кг, ще зададем флага за тежестта на поръчката

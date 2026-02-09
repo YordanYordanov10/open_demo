@@ -352,6 +352,12 @@
                     <div class="text-danger">{{ error_limit_admin }}</div>
                     {% endif %} </div>
                 </div>
+                <div class="form-group">
+                 <label class="col-sm-2 control-label" for="input-min-order">Минимална сума за поръчка</label>
+                <div class="col-sm-10">
+                <input type="text" name="config_min_order" value="{{ config_min_order }}" placeholder="20" id="input-min-order" class="form-control" />
+               </div>
+                </div>
               </fieldset>
               <fieldset>
                 <legend>{{ text_review }}</legend>
