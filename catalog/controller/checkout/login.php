@@ -32,6 +32,7 @@ class ControllerCheckoutLogin extends Controller {
 			$json['redirect'] = $this->url->link('checkout/cart');
 		}
 
+		// Часове за поддръжка: 8:00 - 18:00
 		$maintance_hours = date('H') >= 8 && date('H') < 18;
 		if ($maintance_hours) {
 			$json['error']['warning'] = $this->language->get('error_maintance');

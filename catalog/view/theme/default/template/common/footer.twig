@@ -40,6 +40,21 @@
       <div class="col-sm-3">
         <h5 class="text-center bg bg-primary">Total Customers: {{ total_customers }}</h5>
        </div>
+
+      {% if working_hours and working_days %}
+       <div class="col-sm-4">
+        <h5 class="text-center bg-success" style="padding: 10px; color: white;">We are open! (8:00 - 18:00)</h5>
+      </div>
+      {% elseif not working_hours and working_days %}
+       <div class="col-sm-4">
+        <h5 class="text-center bg-danger" style="padding: 10px; color: white;">We are closed! (8:00 - 18:00)</h5>
+       </div>
+      {% elseif not working_days %}
+        <div class="col-sm-4">
+        <h5 class="text-center bg-warning" style="padding: 10px; color: black;">Have a nice weekend! We work Monday - Friday (8:00 - 18:00)</h5>
+        </div>
+      {% endif %}
+      
     </div>
     <hr>
     <p>{{ powered }}</p>

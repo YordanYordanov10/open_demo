@@ -36,4 +36,32 @@
       </tbody>
     </table>
   </div>
+
+   <div class="panel-heading">
+    <h3 class="panel-title"><i class="fa fa-shopping-cart"></i> {{ heading_title }}</h3>
+  </div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <td>{{ column_customer }}</td>
+          <td class="text-right">{{ column_total }}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% if orders %}
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.customer }}</td>
+          <td class="text-right">{{ order.total }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td class="text-center" colspan="6">{{ text_no_results }}</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
 </div>

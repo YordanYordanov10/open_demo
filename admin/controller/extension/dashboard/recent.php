@@ -110,7 +110,10 @@ class ControllerExtensionDashboardRecent extends Controller {
         	if (isset($product['free_item_shipping']) && $product['free_item_shipping'] == 1) {
             $free_delivery = true;
             break; 
-        	}
+        }
+
+		
+
     }
 
 			$data['orders'][] = array(
