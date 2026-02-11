@@ -65,6 +65,16 @@
     </div>
   </div>
 </nav>
+{% if text_greeting %}
+<div class="container">
+    <div class="alert alert-info text-center" style="margin: 10px 0; border-radius: 20px; border: none; background-color: #e0f7ff; color: #007791; font-weight: bold;">
+        {% if is_vip %}
+            <span style="color: gold;">[VIP]</span> 
+        {% endif %}
+        <i class="fa fa-user-circle"></i> {{ text_greeting }}
+    </div>
+</div>
+{% endif %}
 <header>
   <div class="container">
     <div class="row">

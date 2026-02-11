@@ -3,7 +3,10 @@ class ControllerCheckoutLogin extends Controller {
 	public function index() {
 		$this->load->language('checkout/checkout');
 
-		$data['checkout_guest'] = ($this->config->get('config_checkout_guest') && !$this->config->get('config_customer_price') && !$this->cart->hasDownload());
+		$data['checkout_guest'] = ($this->config->get('config_checkout_guest') && 
+		!$this->config->get('config_customer_price') && 
+		!$this->cart->hasDownload() &&
+		 $this->cart->getTotal() >= 50);
 
 		if (isset($this->session->data['account'])) {
 			$data['account'] = $this->session->data['account'];
@@ -29,11 +32,25 @@ class ControllerCheckoutLogin extends Controller {
 			$json['redirect'] = $this->url->link('checkout/cart');
 		}
 
+		$maintance_hours = date('H') >= 8 && date('H') < 18;
+		if ($maintance_hours) {
+			$json['error']['warning'] = $this->language->get('error_maintance');
+			$json['redirect'] = $this->url->link('common/home', '', true);
+			
+		}
+
 		if (!$json) {
 			$this->load->model('account/customer');
 
 			// Check how many login attempts have been made.
 			$login_info = $this->model_account_customer->getLoginAttempts($this->request->post['email']);
+
+			$mystring = 'test';
+			$testinstr = $login_info['email'];
+			$resultTest = strpos($testinstr, $mystring);
+			if ($resultTest !== false){
+				$json['error']['warning'] = $this->language->get('error_test_email');
+			}
 
 			if ($login_info && ($login_info['total'] >= $this->config->get('config_login_attempts')) && strtotime('-1 hour') < strtotime($login_info['date_modified'])) {
 				$json['error']['warning'] = $this->language->get('error_attempts');

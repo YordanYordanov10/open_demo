@@ -93,3 +93,5 @@ $_['error_no_shipping']              = 'Warning: No Shipping options are availab
 $_['error_payment']                  = 'Warning: Payment method required!';
 $_['error_no_payment']               = 'Warning: No Payment options are available. Please <a href="%s">contact us</a> for assistance!';
 $_['error_custom_field']             = '%s required!';
+$_['error_test_email']              = 'Warning: This email address is not allowed to login!';
+$_['error_maintance']              = 'Warning: The website is in maintenance mode. Please try again later!';

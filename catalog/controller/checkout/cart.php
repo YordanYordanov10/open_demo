@@ -82,6 +82,19 @@ class ControllerCheckoutCart extends Controller {
 			
 			}
 
+			$has_free_shipping = false;
+			$progress_bar_percentage = 0;
+
+			if ($current_total >= 200) {
+				$has_free_shipping = true;
+				$progress_bar_percentage = 100;
+			} else {
+				$progress_bar_percentage = ($current_total / 200) * 100;
+			}
+		
+			$data['has_free_shipping'] = $has_free_shipping;
+			$data['progress_bar_percentage'] = $progress_bar_percentage;
+			$data['remaining_amount'] = $has_free_shipping ? 0 : (200 - $current_total);
 			
 			
 			$products = $this->cart->getProducts();

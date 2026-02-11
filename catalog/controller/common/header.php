@@ -45,14 +45,26 @@ class ControllerCommonHeader extends Controller {
 
 		$this->load->language('common/header');
 
+		if ($this->customer->isLogged()) {
+   		 $data['text_greeting'] = 'Здравей, ' . $this->customer->getFirstName() . '!';
+
+		 if( $this->customer->getGroupId() == 1 ) {
+		 $data['is_vip'] = true;
+		 }
+
+		} else {
+   		 $data['text_greeting'] = '';
+		}
+
 		// Wishlist
 		if ($this->customer->isLogged()) {
-			$this->load->model('account/wishlist');
-
-			$data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), $this->model_account_wishlist->getTotalWishlist());
+ 	  	 $this->load->model('account/wishlist');
+  	  	$wishlist_total = $this->model_account_wishlist->getTotalWishlist();
 		} else {
-			$data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
+  	 	 $wishlist_total = (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0);
 		}
+
+		$data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), $wishlist_total);
 
 		$data['text_logged'] = sprintf($this->language->get('text_logged'), $this->url->link('account/account', '', true), $this->customer->getFirstName(), $this->url->link('account/logout', '', true));
 		

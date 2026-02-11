@@ -186,10 +186,6 @@ class Cart {
 					$price = $product_discount_query->row['price'];
 				}
 
-				// Отстъпка при поръчка на 3 или повече броя от един и същ продукт.
-				if($cart['quantity'] > 2) {
-					$price = $price * 0.9; 
-				}
 
 				// Product Specials
 				$product_special_query = $this->db->query("SELECT price FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$cart['product_id'] . "' AND customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND ((date_start = '0000-00-00' OR date_start < NOW()) AND (date_end = '0000-00-00' OR date_end > NOW())) ORDER BY priority ASC, price ASC LIMIT 1");
@@ -244,6 +240,11 @@ class Cart {
 					);
 				} else {
 					$recurring = false;
+				}
+
+				// Отстъпка при поръчка на 3 или повече броя от един и същ продукт.
+				if($cart['quantity'] > 2) {
+					$price = $price * 0.9; 
 				}
 
 				$product_data[] = array(

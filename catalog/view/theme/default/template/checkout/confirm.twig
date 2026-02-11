@@ -59,6 +59,12 @@
         <i class="fa fa-truck" style="margin-right: 10px; font-size: 20px;"></i> {{ text_free_shipping_notice }}
     </div>
   {% endif %}
+
+  {% if has_vip_insurance %}
+    <div class="alert alert-info" style="margin-top: 10px; padding: 5px; font-size: 20px; flex-direction: row; align-items: center; text-align: center;">
+        <i class="fa fa-shield" style="margin-right: 10px; font-size: 20px;"></i> 🚀 VIP Доставка: Твоят iPhone/Apple продукт ще бъде изпратен с приоритетна застраховка!
+    </div>
+  {% endif %}
 </div>
 {{ payment }}
 {% else %} 
