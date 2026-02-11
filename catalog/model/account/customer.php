@@ -148,5 +148,11 @@ class ModelAccountCustomer extends Model {
 		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "customer_affiliate` WHERE `tracking` = '" . $this->db->escape($tracking) . "'");
 
 		return $query->row;
-	}			
+	}	
+	
+	public function getTotalCustomers() {
+		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer");
+
+		return $query->row['total'];
+	}
 }

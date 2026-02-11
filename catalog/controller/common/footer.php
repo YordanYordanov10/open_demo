@@ -16,6 +16,10 @@ class ControllerCommonFooter extends Controller {
 			}
 		}
 
+		$this->load->model('account/customer');
+		$data['total_customers'] = $this->model_account_customer->getTotalCustomers();
+
+
 		$data['contact'] = $this->url->link('information/contact');
 		$data['return'] = $this->url->link('account/return/add', '', true);
 		$data['sitemap'] = $this->url->link('information/sitemap');
