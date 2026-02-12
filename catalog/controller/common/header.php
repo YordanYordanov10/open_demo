@@ -44,11 +44,16 @@ class ControllerCommonHeader extends Controller {
 		}
 
 		$this->load->language('common/header');
+		$this->load->model('account/order');
+
 
 		if ($this->customer->isLogged()) {
-   		 $data['text_greeting'] = 'Здравей, ' . $this->customer->getFirstName() . '!';
 
-		 if( $this->customer->getGroupId() == 1 ) {
+		$total_spent = $this->model_account_order->getOrderTotalsById($this->customer->getId());
+
+   		 $data['text_greeting'] = 'Здравей, ' . $this->customer->getFirstName() . '!';
+	
+		 if( (float)$total_spent >= 1000 ) {
 		 $data['is_vip'] = true;
 		 }
 

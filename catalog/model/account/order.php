@@ -150,6 +150,13 @@ class ModelAccountOrder extends Model {
 		return $query->rows;
 	}
 
+	// SELECT sum(total) from oc_order where customer_id = 2; 
+	public function getOrderTotalsById($customer_id) {
+		$query = $this->db->query("SELECT sum(total) AS total FROM `" . DB_PREFIX . "order` WHERE customer_id = '" . (int)$customer_id . "' AND order_status_id > '0' AND store_id = '" . (int)$this->config->get('config_store_id') . "'");
+
+		return $query->row['total'];
+	}
+
 	public function getTotalOrders() {
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "order` o WHERE customer_id = '" . (int)$this->customer->getId() . "' AND o.order_status_id > '0' AND o.store_id = '" . (int)$this->config->get('config_store_id') . "'");
 

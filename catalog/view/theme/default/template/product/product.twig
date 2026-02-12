@@ -286,7 +286,7 @@
 								<h4 id="total-price" style="margin: 5px 0; color: #23a1d1;">{{ special ? special : price }}</h4>
 							</div>
                 {% if stock_attention %}
-              <div class="alert alert-danger" style="display: inline-block; padding: 5px 10px; margin-top: 10px;">
+              <div class="alert alert-danger" style = "{{ style }}">
                <i class="fa fa-exclamation-triangle"></i> {{ stock_attention }}
               </div>
               {% endif %}
