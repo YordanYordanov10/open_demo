@@ -285,12 +285,18 @@
 								<small style="color: #999;">Обща цена:</small>
 								<h4 id="total-price" style="margin: 5px 0; color: #23a1d1;">{{ special ? special : price }}</h4>
 							</div>
+                {% if stock_attention %}
+              <div class="alert alert-danger" style="display: inline-block; padding: 5px 10px; margin-top: 10px;">
+               <i class="fa fa-exclamation-triangle"></i> {{ stock_attention }}
+              </div>
+              {% endif %}
 
                {% if free_item_shipping %}
               <div class="alert alert-success" style="display: inline-block; padding: 5px 10px; margin-top: 10px;">
                <i class="fa fa-truck"></i> Безплатна доставка за този продукт!
               </div>
               {% endif %}
+
               
 							<button type="button" id="button-cart" data-loading-text="{{ text_loading }}" class="btn btn-primary btn-lg btn-block">{{ button_cart }}</button>
 						</div>

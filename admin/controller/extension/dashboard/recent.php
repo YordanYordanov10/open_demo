@@ -104,6 +104,13 @@ class ControllerExtensionDashboardRecent extends Controller {
 
 		foreach ($results as $result) {
 
+			if ($result['total'] >= 100){
+				$currentStyle = 'background-color: #d4edda; font-weight: bold;';
+
+			} else {
+				$currentStyle = 'background-color: #f8d7da; font-weight: bold;';
+			}
+
 			$order_products = $this->model_sale_order->getOrderProducts($result['order_id']);
 			$free_delivery = false;
 			foreach ($order_products as $product) {
@@ -112,9 +119,9 @@ class ControllerExtensionDashboardRecent extends Controller {
             break; 
         }
 
-		echo $this->model_sale_order->getOrderProducts($result['order_id']);
+		
 
-
+			
     }
 
 			$data['orders'][] = array(
@@ -125,6 +132,7 @@ class ControllerExtensionDashboardRecent extends Controller {
 				'total'      => $this->currency->format($result['total'], $result['currency_code'], $result['currency_value']),
 				'free_delivery' => $free_delivery ? "ДА" : "НЕ",
 				'view'       => $this->url->link('sale/order/info', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'], true),
+				'style'      => $currentStyle
 			);
 		}
 

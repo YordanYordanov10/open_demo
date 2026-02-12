@@ -267,6 +267,10 @@ class ControllerProductProduct extends Controller {
 				$data['stock'] = $this->language->get('text_instock');
 			}
 
+			if ($product_info['quantity']< 10 && $product_info['quantity'] > 0) {
+				$data['stock_attention'] = sprintf($this->language->get('text_stock_attention'), $product_info['quantity']);
+			}
+
 			$this->load->model('tool/image');
 
 			if ($product_info['image']) {
