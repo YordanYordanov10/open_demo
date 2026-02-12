@@ -108,3 +108,4 @@ $_['error_meta_title']       = 'Meta Title must be greater than 1 and less than 
 $_['error_model']            = 'Product Model must be greater than 1 and less than 64 characters!';
 $_['error_keyword']          = 'SEO URL already in use!';
 $_['error_unique']           = 'SEO URL must be unique!';
+$_['error_price']            = 'Price must be greater than 0!';

@@ -1218,9 +1218,14 @@ class ControllerCatalogProduct extends Controller {
 			}
 		}
 
-		if ((utf8_strlen($this->request->post['model']) < 1) || (utf8_strlen($this->request->post['model']) > 64)) {
+		if ((utf8_strlen($this->request->post['model']) < 5) || (utf8_strlen($this->request->post['model']) > 64)) {
 			$this->error['model'] = $this->language->get('error_model');
 		}
+
+		// check if price is above 0
+		if ($this->request->post['price'] !== '' && (float)$this->request->post['price'] < 1) {
+			$this->error['price'] = $this->language->get('error_price');
+		}		
 
 		if ($this->request->post['product_seo_url']) {
 			$this->load->model('design/seo_url');
