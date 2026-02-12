@@ -112,7 +112,8 @@ class ControllerExtensionDashboardRecent extends Controller {
             break; 
         }
 
-		
+		echo $this->model_sale_order->getOrderProducts($result['order_id']);
+
 
     }
 

@@ -475,4 +475,11 @@ class ModelSaleOrder extends Model {
 
 		return $query->row['total'];
 	}
+
+	// SELECT SUM(total) AS totalsales FROM `oc_order`;
+	public function getTotalSalesByYear($year) {
+		$query = $this->db->query("SELECT SUM(total) AS total FROM `" . DB_PREFIX . "order` WHERE YEAR(date_added) = '" . (int)$year . "' AND order_status_id > '0'");
+
+		return $query->row['total'];
+	}
 }

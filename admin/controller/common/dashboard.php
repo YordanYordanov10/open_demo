@@ -34,6 +34,11 @@ class ControllerCommonDashboard extends Controller {
 		// Get a list of installed modules
 		$extensions = $this->model_setting_extension->getInstalled('dashboard');
 
+
+		$this->load->model('sale/order');
+		$data['total_sales'] = $this->model_sale_order->getTotalSalesByYear(date('Y'));
+		$data['total_sales'] = $this->currency->format($data['total_sales'], $this->config->get('config_currency'));
+
 		// Add all the modules which have multiple settings for each module
 		foreach ($extensions as $code) {
 			if ($this->config->get('dashboard_' . $code . '_status') && $this->user->hasPermission('access', 'extension/dashboard/' . $code)) {

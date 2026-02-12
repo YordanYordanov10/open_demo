@@ -435,4 +435,12 @@ class ModelExtensionDashboardSale extends Model {
 
 		return $query->row['total'];
 	}
+
+	// SELECT firstname, COUNT(*) AS total_orders FROM oc_order GROUP BY customer_id ORDER BY total_orders DESC LIMIT 1
+
+	public function getTopCustomerByOrders() {
+		$query = $this->db->query("SELECT customer_id, firstname, COUNT(*) AS total_orders FROM `" . DB_PREFIX . "order` GROUP BY customer_id ORDER BY total_orders DESC LIMIT 1");
+
+		return $query->row;
+	}
 }

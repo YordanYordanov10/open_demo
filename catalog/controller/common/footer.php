@@ -21,11 +21,15 @@ class ControllerCommonFooter extends Controller {
 		$data['total_customers'] = $this->model_account_customer->getTotalCustomers();
 
 		// Задаване на работните часдове на магазина по час и дни от седмицата.
-		$working_hours = date('H') >= 8 && date('H') < 18; 
+		$working_hours = date('H') >= 6 && date('H') < 16; 
 		$working_days = date('N') < 6; // Monday to Friday (1-5)
 		$data['working_hours'] = $working_hours;
 		$data['working_days'] = $working_days;
 
+		$current_time = date('d-m-Y H:i');
+		$data['current_time'] = $current_time;
+
+		
 
 		$data['contact'] = $this->url->link('information/contact');
 		$data['return'] = $this->url->link('account/return/add', '', true);

@@ -54,6 +54,7 @@ class ControllerCommonHeader extends Controller {
 
 		} else {
    		 $data['text_greeting'] = '';
+		 $data['discount_for_registered'] = 'Регистрирайте се, за да получите 10% отстъпка при първата си поръчка!';
 		}
 
 		// Wishlist
