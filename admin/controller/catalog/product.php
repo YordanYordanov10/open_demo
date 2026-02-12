@@ -38,6 +38,10 @@ class ControllerCatalogProduct extends Controller {
 				$url .= '&filter_price=' . $this->request->get['filter_price'];
 			}
 
+			if (isset($this->request->get['VAT'])) {
+				$url .= '&VAT=' . $this->request->get['VAT'];
+			}
+
 			if (isset($this->request->get['filter_quantity'])) {
 				$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
 			}
@@ -89,6 +93,10 @@ class ControllerCatalogProduct extends Controller {
 
 			if (isset($this->request->get['filter_price'])) {
 				$url .= '&filter_price=' . $this->request->get['filter_price'];
+			}
+
+			If (isset($this->request->get['VAT'])) {
+				$url .= '&VAT=' . $this->request->get['VAT'];
 			}
 
 			if (isset($this->request->get['filter_quantity'])) {
@@ -244,6 +252,12 @@ class ControllerCatalogProduct extends Controller {
 			$filter_price = '';
 		}
 
+		if (isset($this->request->get['VAT'])) {
+			$filter_VAT = $this->request->get['VAT'];
+		} else {
+			$filter_VAT = '';
+		}
+
 		if (isset($this->request->get['filter_quantity'])) {
 			$filter_quantity = $this->request->get['filter_quantity'];
 		} else {
@@ -335,7 +349,8 @@ class ControllerCatalogProduct extends Controller {
 			'sort'            => $sort,
 			'order'           => $order,
 			'start'           => ($page - 1) * $this->config->get('config_limit_admin'),
-			'limit'           => $this->config->get('config_limit_admin')
+			'limit'           => $this->config->get('config_limit_admin'),
+			'VAT'             => $filter_VAT
 		);
 
 		$this->load->model('tool/image');
@@ -352,13 +367,14 @@ class ControllerCatalogProduct extends Controller {
 			}
 
 			$special = false;
+			$special_VAT = false;
 
 			$product_specials = $this->model_catalog_product->getProductSpecials($result['product_id']);
 
 			foreach ($product_specials  as $product_special) {
 				if (($product_special['date_start'] == '0000-00-00' || strtotime($product_special['date_start']) < time()) && ($product_special['date_end'] == '0000-00-00' || strtotime($product_special['date_end']) > time())) {
 					$special = $this->currency->format($product_special['price'], $this->config->get('config_currency'));
-
+					$special_VAT = $this->currency->format($product_special['price'] * 0.2, $this->config->get('config_currency'));
 					break;
 				}
 			}
@@ -369,10 +385,13 @@ class ControllerCatalogProduct extends Controller {
 				'name'       => $result['name'],
 				'model'      => $result['model'],
 				'price'      => $this->currency->format($result['price'], $this->config->get('config_currency')),
+				'VAT'        => $this->currency->format($result['price'] * 0.2, $this->config->get('config_currency')), // Assuming VAT is 20% of the price, adjust as needed
 				'special'    => $special,
+				'special_VAT' => $special_VAT,
 				'quantity'   => $result['quantity'],
 				'status'     => $result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
 				'edit'       => $this->url->link('catalog/product/edit', 'user_token=' . $this->session->data['user_token'] . '&product_id=' . $result['product_id'] . $url, true)
+				
 			);
 		}
 
