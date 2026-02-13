@@ -1,6 +1,6 @@
 <?php
 
-class ControllerExtensionTotalTierDiscount extends Controller{
+class ControllerExtensionTotalTierDiscount extends Controller {
     private $error = array();
 
     public function index() {
@@ -15,81 +15,55 @@ class ControllerExtensionTotalTierDiscount extends Controller{
 
             $this->session->data['success'] = $this->language->get('text_success');
 
-            $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total', true));
+            $this->response->redirect($this->url->link(
+                'marketplace/extension',
+                'user_token=' . $this->session->data['user_token'] . '&type=total',
+                true
+            ));
         }
 
-        if (isset($this->error['warning'])) {
-            $data['error_warning'] = $this->error['warning'];
-        } else {
-            $data['error_warning'] = '';
+        // --- Грешки за всяко поле ---
+        $fields = ['tier1_min', 'tier1_percent', 'tier2_min', 'tier2_percent', 'vip_percent', 'status', 'sort_order'];
+        foreach ($fields as $field) {
+            $data['error_' . $field] = isset($this->error[$field]) ? $this->error[$field] : '';
         }
 
+        // --- Breadcrumbs ---
         $data['breadcrumbs'] = array();
-
-        $data['breadcrumbs'][] = array(
+        $data['breadcrumbs'][] = [
             'text' => $this->language->get('text_home'),
             'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
-        );
-
-        $data['breadcrumbs'][] = array(
+        ];
+        $data['breadcrumbs'][] = [
             'text' => $this->language->get('text_extension'),
             'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total', true)
-        );
-
-        $data['breadcrumbs'][] = array(
+        ];
+        $data['breadcrumbs'][] = [
             'text' => $this->language->get('heading_title'),
             'href' => $this->url->link('extension/total/tier_discount', 'user_token=' . $this->session->data['user_token'], true)
-        );
+        ];
 
         $data['action'] = $this->url->link('extension/total/tier_discount', 'user_token=' . $this->session->data['user_token'], true);
-
         $data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=total', true);
 
-        if (isset($this->request->post['total_tier_discount_status'])) {
-            $data['total_tier_discount_status'] = $this->request->post['total_tier_discount_status'];
-        } else {
-            $data['total_tier_discount_status'] = $this->config->get('total_tier_discount_status');
-        }
-
-        if (isset($this->request->post['total_tier_discount_sort_order'])) {
-            $data['total_tier_discount_sort_order'] = $this->request->post['total_tier_discount_sort_order'];
-        } else {
-            $data['total_tier_discount_sort_order'] = $this->config->get('total_tier_discount_sort_order');
-        }
-
-        if (isset($this->request->post['total_tier_discount_tier1_min'])) {
-            $data['total_tier_discount_tier1_min'] = $this->request->post['total_tier_discount_tier1_min'];
-        } else {
-            $data['total_tier_discount_tier1_min'] = $this->config->get('total_tier_discount_tier1_min');
-        }
-
-        if (isset($this->request->post['total_tier_discount_tier1_percent'])) {
-            $data['total_tier_discount_tier1_percent'] = $this->request->post['total_tier_discount_tier1_percent'];
-        } else {
-            $data['total_tier_discount_tier1_percent'] = $this->config->get('total_tier_discount_tier1_percent');
-        }
-
-        if (isset($this->request->post['total_tier_discount_tier2_min'])) {
-            $data['total_tier_discount_tier2_min'] = $this->request->post['total_tier_discount_tier2_min'];
-        } else {
-            $data['total_tier_discount_tier2_min'] = $this->config->get('total_tier_discount_tier2_min');
-        }
-
-        if (isset($this->request->post['total_tier_discount_tier2_percent'])) {
-            $data['total_tier_discount_tier2_percent'] = $this->request->post['total_tier_discount_tier2_percent'];
-        } else {
-            $data['total_tier_discount_tier2_percent'] = $this->config->get('total_tier_discount_tier2_percent');
-        }
-
-        if (isset($this->request->post['total_tier_discount_vip_percent'])) {
-            $data['total_tier_discount_vip_percent'] = $this->request->post['total_tier_discount_vip_percent'];
-        } else {
-            $data['total_tier_discount_vip_percent'] = $this->config->get('total_tier_discount_vip_percent');
+        // --- Зареждане на POST или config стойности ---
+        $fields_post = [
+            'total_tier_discount_status',
+            'total_tier_discount_sort_order',
+            'total_tier_discount_tier1_min',
+            'total_tier_discount_tier1_percent',
+            'total_tier_discount_tier2_min',
+            'total_tier_discount_tier2_percent',
+            'total_tier_discount_vip_percent'
+        ];
+        foreach ($fields_post as $field) {
+            $data[$field] = isset($this->request->post[$field]) ? $this->request->post[$field] : $this->config->get($field);
         }
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');     
+
         $this->response->setOutput($this->load->view('extension/total/tier_discount', $data));
     }
 
@@ -98,23 +72,28 @@ class ControllerExtensionTotalTierDiscount extends Controller{
             $this->error['warning'] = $this->language->get('error_permission');
         }
 
-        // if (!is_numeric($this->request->post['total_tier_discount_tier1_min']) || $this->request->post['total_tier_discount_tier1_min'] < 0) {
-        //     $this->error['warning'] = 'Tier 1 Minimum must be a non-negative number!';
-        // }
+        // --- Проверка на Tier 1 ---
+        if (!isset($this->request->post['total_tier_discount_tier1_min']) || !is_numeric($this->request->post['total_tier_discount_tier1_min']) || $this->request->post['total_tier_discount_tier1_min'] < 0) {
+            $this->error['tier1_min'] = $this->language->get('error_tier1_min');
+        }
 
-        // if (!is_numeric($this->request->post['total_tier_discount_tier2_min']) || $this->request->post['total_tier_discount_tier2_min'] < 0) {
-        //     $this->error['warning'] = 'Tier 2 Minimum must be a non-negative number!';
-        // }
+        if (!isset($this->request->post['total_tier_discount_tier1_percent']) || !is_numeric($this->request->post['total_tier_discount_tier1_percent']) || $this->request->post['total_tier_discount_tier1_percent'] < 0) {
+            $this->error['tier1_percent'] = $this->language->get('error_tier1_percent');
+        }
 
-        // if (!is_numeric($this->request->post['total_tier_discount_vip_percent']) || $this->request->post['total_tier_discount_vip_percent'] < 0) {
-        //     $this->error['warning'] = 'VIP Percent must be a non-negative number!';
-        // }
-        //     if (!is_numeric($this->request->post['total_tier_discount_tier1_percent']) || $this->request->post['total_tier_discount_tier1_percent'] < 0) {
-        //         $this->error['warning'] = 'Tier 1 Percent must be a non-negative number!';
-        //     }
-        //     if (!is_numeric($this->request->post['total_tier_discount_tier2_percent']) || $this->request->post['total_tier_discount_tier2_percent'] < 0) {
-        //         $this->error['warning'] = 'Tier 2 Percent must be a non-negative number!';
-        //     }
+        // --- Проверка на Tier 2 ---
+        if (!isset($this->request->post['total_tier_discount_tier2_min']) || !is_numeric($this->request->post['total_tier_discount_tier2_min']) || $this->request->post['total_tier_discount_tier2_min'] < 0) {
+            $this->error['tier2_min'] = $this->language->get('error_tier2_min');
+        }
+
+        if (!isset($this->request->post['total_tier_discount_tier2_percent']) || !is_numeric($this->request->post['total_tier_discount_tier2_percent']) || $this->request->post['total_tier_discount_tier2_percent'] < 0) {
+            $this->error['tier2_percent'] = $this->language->get('error_tier2_percent');
+        }
+
+        // --- Проверка на VIP ---
+        if (!isset($this->request->post['total_tier_discount_vip_percent']) || !is_numeric($this->request->post['total_tier_discount_vip_percent']) || $this->request->post['total_tier_discount_vip_percent'] < 0) {
+            $this->error['vip_percent'] = $this->language->get('error_vip_percent');
+        }
 
         return !$this->error;
     }

@@ -18,3 +18,8 @@ $_['entry_discount_vip_percent'] = 'VIP Percent';
 
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify tier discount total!';
+$_['error_tier1_min'] = 'Tier 1 Minimum must be a non-negative number!';
+$_['error_tier1_percent'] = 'Tier 1 Percent must be a non-negative number!'; 
+$_['error_tier2_min'] = 'Tier 2 Minimum must be a non-negative number!';
+$_['error_tier2_percent'] = 'Tier 2 Percent must be a non-negative number!';
+$_['error_vip_percent'] = 'VIP Percent must be a non-negative number!';

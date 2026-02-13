@@ -41,6 +41,9 @@
                 <option value="1" {% if total_tier_discount_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
                 <option value="0" {% if not total_tier_discount_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
               </select>
+              {% if error_status %}
+                <div class="text-danger" style="margin-top:5px;">{{ error_status }}</div>
+              {% endif %}
             </div>
           </div>
           
@@ -48,43 +51,64 @@
             <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
             <div class="col-sm-10">
               <input type="text" name="total_tier_discount_sort_order" value="{{ total_tier_discount_sort_order }}" id="input-sort-order" class="form-control"/>
+              {% if error_sort_order %}
+                <div class="text-danger" style="margin-top:5px;">{{ error_sort_order }}</div>
+              {% endif %}
             </div>
           </div>
 
           <hr />
           <h4 style="margin-left: 15px; margin-bottom: 20px;">Настройки на нивата (Tiers)</h4>
 
+          <!-- Tier 1 -->
           <div class="well" style="background-color: #f0f7fd; border: 1px solid #d1e9ff; border-left: 5px solid #3498db; overflow: hidden;">
             <div class="form-group">
               <label class="col-sm-2 control-label">Tier 1 - {{ entry_discount_tier1_min }}</label>
               <div class="col-sm-4">
                 <input type="text" name="total_tier_discount_tier1_min" value="{{ total_tier_discount_tier1_min }}" placeholder="Min. Price" class="form-control"/>
+                {% if error_tier1_min %}
+                  <div class="text-danger" style="margin-top:5px;">{{ error_tier1_min }}</div>
+                {% endif %}
               </div>
               <label class="col-sm-2 control-label">{{ entry_discount_tier1_percent }} (%)</label>
               <div class="col-sm-4">
                 <input type="text" name="total_tier_discount_tier1_percent" value="{{ total_tier_discount_tier1_percent }}" placeholder="Percent" class="form-control"/>
+                {% if error_tier1_percent %}
+                  <div class="text-danger" style="margin-top:5px;">{{ error_tier1_percent }}</div>
+                {% endif %}
               </div>
             </div>
           </div>
 
+          <!-- Tier 2 -->
           <div class="well" style="background-color: #f4faf4; border: 1px solid #dff0d8; border-left: 5px solid #27ae60; overflow: hidden;">
             <div class="form-group">
               <label class="col-sm-2 control-label">Tier 2 - {{ entry_discount_tier2_min }}</label>
               <div class="col-sm-4">
                 <input type="text" name="total_tier_discount_tier2_min" value="{{ total_tier_discount_tier2_min }}" placeholder="Min. Price" class="form-control"/>
+                {% if error_tier2_min %}
+                  <div class="text-danger" style="margin-top:5px;">{{ error_tier2_min }}</div>
+                {% endif %}
               </div>
               <label class="col-sm-2 control-label">{{ entry_discount_tier2_percent }} (%)</label>
               <div class="col-sm-4">
                 <input type="text" name="total_tier_discount_tier2_percent" value="{{ total_tier_discount_tier2_percent }}" placeholder="Percent" class="form-control"/>
+                {% if error_tier2_percent %}
+                  <div class="text-danger" style="margin-top:5px;">{{ error_tier2_percent }}</div>
+                {% endif %}
               </div>
             </div>
           </div>
 
+          <!-- VIP -->
           <div class="well" style="background-color: #fdf4f4; border: 1px solid #f2dede; border-left: 5px solid #e74c3c; overflow: hidden;">
             <div class="form-group">
               <label class="col-sm-2 control-label">{{ entry_discount_vip_percent }} (%)</label>
               <div class="col-sm-4">
                 <input type="text" name="total_tier_discount_vip_percent" value="{{ total_tier_discount_vip_percent }}" placeholder="VIP Percent" class="form-control"/>
+                {% if error_vip_percent %}
+                  <div class="text-danger" style="margin-top:5px;">{{ error_vip_percent }}</div>
+                {% endif %}
               </div>
             </div>
           </div>
