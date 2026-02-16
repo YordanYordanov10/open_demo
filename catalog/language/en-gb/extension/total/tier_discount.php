@@ -8,7 +8,7 @@ $_['text_success']     = 'Success: You have modified tier discount total!';
 $_['text_edit']        = 'Edit Tier Discount Total';
 $_['text_guest_login_to_discount'] = 'Login to unlock additional discounts';
 $_['text_vip_customer'] = 'VIP Customer';
-$_['text_tier_discount'] = 'Tier Discount %s;';
+$_['text_tier_discount'] = 'Tier Discount %s';
 
 // Entry
 $_['entry_status']     = 'Status';

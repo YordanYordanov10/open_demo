@@ -66,7 +66,7 @@ class ModelExtensionTotalTierDiscount extends Model{
         if ($discount > 0) {
         $total['totals'][] = array(
             'code' => 'tier_discount',
-            'title' => sprintf( $this->language->get('text_tier_discount'),$this->currency->format($totalDiscount, $this->session->data['currency'])),
+            'title' => sprintf( $this->language->get('text_tier_discount'),$totalDiscount),
             'value' => -$discount,
             'sort_order' => $this->config->get('total_tier_discount_sort_order')
         );
