@@ -1,58 +1,169 @@
 {{ header }}{{ column_left }}
 <div id="content">
-  <div class="page-header">
-    <div class="container-fluid">
-      <div class="pull-right">
-        <button type="submit" form="form-total" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
-          <i class="fa fa-save"></i>
-        </button>
-        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
-          <i class="fa fa-reply"></i>
-        </a>
-      </div>
-      <h1>{{ heading_title }}</h1>
-      <ul class="breadcrumb">
-        {% for breadcrumb in breadcrumbs %}
-          <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-  
-  <div class="container-fluid">
-    {% if error_warning %}
-      <div class="alert alert-danger alert-dismissible">
-        <i class="fa fa-exclamation-circle"></i> {{ error_warning }}
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-      </div>
-    {% endif %}
-    
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
-      </div>
-      <div class="panel-body">
-        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-total" class="form-horizontal">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<button type="submit" form="form-total" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+					<i class="fa fa-save"></i>
+				</button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+					<i class="fa fa-reply"></i>
+				</a>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li>
+						<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		{% if error_warning %}
+			<div class="alert alert-danger alert-dismissible">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ error_warning }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-pencil"></i>
+					{{ text_edit }}</h3>
+			</div>
+			<div class="panel-body">
+				<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-total" class="form-horizontal">
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+						<div class="col-sm-10">
+							<select name="total_loyalty_points_status" id="input-status" class="form-control">
+								<option value="1" {% if total_loyalty_points_status %} selected="selected" {% endif %}>{{ text_enabled }}</option>
+								<option value="0" {% if not total_loyalty_points_status %} selected="selected" {% endif %}>{{ text_disabled }}</option>
+							</select>
+							{% if error_status %}
+								<div class="text-danger" style="margin-top:5px;">{{ error_status }}</div>
+							{% endif %}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
+						<div class="col-sm-10">
+							<input type="text" name="total_loyalty_points_sort_order" value="{{ total_loyalty_points_sort_order }}" id="input-sort-order" class="form-control"/>
+							{% if error_sort_order %}
+								<div class="text-danger" style="margin-top:5px;">{{ error_sort_order }}</div>
+							{% endif %}
+						</div>
+					</div>
+
+					<hr/>
+					<h4 style="margin-left: 15px; margin-bottom: 20px;">Настройки на лоялната програма (Loyal)</h4>
+
+					<!-- Earn rate -->
+					<div class="well" style="background-color: #f0f7fd; border: 1px solid #d1e9ff; border-left: 5px solid #3498db; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Rate %
+								{{ entry_earn_rate_percent }}</label>
+							<div class="col-sm-4">
+								<input type="text" name="total_loyalty_points_percent" value="{{ total_loyalty_points_percent }}" placeholder="Percent" class="form-control"/>
+								{% if error_earn_rate_percent %}
+									<div class="text-danger" style="margin-top:5px;">{{ error_earn_rate_percent }}</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+					<!-- Points Value -->
+					<div class="well" style="background-color: #f4faf4; border: 1px solid #dff0d8; border-left: 5px solid #27ae60; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Points Value -
+								{{ entry_points_value }}</label>
+							<div class="col-sm-4">
+								<input type="text" name="total_loyalty_points_value" value="{{ total_loyalty_points_value }}" placeholder="Price" class="form-control"/>
+								{% if error_points_value %}
+									<div class="text-danger" style="margin-top:5px;">{{ error_points_value}}</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+					<!-- Allow Redeem -->
+					<div class="well" style="background-color: #fff9f0; border: 1px solid #ffe8cc; border-left: 5px solid #f39c12; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Allow Redeem</label>
+							<div class="col-sm-10">
+								<label class="radio-inline">
+									<input type="radio" name="total_loyalty_points_allow_redeem" value="1" {% if total_loyalty_points_allow_redeem %} checked="checked" {% endif %}/>
+									Yes
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="total_loyalty_points_allow_redeem" value="0" {% if not total_loyalty_points_allow_redeem %} checked="checked" {% endif %}/>
+									No
+								</label>
+							</div>
+						</div>
+					</div>
+
+          <!-- Order status -->
+					<div class="well" style="background-color: #fdfdfd; border: 1px solid #e2e2e2; border-left: 5px solid #607d8b; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="input-complete-status">
+								<span data-toggle="tooltip" title="Изберете при какъв статус на поръчката клиентът реално да получава точките (обикновено 'Доставена' или 'Завършена')">
+									{{ entry_complete_status }}
+								</span>
+							</label>
+							<div class="col-sm-10">
+								<select name="total_loyalty_points_complete_status_id" id="input-complete-status" class="form-control">
+									{% for status in order_statuses %}
+										<option value="{{ status.order_status_id }}" {% if status.order_status_id == total_loyalty_points_complete_status_id %} selected="selected" {% endif %}>
+											{{ status.name }}
+										</option>
+									{% endfor %}
+								</select>
+								<small class="text-muted">
+									<i class="fa fa-info-circle"></i>
+									Точките ще се добавят автоматично в баланса на клиента само при преминаване в този статус.</small>
+							</div>
+						</div>
+					</div>
           
-          <div class="form-group">
-            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
-            <div class="col-sm-10">
-              <select name="total_tier_discount_status" id="input-status" class="form-control">
-                <option value="1" {% if total_tier_discount_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
-                <option value="0" {% if not total_tier_discount_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
-              </select>
-              {% if error_status %}
-                <div class="text-danger" style="margin-top:5px;">{{ error_status }}</div>
-              {% endif %}
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
-            <div class="col-sm-10">
-              <input type="text" name="total_tier_discount_sort_order" value="{{ total_tier_discount_sort_order }}" id="input-sort-order" class="form-control"/>
-              {% if error_sort_order %}
-                <div class="text-danger" style="margin-top:5px;">{{ error_sort_order }}</div>
-              {% endif %}
-            </div>
-          </div>
+					<!-- Min Points to Redeem -->
+					<div class="well" style="background-color: #f4faf4; border: 1px solid #dff0d8; border-left: 5px solid #27ae60; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_points_to_redeem }}</label>
+							<div class="col-sm-4">
+								<input type="text" name="total_loyalty_points_to_redeem" value="{{ total_loyalty_points_to_redeem }}" placeholder="Value" class="form-control"/>
+								{% if error_points_to_redeem %}
+									<div class="text-danger" style="margin-top:5px;">{{ error_points_to_redeem}}</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+
+					<!-- VIP -->
+					<div class="well" style="background-color: #fdf4f4; border: 1px solid #f2dede; border-left: 5px solid #e74c3c; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_max_order_percent }}
+							</label>
+							<div class="col-sm-4">
+								<input type="text" name="total_loyalty_points_max_order_percent" value="{{ total_loyalty_points_max_order_percent }}" placeholder="Percent" class="form-control"/>
+								{% if error_max_order_percent %}
+									<div class="text-danger" style="margin-top:5px;">{{ error_max_order_percent }}</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{{ footer }}
