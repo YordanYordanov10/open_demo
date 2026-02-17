@@ -34,5 +34,16 @@ class ModelAccountLoyalty extends Model{
             date_added = NOW()");
            
  }
- 
+
+   public function hasPointsForOrder($order_id) {
+    $query = $this->db->query("
+        SELECT id 
+        FROM " . DB_PREFIX . "customer_loyalty_points
+        WHERE order_id = '" . (int)$order_id . "'
+        LIMIT 1
+    ");
+
+    return $query->num_rows;
+}
+
 }
