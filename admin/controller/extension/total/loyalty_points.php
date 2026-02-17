@@ -26,12 +26,20 @@ class ControllerExtensionTotalLoyaltyPoints extends Controller{
             'catalog/model/checkout/order/addOrderHistory/after',
             'extension/module/loyalty_points/addPointsOnComplete'
             );
+
+            $this->model_setting_event->addEvent(
+                'loyalty_points_cancel',
+                'catalog/model/checkout/order/addOrderHistory/after',
+                'extension/module/loyalty_points/returnPointsOnCancel'
+            );
         }
 
         public function uninstall() {
             $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "customer_loyalty_points`;");
 
             $this->model_setting_event->deleteEventByCode('loyalty_points_add');
+
+            $this->model_setting_event->deleteEventByCode('loyalty_points_cancel');
         }
 
     public function index(){
@@ -91,7 +99,8 @@ class ControllerExtensionTotalLoyaltyPoints extends Controller{
             'total_loyalty_points_allow_redeem',
             'total_loyalty_points_to_redeem',
             'total_loyalty_points_max_order_percent',
-            'total_loyalty_points_complete_status_id'
+            'total_loyalty_points_complete_status_id',
+            'total_loyalty_points_canceled_status_id'
         ];
         foreach ($fields_post as $field) {
             $data[$field] = isset($this->request->post[$field]) ? $this->request->post[$field] : $this->config->get($field);

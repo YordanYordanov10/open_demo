@@ -382,4 +382,6 @@ class ModelCheckoutOrder extends Model {
 			$this->cache->delete('product');
 		}
 	}
+
+	
 }

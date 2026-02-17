@@ -110,7 +110,7 @@
 						</div>
 					</div>
 
-          <!-- Order status -->
+					<!-- Order status complete -->
 					<div class="well" style="background-color: #fdfdfd; border: 1px solid #e2e2e2; border-left: 5px solid #607d8b; overflow: hidden;">
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="input-complete-status">
@@ -132,7 +132,30 @@
 							</div>
 						</div>
 					</div>
-          
+					<!-- Order status cancel -->
+					<div class="well" style="background-color: #fff5f5; border: 1px solid #ffebeb; border-left: 5px solid #f44336; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="input-cancel-status">
+								<span data-toggle="tooltip" title="Изберете при какъв статус точките да се връщат на клиента (обикновено 'Отказана' или 'Върната')">
+								{{ entry_cancel_status }}
+								</span>
+							</label>
+							<div class="col-sm-10">
+								<select name="total_loyalty_points_canceled_status_id" id="input-cancel-status" class="form-control">
+									{% for status in order_statuses %}
+										<option value="{{ status.order_status_id }}" {% if status.order_status_id == total_loyalty_points_canceled_status_id %} selected="selected" {% endif %}>
+											{{ status.name }}
+										</option>
+									{% endfor %}
+								</select>
+								<small class="text-muted">
+									<i class="fa fa-info-circle"></i>
+									Ако поръчката бъде отменена с този статус, използваните точки ще се върнат автоматично в баланса на клиента.
+								</small>
+							</div>
+						</div>
+					</div>
+
 					<!-- Min Points to Redeem -->
 					<div class="well" style="background-color: #f4faf4; border: 1px solid #dff0d8; border-left: 5px solid #27ae60; overflow: hidden;">
 						<div class="form-group">

@@ -15,6 +15,9 @@ $_['entry_earn_rate_percent'] = 'Earn Rate Percent';
 $_['entry_points_value'] = 'Entry Points Value';
 $_['entry_points_to_redeem'] = 'Entry points to Redeem';
 $_['entry_max_order_percent'] = 'Max order in Percent';
+$_['entry_allow_redeem'] = 'Allow redeem';
+$_['entry_complete_status'] = 'Complete Status';
+$_['entry_cancel_status'] = 'Cancel Status';
 
 
 // Error
