@@ -104,11 +104,13 @@ class ControllerExtensionTotalLoyaltyPoints extends Controller{
             'total_loyalty_points_to_redeem',
             'total_loyalty_points_max_order_percent',
             'total_loyalty_points_complete_status_id',
-            'total_loyalty_points_canceled_status_id'
+            'total_loyalty_points_canceled_status_id',
         ];
         foreach ($fields_post as $field) {
             $data[$field] = isset($this->request->post[$field]) ? $this->request->post[$field] : $this->config->get($field);
         }
+
+        $data['loyalty'] = 
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
