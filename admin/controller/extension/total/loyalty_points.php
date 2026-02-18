@@ -7,16 +7,20 @@ class ControllerExtensionTotalLoyaltyPoints extends Controller{
 
         public function install() {
             $this->db->query("
-            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "customer_loyalty_points` (
-              `id` INT(11) NOT NULL AUTO_INCREMENT,
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "loyalty_transaction` (
+              `transaction_id` INT(11) NOT NULL AUTO_INCREMENT,
               `customer_id` INT(11) NOT NULL,
-              `order_id` INT(11) NOT NULL,
-              `points` DECIMAL(15,4) NOT NULL DEFAULT '0.0000',
-              `description` TEXT NOT NULL,
-              `date_added` DATETIME NOT NULL,
-              PRIMARY KEY (`id`),
+              `order_id` INT(11) NULL,
+              `description` VARCHAR(255) NOT NULL,
+              `points` INT(11) NOT NULL DEFAULT '0',
+              `transaction_type` VARCHAR(20) NOT NULL,
+              `status` TINYINT(1) NOT NULL DEFAULT '1',
+              `date_expired` DATETIME NULL,
+              `date_added` DATETIME NOT NULL, 
+              `date_modified` DATETIME NULL,
+              PRIMARY KEY (`transaction_id`),
               INDEX (`customer_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             ");
 
             $this->load->model('setting/event');
@@ -35,7 +39,7 @@ class ControllerExtensionTotalLoyaltyPoints extends Controller{
         }
 
         public function uninstall() {
-            $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "customer_loyalty_points`;");
+            $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "loyalty_transaction`;");
 
             $this->model_setting_event->deleteEventByCode('loyalty_points_add');
 
