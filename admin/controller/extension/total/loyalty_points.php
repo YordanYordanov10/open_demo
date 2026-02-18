@@ -110,7 +110,7 @@ class ControllerExtensionTotalLoyaltyPoints extends Controller{
             $data[$field] = isset($this->request->post[$field]) ? $this->request->post[$field] : $this->config->get($field);
         }
 
-        $data['loyalty'] = 
+        
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');

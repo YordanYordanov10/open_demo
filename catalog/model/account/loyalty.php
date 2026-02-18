@@ -102,11 +102,12 @@ public function getPointsUsedForOrder($order_id) {
         $point_value = (float)$this->config->get('total_loyalty_points_value');
 
         if ($point_value > 0) {
-            return (int)($discount / $point_value); // ВРЪЩА резултата
+            return (int)($discount / $point_value); 
         }
     }
     
-    return 0; // Връща 0, ако няма използвани точки
+    return 0; 
+
 }
 
 }

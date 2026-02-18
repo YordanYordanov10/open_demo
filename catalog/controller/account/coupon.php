@@ -1,0 +1,68 @@
+<?php
+
+class ControllerAccountCoupon extends Controller {
+   public function index() {
+
+    if (!$this->customer->isLogged()) {
+        $this->session->data['redirect'] = $this->url->link('account/coupon', '', true);
+        return $this->response->redirect($this->url->link('account/login', '', true));
+    }
+
+    $this->load->language('account/coupon');
+    $this->document->setTitle($this->language->get('heading_title'));
+
+    $this->load->model('account/coupon');
+    $this->load->model('account/loyalty');
+
+    $customer_id = $this->customer->getId();
+
+   
+    $page = isset($this->request->get['page']) ? (int)$this->request->get['page'] : 1;
+    $limit = 10;
+    $start = ($page - 1) * $limit;
+
+   
+    $data['total_points'] = $this->model_account_loyalty->getCustomerPoints($customer_id);
+
+    $coupon_total = $this->model_account_coupon ->getTotalCouponsByCustomerId($customer_id);
+
+    $results = $this->model_account_coupon->getCouponsByCustomerId($customer_id, $start, $limit);
+
+    $data['coupons'] = [];
+
+    foreach ($results as $result) {
+        $data['coupons'][] = [
+            'coupon_id'    => $result['coupon_id'],
+            'code'         => $result['code'],
+            'amount'       => $this->currency->format($result['amount'],$this->session->data['currency']),
+            'points_spent' => $result['points_spent'],
+            'status'       => $result['status'],
+            'date_added'   => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
+            'date_used'    => $result['date_used'] ? date($this->language->get('date_format_short'), strtotime($result['date_used'])) : '',
+            'date_expired' => date($this->language->get('date_format_short'), strtotime($result['date_expired']))
+        ];
+    }
+
+  
+    $pagination = new Pagination();
+    $pagination->total = $coupon_total;  
+    $pagination->page  = $page;
+    $pagination->limit = $limit;
+    $pagination->url   = $this->url->link('account/coupon', 'page={page}', true);
+
+    $data['pagination'] = $pagination->render();
+
+
+    $data['continue'] = $this->url->link('account/account', '', true);
+
+    $data['header'] = $this->load->controller('common/header');
+    $data['footer'] = $this->load->controller('common/footer');
+    $data['column_left'] = $this->load->controller('common/column_left');
+    $data['column_right'] = $this->load->controller('common/column_right');
+    $data['content_top'] = $this->load->controller('common/content_top');
+    $data['content_bottom'] = $this->load->controller('common/content_bottom');
+
+    $this->response->setOutput($this->load->view('account/coupon', $data));
+   
+}
+}
