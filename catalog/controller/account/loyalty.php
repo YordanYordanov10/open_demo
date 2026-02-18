@@ -57,16 +57,17 @@ class ControllerAccountLoyalty extends Controller {
                 'order_id'    => $result['order_id'],
                 'points'      => $result['points'],
                 'description' => $result['description'],
+                'transaction_type' => $result['transaction_type'],
                 'date_added'  => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
                 'href'        => $this->url->link('account/order/info', 'order_id=' . $result['order_id'], true)
             );
         }
 
-         $pagination = new Pagination();
-         $pagination->total = $reward_total;
-         $pagination->page = $page;
-         $pagination->limit = $limit;
-         $pagination->url = $this->url->link('account/loyalty', 'page={page}', true);
+        $pagination = new Pagination();
+        $pagination->total = $reward_total;
+        $pagination->page = $page;
+        $pagination->limit = $limit;
+        $pagination->url = $this->url->link('account/loyalty', 'page={page}', true);
 
         $data['pagination'] = $pagination->render();
 
