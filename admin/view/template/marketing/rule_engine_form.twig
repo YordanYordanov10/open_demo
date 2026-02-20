@@ -1,0 +1,257 @@
+{{ header }}
+{{ column_left }}
+
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-rule" class="btn btn-primary">
+          <i class="fa fa-save"></i> {{ button_save }}
+        </button>
+        <a href="{{ cancel }}" class="btn btn-default">
+          <i class="fa fa-reply"></i> {{ button_cancel }}
+        </a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    {% if error_warning %}
+      <div class="alert alert-danger">
+        <i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      </div>
+    {% endif %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ form_heading }}</h3>
+      </div>
+
+      <div class="panel-body">
+        <form id="form-rule" action="{{ action }}" method="post" class="form-horizontal">
+
+          <!-- NAME -->
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{ entry_name }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="name" value="{{ name }}" class="form-control" />
+              {% if error_name %}
+                <div class="text-danger">{{ error_name }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <hr/>
+
+          <!-- CONDITIONS -->
+          <h4>Conditions</h4>
+
+          <div class="panel panel-default">
+            <div class="panel-body">
+
+              <button type="button" id="add-condition" class="btn btn-sm btn-primary">
+                Add Condition
+              </button>
+
+              <div class="table-responsive" style="margin-top:10px;">
+                <table id="conditions_table" class="table table-striped table-condensed">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Operator</th>
+                      <th>Value</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    {% if conditions %}
+                      {% for condition in conditions %}
+                        <tr>
+                          <td>
+                            <select name="conditions[][type]" class="form-control">
+                              {% for key,label in condition_types %}
+                                <option value="{{ key }}" {% if condition.type == key %}selected{% endif %}>
+                                  {{ label }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </td>
+                          <td>
+                            <input type="text" name="conditions[][operator]" value="{{ condition.operator }}" class="form-control"/>
+                          </td>
+                          <td>
+                            <input type="text" name="conditions[][value]" value="{{ condition.value }}" class="form-control"/>
+                          </td>
+                          <td>
+                            <button type="button" class="btn btn-danger btn-sm remove-condition">
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr>
+                        <td>
+                          <select name="conditions[][type]" class="form-control">
+                            {% for key,label in condition_types %}
+                              <option value="{{ key }}">{{ label }}</option>
+                            {% endfor %}
+                          </select>
+                        </td>
+                        <td>
+                          <input type="text" name="conditions[][operator]" class="form-control"/>
+                        </td>
+                        <td>
+                          <input type="text" name="conditions[][value]" class="form-control"/>
+                        </td>
+                        <td></td>
+                      </tr>
+                    {% endif %}
+
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+
+          <hr/>
+
+          <!-- ACTIONS -->
+          <h4>Actions</h4>
+
+          <div class="panel panel-default">
+            <div class="panel-body">
+
+              <button type="button" id="add-action" class="btn btn-sm btn-primary">
+                Add Action
+              </button>
+
+              {% if error_actions %}
+                <div class="text-danger" style="margin-top:10px;">
+                  {{ error_actions }}
+                </div>
+              {% endif %}
+
+              <div class="table-responsive" style="margin-top:10px;">
+                <table id="actions_table" class="table table-striped table-condensed">
+                  <thead>
+                    <tr>
+                      <th>Action Type</th>
+                      <th>Value</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    {% if actions %}
+                      {% for action in actions %}
+                        <tr>
+                          <td>
+                            <select name="actions[][type]" class="form-control">
+                              {% for key,label in action_types %}
+                                <option value="{{ key }}" {% if action.type == key %}selected{% endif %}>
+                                  {{ label }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </td>
+                          <td>
+                            <input type="text" name="actions[][value]" value="{{ action.value }}" class="form-control"/>
+                          </td>
+                          <td>
+                            <button type="button" class="btn btn-danger btn-sm remove-action">
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr>
+                        <td>
+                          <select name="actions[][type]" class="form-control">
+                            {% for key,label in action_types %}
+                              <option value="{{ key }}">{{ label }}</option>
+                            {% endfor %}
+                          </select>
+                        </td>
+                        <td>
+                          <input type="text" name="actions[][value]" class="form-control"/>
+                        </td>
+                        <td></td>
+                      </tr>
+                    {% endif %}
+
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ footer }}
+
+<script>
+(function(){
+
+  var conditionTypes = {{ condition_types|json_encode()|raw }};
+  var actionTypes    = {{ action_types|json_encode()|raw }};
+
+  function buildConditionSelect(){
+    var html = '<select name="conditions[][type]" class="form-control">';
+    for (var k in conditionTypes){
+      html += '<option value="'+k+'">'+conditionTypes[k]+'</option>';
+    }
+    html += '</select>';
+    return html;
+  }
+
+  function buildActionSelect(){
+    var html = '<select name="actions[][type]" class="form-control">';
+    for (var k in actionTypes){
+      html += '<option value="'+k+'">'+actionTypes[k]+'</option>';
+    }
+    html += '</select>';
+    return html;
+  }
+
+  document.getElementById('add-condition').addEventListener('click', function(){
+    var tbody = document.querySelector('#conditions_table tbody');
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>'+buildConditionSelect()+'</td>'+
+      '<td><input type="text" name="conditions[][operator]" class="form-control"/></td>'+
+      '<td><input type="text" name="conditions[][value]" class="form-control"/></td>'+
+      '<td><button type="button" class="btn btn-danger btn-sm remove-condition">Remove</button></td>';
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('add-action').addEventListener('click', function(){
+    var tbody = document.querySelector('#actions_table tbody');
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>'+buildActionSelect()+'</td>'+
+      '<td><input type="text" name="actions[][value]" class="form-control"/></td>'+
+      '<td><button type="button" class="btn btn-danger btn-sm remove-action">Remove</button></td>';
+    tbody.appendChild(tr);
+  });
+
+  document.addEventListener('click', function(e){
+    if (e.target.classList.contains('remove-condition')){
+      e.target.closest('tr').remove();
+    }
+    if (e.target.classList.contains('remove-action')){
+      e.target.closest('tr').remove();
+    }
+  });
+
+})();
+</script>

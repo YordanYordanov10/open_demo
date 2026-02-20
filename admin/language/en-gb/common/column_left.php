@@ -49,6 +49,7 @@ $_['text_return']               = 'Returns';
 $_['text_return_action']        = 'Return Actions';
 $_['text_return_reason']        = 'Return Reasons';
 $_['text_return_status']        = 'Return Statuses';
+$_['text_rule_engine']          = 'Rule Engine';
 $_['text_sale']                 = 'Sales';
 $_['text_setting']              = 'Settings';
 $_['text_seo_url']              = 'SEO URL';

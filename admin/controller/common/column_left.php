@@ -370,6 +370,14 @@ class ControllerCommonColumnLeft extends Controller {
 				);
 			}
 
+			if ($this->user->hasPermission('access', 'marketing/rule_engine')) {
+				$marketing[] = array(
+					'name'	   => $this->language->get('text_rule_engine'),
+					'href'     => $this->url->link('marketing/rule_engine', 'user_token=' . $this->session->data['user_token'], true),
+					'children' => array()
+				);
+			}
+
 			if ($marketing) {
 				$data['menus'][] = array(
 					'id'       => 'menu-marketing',

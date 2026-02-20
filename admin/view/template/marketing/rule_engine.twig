@@ -1,0 +1,121 @@
+{{ header }}
+{{ column_left }}
+
+<div class="container-fluid">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title"><i class="fa fa-cogs"></i> {{ heading_title }}</h3>
+    </div>
+
+    <div class="panel-body table-responsive">
+      <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-rule">
+        <div class="pull-right">
+          <a href="{{ add }}" class="btn btn-primary"><i class="fa fa-plus"></i> Добави ново правило</a>
+        </div>
+
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr class="active">
+              <th style="width: 3%;" class="text-center">
+                <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" />
+              </th>
+              <th style="width: 25%;">Правило (Rule)</th>
+              <th style="width: 37%;">Условия (Conditions)</th>
+              <th style="width: 35%;">Действия (Actions)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if rules %}
+              {% for rule in rules %}
+                <tr>
+                  <td class="text-center">
+                    <input type="checkbox" name="selected[]" value="{{ rule.rule_id }}" />
+                  </td>
+
+                  <!-- Rule -->
+                  <td style="vertical-align: top;">
+                    <div><strong>ID:</strong> {{ rule.rule_id }}</div>
+                    <div><strong>Name:</strong> <span class="label label-info">{{ rule.name }}</span></div>
+                    <div><strong>Priority:</strong> {{ rule.priority }}</div>
+                    <div><strong>Stop Processing:</strong> {{ rule.stop_processing ? 'Да' : 'Не' }}</div>
+                    <div><strong>Status:</strong> {{ rule.status ? 'Активно' : 'Неактивно' }}</div>
+                    <div><a href="{{ rule.edit }}" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> Редакция</a></div>
+                  </td>
+
+                  <!-- Conditions -->
+                  <td style="padding: 0;">
+                    {% if rule.conditions %}
+                      <table class="table table-condensed table-striped" style="margin: 0;">
+                        <thead>
+                          <tr style="font-size: 12px; color: #555;">
+                            <th>Type</th>
+                            <th>Operator</th>
+                            <th>Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for condition in rule.conditions %}
+                            <tr>
+                              <td><small>{{ condition.type }}</small></td>
+                              <td><strong>{{ condition.operator }}</strong></td>
+                              <td><span class="badge" style="background: #5cb85c;">{{ condition.value }}</span></td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    {% else %}
+                      <span class="text-muted">Няма условия</span>
+                    {% endif %}
+                  </td>
+
+                  <!-- Actions -->
+                  <td style="padding: 0;">
+                    {% if rule.actions %}
+                      <table class="table table-condensed table-striped" style="margin: 0;">
+                        <thead>
+                          <tr style="font-size: 12px; color: #555;">
+                            <th>Action Type</th>
+                            <th>Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for action in rule.actions %}
+                            <tr>
+                              <td><small>{{ action.type }}</small></td>
+                              <td>
+                                <span class="label label-warning">
+                                  {{ action.value }}{% if action.type == 'percentage_discount' %}%{% endif %}
+                                </span>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    {% else %}
+                      <span class="text-muted">Няма действия</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted">Няма намерени активни правила.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+
+        <div class="row">
+          <div class="col-sm-6">
+            {{ results }}
+          </div>
+          <div class="col-sm-6 text-right">
+            {{ pagination }}
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{{ footer }}
