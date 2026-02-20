@@ -8,3 +8,6 @@ $_['column_code'] = 'Код на купона';
 $_['column_points_spent'] = 'Изразходвани точки';
 $_['column_amount'] = 'Стойност';
 $_['column_status'] = 'Статус';
+
+// Text
+$_['text_account']       = 'Account';

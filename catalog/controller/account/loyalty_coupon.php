@@ -11,6 +11,23 @@ class ControllerAccountLoyaltyCoupon extends Controller {
     $this->load->language('account/coupon');
     $this->document->setTitle($this->language->get('heading_title'));
 
+        $data['breadcrumbs'] = array();
+
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_home'),
+            'href' => $this->url->link('common/home')
+        );
+
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_account'),
+            'href' => $this->url->link('account/account', '', true)
+        );
+
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('heading_title'),
+            'href' => $this->url->link('account/loyalty', '', true)
+        );
+
     $this->load->model('account/loyalty_coupon');
     $this->load->model('account/loyalty');
 
