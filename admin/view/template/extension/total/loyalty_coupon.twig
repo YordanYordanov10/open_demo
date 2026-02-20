@@ -28,8 +28,8 @@
           <div class="form-group">
             <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
             <div class="col-sm-10">
-              <select name="total_coupon_status" id="input-status" class="form-control">
-                {% if total_coupon_status %}
+              <select name="total_loyalty_coupon_status" id="input-status" class="form-control">
+                {% if total_loyalty_coupon_status %}
                 <option value="1" selected="selected">{{ text_enabled }}</option>
                 <option value="0">{{ text_disabled }}</option>
                 {% else %}
@@ -45,8 +45,33 @@
               <input type="text" name="total_loyalty_coupon_sort_order" value="{{ total_loyalty_coupon_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
             </div>
           </div>
-        </form>
+
+          <!-- Order status complete -->
+					<div class="well" style="background-color: #fdfdfd; border: 1px solid #e2e2e2; border-left: 5px solid #607d8b; overflow: hidden;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="input-complete-status">
+								<span data-toggle="tooltip" title="Изберете при какъв статус на поръчката клиентът реално да деактивира купона (обикновено 'Доставена' или 'Завършена')">
+									{{ entry_complete_status }}
+								</span>
+							</label>
+							<div class="col-sm-10">
+								<select name="total_loyalty_coupon_complete_status_id" id="input-complete-status" class="form-control">
+									{% for status in order_statuses %}
+										<option value="{{ status.order_status_id }}" {% if status.order_status_id == total_loyalty_coupon_complete_status_id %} selected="selected" {% endif %}>
+											{{ status.name }}
+										</option>
+									{% endfor %}
+								</select>
+								<small class="text-muted">
+									<i class="fa fa-info-circle"></i>
+									Купона ще се деактивира автоматично в баланса на клиента само при преминаване в този статус.</small>
+							</div>
+						</div>
+					</div>
       </div>
+        </form>
+
+        
     </div>
   </div>
 </div>

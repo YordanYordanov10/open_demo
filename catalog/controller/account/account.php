@@ -56,6 +56,7 @@ class ControllerAccountAccount extends Controller {
 		$data['order'] = $this->url->link('account/order', '', true);
 		$data['download'] = $this->url->link('account/download', '', true);
 		$data['loyalty'] = $this->url->link('account/loyalty', '', true);
+		$data['coupon'] = $this->url->link('account/loyalty_coupon', '', true);
 		
 		if ($this->config->get('total_reward_status')) {
 			$data['reward'] = $this->url->link('account/reward', '', true);

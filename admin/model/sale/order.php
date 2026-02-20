@@ -188,6 +188,10 @@ class ModelSaleOrder extends Model {
 			$sql .= " AND o.total = '" . (float)$data['filter_total'] . "'";
 		}
 
+		if (!empty($data['filter_register_user'])) {
+			$sql .= " AND o.customer_id > 0";
+		}
+
 		$sort_data = array(
 			'o.order_id',
 			'customer',

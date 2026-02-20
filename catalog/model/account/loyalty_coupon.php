@@ -1,5 +1,5 @@
 <?php
-class ModelAccountCoupon extends Model {
+class ModelAccountLoyaltyCoupon extends Model {
 
    
     public function addCoupon($customer_id, $code, $amount, $points_spent) {
@@ -38,6 +38,21 @@ class ModelAccountCoupon extends Model {
         return $query->rows;
     }
 
+    public function getOldestCouponByCustomerId($customer_id) {
+
+        $query = $this->db->query("
+            SELECT *
+            FROM " . DB_PREFIX . "loyalty_coupon
+            WHERE customer_id = '" . (int)$customer_id . "'
+            AND status = '1'
+            AND date_expired > NOW()
+            ORDER BY date_added ASC
+            LIMIT 1
+        ");
+
+        return $query->row;
+    }
+
     
     public function getTotalCouponsByCustomerId($customer_id) {
 
@@ -66,14 +81,27 @@ class ModelAccountCoupon extends Model {
     }
 
     
-    public function markCouponUsed($coupon_id) {
+    public function markCouponAsUsed($coupon_id, $order_id) {
+    $this->db->query("
+        UPDATE " . DB_PREFIX . "loyalty_coupon
+        SET 
+            status = 0,
+            order_id = '" . (int)$order_id . "',
+            date_used = NOW()
+        WHERE coupon_id = '" . (int)$coupon_id . "'
+    ");
 
-        $this->db->query("
-            UPDATE " . DB_PREFIX . "loyalty_coupon
-            SET status = '0',
-                date_used = NOW()
-            WHERE coupon_id = '" . (int)$coupon_id . "'
-        ");
+    
+}
+
+public function getCouponIdByOrderId($order_id) {
+        $query = $this->db->query("SELECT coupon_id FROM " . DB_PREFIX . "loyalty_coupon WHERE order_id = '" . (int)$order_id . "' LIMIT 1");
+
+        if ($query->num_rows) {
+            return (int)$query->row['coupon_id'];
+        }
+
+        return 0;
     }
 
 }

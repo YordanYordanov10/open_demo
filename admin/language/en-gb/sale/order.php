@@ -121,6 +121,8 @@ $_['entry_order_id']             = 'Order ID';
 $_['entry_total']                = 'Total';
 $_['entry_date_added']           = 'Date Added';
 $_['entry_date_modified']        = 'Date Modified';
+$_['entry_register_user']          = 'Register User';
+$_['entry_guest_user']             = 'Guest User';
 
 // Help
 $_['help_override']              = 'If the customers order is being blocked from changing the order status due to an anti-fraud extension enable override.';

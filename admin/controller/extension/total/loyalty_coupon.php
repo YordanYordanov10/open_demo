@@ -23,10 +23,19 @@ class ControllerExtensionTotalLoyaltyCoupon extends Controller {
             KEY `status` (`status`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
+
+    $this->model_setting_event->addEvent(
+    'loyalty_coupon_confirm',
+    'catalog/model/checkout/order/addOrderHistory/after',
+    'extension/module/loyalty_coupon/confirm'
+    );
     }
 
     public function uninstall() {
         $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "loyalty_coupon`;");
+
+        $this->load->model('setting/event');
+        $this->model_setting_event->deleteEventByCode('loyalty_coupon_confirm');
     }
 
     public function index() {
@@ -50,9 +59,10 @@ class ControllerExtensionTotalLoyaltyCoupon extends Controller {
 
        
          // --- Грешки за всяко поле ---
-         $fields = [  'status', 'sort_order'];
+         $fields = [  'total_loyalty_coupon_status', 'total_loyalty_coupon_sort_order','status', 'sort_order'];
          foreach ($fields as $field) {
          $data['error_' . $field] = isset($this->error[$field]) ? $this->error[$field] : '';
+            }
         
          // --- Breadcrumbs ---
         $data['breadcrumbs'] = array();
@@ -81,6 +91,7 @@ class ControllerExtensionTotalLoyaltyCoupon extends Controller {
         $fields_post = [
             'total_loyalty_coupon_status',
             'total_loyalty_coupon_sort_order',
+            'total_loyalty_coupon_complete_status_id'
         ];
         foreach ($fields_post as $field) {
             $data[$field] = isset($this->request->post[$field]) ? $this->request->post[$field] : $this->config->get($field);
@@ -95,7 +106,6 @@ class ControllerExtensionTotalLoyaltyCoupon extends Controller {
         $this->response->setOutput($this->load->view('extension/total/loyalty_coupon', $data));
            
            
-        }   
     }
     
 

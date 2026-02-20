@@ -41,8 +41,9 @@ class ControllerExtensionTotalLoyaltyPoints extends Controller{
         public function uninstall() {
             $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "loyalty_transaction`;");
 
-            $this->model_setting_event->deleteEventByCode('loyalty_points_add');
+            $this->load->model('setting/event');
 
+            $this->model_setting_event->deleteEventByCode('loyalty_points_add');
             $this->model_setting_event->deleteEventByCode('loyalty_points_cancel');
         }
 
