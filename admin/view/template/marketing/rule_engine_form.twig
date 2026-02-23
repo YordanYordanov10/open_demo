@@ -31,11 +31,10 @@
       <div class="panel-body">
         <form id="form-rule" action="{{ action }}" method="post" class="form-horizontal">
 
-          <!-- NAME -->
           <div class="form-group">
             <label class="col-sm-2 control-label">{{ entry_name }}</label>
             <div class="col-sm-10">
-              <input type="text" name="name" value="{{ name }}" class="form-control" />
+              <input type="text" name="name" value="{{ name }}" class="form-control"/>
               {% if error_name %}
                 <div class="text-danger">{{ error_name }}</div>
               {% endif %}
@@ -44,150 +43,105 @@
 
           <hr/>
 
-          <!-- CONDITIONS -->
           <h4>Conditions</h4>
-
           <div class="panel panel-default">
             <div class="panel-body">
-
               <button type="button" id="add-condition" class="btn btn-sm btn-primary">
-                Add Condition
+                <i class="fa fa-plus"></i> Add Condition
               </button>
 
               <div class="table-responsive" style="margin-top:10px;">
-                <table id="conditions_table" class="table table-striped table-condensed">
+                <table id="conditions_table" class="table table-striped table-bordered">
                   <thead>
                     <tr>
                       <th>Type</th>
                       <th>Operator</th>
                       <th>Value</th>
-                      <th></th>
+                      <th style="width:1px;"></th>
                     </tr>
                   </thead>
                   <tbody>
-
+                    {% set cond_row = 0 %}
                     {% if conditions %}
                       {% for condition in conditions %}
-                        <tr>
+                        <tr id="condition-row{{ cond_row }}">
                           <td>
-                            <select name="conditions[][type]" class="form-control">
-                              {% for key,label in condition_types %}
-                                <option value="{{ key }}" {% if condition.type == key %}selected{% endif %}>
-                                  {{ label }}
-                                </option>
+                            <select name="conditions[{{ cond_row }}][type]" class="form-control">
+                              {% for key, label in condition_types %}
+                                <option value="{{ key }}" {% if condition.type == key %} selected {% endif %}>{{ label }}</option>
                               {% endfor %}
                             </select>
                           </td>
                           <td>
-                            <input type="text" name="conditions[][operator]" value="{{ condition.operator }}" class="form-control"/>
+                            <select name="conditions[{{ cond_row }}][operator]" class="form-control">
+                              {% for key, label in operator_types %}
+                                <option value="{{ key }}" {% if condition.operator == key %} selected {% endif %}>{{ label }}</option>
+                              {% endfor %}
+                            </select>
                           </td>
                           <td>
-                            <input type="text" name="conditions[][value]" value="{{ condition.value }}" class="form-control"/>
+                            <input type="text" name="conditions[{{ cond_row }}][value]" value="{{ condition.value }}" class="form-control"/>
                           </td>
                           <td>
-                            <button type="button" class="btn btn-danger btn-sm remove-condition">
-                              Remove
-                            </button>
+                            <button type="button" onclick="$('#condition-row{{ cond_row }}').remove();" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle"></i></button>
                           </td>
                         </tr>
+                        {% set cond_row = cond_row + 1 %}
                       {% endfor %}
-                    {% else %}
-                      <tr>
-                        <td>
-                          <select name="conditions[][type]" class="form-control">
-                            {% for key,label in condition_types %}
-                              <option value="{{ key }}">{{ label }}</option>
-                            {% endfor %}
-                          </select>
-                        </td>
-                        <td>
-                          <input type="text" name="conditions[][operator]" class="form-control"/>
-                        </td>
-                        <td>
-                          <input type="text" name="conditions[][value]" class="form-control"/>
-                        </td>
-                        <td></td>
-                      </tr>
                     {% endif %}
-
                   </tbody>
                 </table>
               </div>
-
             </div>
           </div>
 
           <hr/>
 
-          <!-- ACTIONS -->
           <h4>Actions</h4>
-
           <div class="panel panel-default">
             <div class="panel-body">
-
               <button type="button" id="add-action" class="btn btn-sm btn-primary">
-                Add Action
+                <i class="fa fa-plus"></i> Add Action
               </button>
 
               {% if error_actions %}
-                <div class="text-danger" style="margin-top:10px;">
-                  {{ error_actions }}
-                </div>
+                <div class="text-danger" style="margin-top:10px;">{{ error_actions }}</div>
               {% endif %}
 
               <div class="table-responsive" style="margin-top:10px;">
-                <table id="actions_table" class="table table-striped table-condensed">
+                <table id="actions_table" class="table table-striped table-bordered">
                   <thead>
                     <tr>
                       <th>Action Type</th>
                       <th>Value</th>
-                      <th></th>
+                      <th style="width:1px;"></th>
                     </tr>
                   </thead>
                   <tbody>
-
+                    {% set act_row = 0 %}
                     {% if actions %}
                       {% for action in actions %}
-                        <tr>
+                        <tr id="action-row{{ act_row }}">
                           <td>
-                            <select name="actions[][type]" class="form-control">
-                              {% for key,label in action_types %}
-                                <option value="{{ key }}" {% if action.type == key %}selected{% endif %}>
-                                  {{ label }}
-                                </option>
+                            <select name="actions[{{ act_row }}][type]" class="form-control">
+                              {% for key, label in action_types %}
+                                <option value="{{ key }}" {% if action.type == key %} selected {% endif %}>{{ label }}</option>
                               {% endfor %}
                             </select>
                           </td>
                           <td>
-                            <input type="text" name="actions[][value]" value="{{ action.value }}" class="form-control"/>
+                            <input type="text" name="actions[{{ act_row }}][value]" value="{{ action.value }}" class="form-control"/>
                           </td>
                           <td>
-                            <button type="button" class="btn btn-danger btn-sm remove-action">
-                              Remove
-                            </button>
+                            <button type="button" onclick="$('#action-row{{ act_row }}').remove();" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle"></i></button>
                           </td>
                         </tr>
+                        {% set act_row = act_row + 1 %}
                       {% endfor %}
-                    {% else %}
-                      <tr>
-                        <td>
-                          <select name="actions[][type]" class="form-control">
-                            {% for key,label in action_types %}
-                              <option value="{{ key }}">{{ label }}</option>
-                            {% endfor %}
-                          </select>
-                        </td>
-                        <td>
-                          <input type="text" name="actions[][value]" class="form-control"/>
-                        </td>
-                        <td></td>
-                      </tr>
                     {% endif %}
-
                   </tbody>
                 </table>
               </div>
-
             </div>
           </div>
 
@@ -197,61 +151,47 @@
   </div>
 </div>
 
-{{ footer }}
+<script type="text/javascript">
+var cond_row = {{ cond_row }};
+var act_row = {{ act_row }};
 
-<script>
-(function(){
+var condition_types = {{ condition_types|json_encode()|raw }};
+var operator_types = {{ operator_types|json_encode()|raw }};
+var action_types = {{ action_types|json_encode()|raw }};
 
-  var conditionTypes = {{ condition_types|json_encode()|raw }};
-  var actionTypes    = {{ action_types|json_encode()|raw }};
+$('#add-condition').on('click', function() {
+    var html = '<tr id="condition-row' + cond_row + '">';
+    html += '  <td><select name="conditions[' + cond_row + '][type]" class="form-control">';
+    $.each(condition_types, function(key, label) {
+        html += '<option value="' + key + '">' + label + '</option>';
+    });
+    html += '  </select></td>';
+    html += '  <td><select name="conditions[' + cond_row + '][operator]" class="form-control">';
+    $.each(operator_types, function(key, label) {
+        html += '<option value="' + key + '">' + label + '</option>';
+    });
+    html += '  </select></td>';
+    html += '  <td><input type="text" name="conditions[' + cond_row + '][value]" value="" class="form-control" /></td>';
+    html += '  <td><button type="button" onclick="$(\'#condition-row' + cond_row + '\').remove();" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle"></i></button></td>';
+    html += '</tr>';
 
-  function buildConditionSelect(){
-    var html = '<select name="conditions[][type]" class="form-control">';
-    for (var k in conditionTypes){
-      html += '<option value="'+k+'">'+conditionTypes[k]+'</option>';
-    }
-    html += '</select>';
-    return html;
-  }
+    $('#conditions_table tbody').append(html);
+    cond_row++;
+});
 
-  function buildActionSelect(){
-    var html = '<select name="actions[][type]" class="form-control">';
-    for (var k in actionTypes){
-      html += '<option value="'+k+'">'+actionTypes[k]+'</option>';
-    }
-    html += '</select>';
-    return html;
-  }
+$('#add-action').on('click', function() {
+    var html = '<tr id="action-row' + act_row + '">';
+    html += '  <td><select name="actions[' + act_row + '][type]" class="form-control">';
+    $.each(action_types, function(key, label) {
+        html += '<option value="' + key + '">' + label + '</option>';
+    });
+    html += '  </select></td>';
+    html += '  <td><input type="text" name="actions[' + act_row + '][value]" value="" class="form-control" /></td>';
+    html += '  <td><button type="button" onclick="$(\'#action-row' + act_row + '\').remove();" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle"></i></button></td>';
+    html += '</tr>';
 
-  document.getElementById('add-condition').addEventListener('click', function(){
-    var tbody = document.querySelector('#conditions_table tbody');
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td>'+buildConditionSelect()+'</td>'+
-      '<td><input type="text" name="conditions[][operator]" class="form-control"/></td>'+
-      '<td><input type="text" name="conditions[][value]" class="form-control"/></td>'+
-      '<td><button type="button" class="btn btn-danger btn-sm remove-condition">Remove</button></td>';
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById('add-action').addEventListener('click', function(){
-    var tbody = document.querySelector('#actions_table tbody');
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td>'+buildActionSelect()+'</td>'+
-      '<td><input type="text" name="actions[][value]" class="form-control"/></td>'+
-      '<td><button type="button" class="btn btn-danger btn-sm remove-action">Remove</button></td>';
-    tbody.appendChild(tr);
-  });
-
-  document.addEventListener('click', function(e){
-    if (e.target.classList.contains('remove-condition')){
-      e.target.closest('tr').remove();
-    }
-    if (e.target.classList.contains('remove-action')){
-      e.target.closest('tr').remove();
-    }
-  });
-
-})();
+    $('#actions_table tbody').append(html);
+    act_row++;
+});
 </script>
+{{ footer }}

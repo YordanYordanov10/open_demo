@@ -1,121 +1,165 @@
 {{ header }}
 {{ column_left }}
 
-<div class="container-fluid">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title"><i class="fa fa-cogs"></i> {{ heading_title }}</h3>
-    </div>
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<a href="{{ add }}" data-toggle="tooltip" title="Добави ново" class="btn btn-primary">
+					<i class="fa fa-plus"></i>
+				</a>
+				<button type="button" data-toggle="tooltip" title="Изтрий" class="btn btn-danger" onclick="confirm('Сигурни ли сте?') ? $('#form-rule').submit() : false;">
+					<i class="fa fa-trash-o"></i>
+				</button>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li>
+						<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
 
-    <div class="panel-body table-responsive">
-      <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-rule">
-        <div class="pull-right">
-          <a href="{{ add }}" class="btn btn-primary"><i class="fa fa-plus"></i> Добави ново правило</a>
-        </div>
+	<div class="container-fluid">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-list"></i>
+					Списък с правила</h3>
+			</div>
 
-        <table class="table table-bordered table-hover">
-          <thead>
-            <tr class="active">
-              <th style="width: 3%;" class="text-center">
-                <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" />
-              </th>
-              <th style="width: 25%;">Правило (Rule)</th>
-              <th style="width: 37%;">Условия (Conditions)</th>
-              <th style="width: 35%;">Действия (Actions)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if rules %}
-              {% for rule in rules %}
-                <tr>
-                  <td class="text-center">
-                    <input type="checkbox" name="selected[]" value="{{ rule.rule_id }}" />
-                  </td>
+			<div class="panel-body">
+				<form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-rule">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<td style="width: 1px;" class="text-center">
+										<input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"/>
+									</td>
+									<td class="text-left">Информация за правилото</td>
+									<td class="text-left">Условия (Conditions)</td>
+									<td class="text-left">Действия (Actions)</td>
+									<td class="text-right">Действие</td>
+								</tr>
+							</thead>
+							<tbody>
+								{% if rules %}
+									{% for rule in rules %}
+										<tr>
+											<td class="text-center">
+												<input type="checkbox" name="selected[]" value="{{ rule.rule_id }}"/>
+											</td>
 
-                  <!-- Rule -->
-                  <td style="vertical-align: top;">
-                    <div><strong>ID:</strong> {{ rule.rule_id }}</div>
-                    <div><strong>Name:</strong> <span class="label label-info">{{ rule.name }}</span></div>
-                    <div><strong>Priority:</strong> {{ rule.priority }}</div>
-                    <div><strong>Stop Processing:</strong> {{ rule.stop_processing ? 'Да' : 'Не' }}</div>
-                    <div><strong>Status:</strong> {{ rule.status ? 'Активно' : 'Неактивно' }}</div>
-                    <div><a href="{{ rule.edit }}" class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i> Редакция</a></div>
-                  </td>
+											<td class="text-left" style="vertical-align: top;">
+												<div>
+													<strong>ID:</strong>
+													{{ rule.rule_id }}</div>
+												<div>
+													<strong>Име:</strong>
+													<span class="label label-info">{{ rule.name }}</span>
+												</div>
+												<div>
+													<strong>Приоритет:</strong>
+													{{ rule.priority }}</div>
+												<div>
+													<strong>Status:</strong>
+													{% if rule.status %}
+														<span class="text-success">Активно</span>
+													{% else %}
+														<span class="text-danger">Неактивно</span>
+													{% endif %}
+												</div>
+											</td>
 
-                  <!-- Conditions -->
-                  <td style="padding: 0;">
-                    {% if rule.conditions %}
-                      <table class="table table-condensed table-striped" style="margin: 0;">
-                        <thead>
-                          <tr style="font-size: 12px; color: #555;">
-                            <th>Type</th>
-                            <th>Operator</th>
-                            <th>Value</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for condition in rule.conditions %}
-                            <tr>
-                              <td><small>{{ condition.type }}</small></td>
-                              <td><strong>{{ condition.operator }}</strong></td>
-                              <td><span class="badge" style="background: #5cb85c;">{{ condition.value }}</span></td>
-                            </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    {% else %}
-                      <span class="text-muted">Няма условия</span>
-                    {% endif %}
-                  </td>
+											<td class="text-left" style="padding: 0;">
+												{% if rule.conditions %}
+													<table class="table table-condensed table-striped" style="margin: 0; border: none;">
+														<thead>
+															<tr style="font-size: 11px;">
+																<th>Тип</th>
+																<th>Оператор</th>
+																<th>Стойност</th>
+															</tr>
+														</thead>
+														<tbody>
+															{% for condition in rule.conditions %}
+																<tr>
+																	<td>
+																		<strong>{{ condition.type }}</small>
+																	</td>
+																	<td>
+																		<strong>{{ condition.operator }}</strong>
+																	</td>
+																	<td>
+																		<span class="label label-primary">{{ condition.value }}</span>
+																	</td>
+																</tr>
+															{% endfor %}
+														</tbody>
+													</table>
+												{% else %}
+													<div style="padding: 8px;" class="text-muted small">Няма условия</div>
+												{% endif %}
+											</td>
 
-                  <!-- Actions -->
-                  <td style="padding: 0;">
-                    {% if rule.actions %}
-                      <table class="table table-condensed table-striped" style="margin: 0;">
-                        <thead>
-                          <tr style="font-size: 12px; color: #555;">
-                            <th>Action Type</th>
-                            <th>Value</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for action in rule.actions %}
-                            <tr>
-                              <td><small>{{ action.type }}</small></td>
-                              <td>
-                                <span class="label label-warning">
-                                  {{ action.value }}{% if action.type == 'percentage_discount' %}%{% endif %}
-                                </span>
-                              </td>
-                            </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    {% else %}
-                      <span class="text-muted">Няма действия</span>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            {% else %}
-              <tr>
-                <td colspan="4" class="text-center text-muted">Няма намерени активни правила.</td>
-              </tr>
-            {% endif %}
-          </tbody>
-        </table>
+											<td class="text-left" style="padding: 0;">
+												{% if rule.actions %}
+													<table class="table table-condensed table-striped" style="margin: 0; border: none;">
+														<thead>
+															<tr style="font-size: 11px;">
+																<th>Тип действие</th>
+																<th>Стойност</th>
+															</tr>
+														</thead>
+														<tbody>
+															{% for action in rule.actions %}
+																<tr>
+																	<td>
+																		<small>{{ action.type }}</small>
+																	</td>
+																	<td>
+																		<span class="label label-success">
+																			{{ action.value }}
+																			{% if action.type == 'Percentage Discount' %}%
+																			{% endif %}
+																		</span>
+																	</td>
+																</tr>
+															{% endfor %}
+														</tbody>
+													</table>
+												{% else %}
+													<div style="padding: 8px;" class="text-muted small">Няма действия</div>
+												{% endif %}
+											</td>
 
-        <div class="row">
-          <div class="col-sm-6">
-            {{ results }}
-          </div>
-          <div class="col-sm-6 text-right">
-            {{ pagination }}
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+											<td class="text-right" style="vertical-align: middle;">
+												<a href="{{ rule.edit }}" data-toggle="tooltip" title="Редактирай" class="btn btn-primary">
+													<i class="fa fa-pencil"></i>
+												</a>
+											</td>
+										</tr>
+									{% endfor %}
+								{% else %}
+									<tr>
+										<td class="text-center" colspan="5">Няма намерени правила.</td>
+									</tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</div>
+				</form>
+
+				<div class="row">
+					<div class="col-sm-6 text-left">{{ pagination }}</div>
+					<div class="col-sm-6 text-right">{{ results }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-
 {{ footer }}

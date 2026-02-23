@@ -65,6 +65,12 @@ class ControllerMarketingRuleEngineForm extends Controller {
             'customer_group' => 'Customer Group'
         );
 
+        $data['operator_types'] = array(
+            'equals' => 'Equals',
+            'greater_than' => 'Greater Than',
+            'less_than' => 'Less Than',
+        );
+
         $data['action_types'] = array(
             'percentage_discount' => 'Percentage Discount',
             'fixed_discount'      => 'Fixed Discount',

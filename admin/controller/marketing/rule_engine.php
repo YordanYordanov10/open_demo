@@ -221,7 +221,7 @@ class ControllerMarketingRuleEngine extends Controller{
 		);
 
        $rules_total = $this->model_marketing_rule_engine->getTotalRuleEngines($filter_data);
-        $results = $this->model_marketing_rule_engine->getRuleEngines($filter_data);
+       $results = $this->model_marketing_rule_engine->getRuleEngines($filter_data);
 
         $data['rules'] = array();
 
@@ -233,6 +233,12 @@ class ControllerMarketingRuleEngine extends Controller{
             'customer_group' => 'Customer Group'
         );
 
+        $condition_operators = array(
+            'equals' => 'Equals',
+            'greater_than' => 'Greater Than',
+            'less_than' => 'Less Than',
+        );
+
         $action_types = array(
             'percentage_discount' => 'Percentage Discount',
             'fixed_discount'      => 'Fixed Discount',
@@ -241,21 +247,25 @@ class ControllerMarketingRuleEngine extends Controller{
 
         foreach ($results as $result) {
             // Map condition/action keys to labels for display
-            $conds = $this->model_marketing_rule_engine->getRuleConditions($result['rule_id']);
-            foreach ($conds as &$c) {
-                $c['type'] = isset($condition_types[$c['type']]) ? $condition_types[$c['type']] : $c['type'];
-            }
+          // 1. Get Conditions and map both Type and Operator immediately
+         $conditions = $this->model_marketing_rule_engine->getRuleConditions($result['rule_id']);
+             foreach ($conditions as &$c) {
+             $c['type']     = isset($condition_types[$c['type']]) ? $condition_types[$c['type']] : $c['type'];
+             $c['operator'] = isset($condition_operators[$c['operator']]) ? $condition_operators[$c['operator']] : $c['operator'];
+                }
 
-            $acts = $this->model_marketing_rule_engine->getRuleActions($result['rule_id']);
-            foreach ($acts as &$a) {
-                $a['type'] = isset($action_types[$a['type']]) ? $action_types[$a['type']] : $a['type'];
+          // 2. Get Actions and map Type
+          $actions = $this->model_marketing_rule_engine->getRuleActions($result['rule_id']);
+          foreach ($actions as &$a) {
+            $a['type'] = isset($action_types[$a['type']]) ? $action_types[$a['type']] : $a['type'];
             }
-
+            
             $data['rules'][] = array(
                 'rule_id'        => $result['rule_id'],
                 'name'           => $result['name'],
-                'conditions'     => $conds,
-                'actions'        => $acts,
+                'conditions'     => $conditions,
+                'operators'      => $condition_operators,
+                'actions'        => $actions,
                 'priority'       => $result['priority'],
                 'stop_processing'=> $result['stop_processing'],
                 'status'         => $result['status'],
