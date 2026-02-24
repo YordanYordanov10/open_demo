@@ -228,9 +228,6 @@ class ControllerMarketingRuleEngine extends Controller{
         // Define labels for mapping types to human readable text
         $condition_types = array(
             'cart_total'     => 'Cart Total',
-            'product_id'     => 'Product',
-            'category_id'    => 'Category',
-            'customer_group' => 'Customer Group'
         );
 
         $condition_operators = array(
@@ -242,7 +239,6 @@ class ControllerMarketingRuleEngine extends Controller{
         $action_types = array(
             'percentage_discount' => 'Percentage Discount',
             'fixed_discount'      => 'Fixed Discount',
-            'free_shipping'       => 'Free Shipping'
         );
 
         foreach ($results as $result) {

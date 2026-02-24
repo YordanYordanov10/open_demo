@@ -60,9 +60,6 @@ class ControllerMarketingRuleEngineForm extends Controller {
         // Available types for selects
         $data['condition_types'] = array(
             'cart_total'     => 'Cart Total',
-            'product_id'     => 'Product',
-            'category_id'    => 'Category',
-            'customer_group' => 'Customer Group'
         );
 
         $data['operator_types'] = array(
@@ -74,7 +71,6 @@ class ControllerMarketingRuleEngineForm extends Controller {
         $data['action_types'] = array(
             'percentage_discount' => 'Percentage Discount',
             'fixed_discount'      => 'Fixed Discount',
-            'free_shipping'       => 'Free Shipping'
         );
 
         $data['heading_title'] = $this->language->get('heading_title');
