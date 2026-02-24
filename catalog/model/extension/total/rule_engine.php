@@ -1,6 +1,8 @@
 <?php
 class ModelExtensionTotalRuleEngine extends Model {
 
+
+
     public function getTotal($total_data) {
         // 1. Извличане на правилата от БД
         $rules = $this->getRules();
