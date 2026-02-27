@@ -378,6 +378,14 @@ class ControllerCommonColumnLeft extends Controller {
 				);
 			}
 
+			if ($this->user->hasPermission('access', 'marketing/category_promo')) {
+				$marketing[] = array(
+					'name'	   => $this->language->get('text_category_promo'),
+					'href'     => $this->url->link('marketing/category_promo', 'user_token=' . $this->session->data['user_token'], true),
+					'children' => array()
+				);
+			}
+
 			if ($marketing) {
 				$data['menus'][] = array(
 					'id'       => 'menu-marketing',

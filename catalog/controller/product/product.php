@@ -437,17 +437,62 @@ class ControllerProductProduct extends Controller {
 					$rating = false;
 				}
 
+					$this->load->model('marketing/category_promo');
+
+				$promo_data = $this->model_marketing_category_promo
+					->getProductPromoData($result['product_id'], $result['price'], $result['special']);
+
+				// Базова форматирана цена
+				if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
+					$formatted_base_price = $this->currency->format(
+						$this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')),
+						$this->session->data['currency']
+					);
+				} else {
+					$formatted_base_price = false;
+				}
+
+				// Определяме коя цена да се показва като special
+				if (!empty($promo_data['has_discount']) && $promo_data['has_discount']) {
+
+					$final_price_value = $promo_data['final_price'];
+
+					$formatted_special = $this->currency->format(
+						$this->tax->calculate($final_price_value, $result['tax_class_id'], $this->config->get('config_tax')),
+						$this->session->data['currency']
+					);
+
+					$display_price   = $formatted_base_price;
+					$display_special = $formatted_special;
+				} else {
+
+					// Стандартна special логика на OpenCart
+					if (!is_null($result['special']) && (float)$result['special'] > 0) {
+
+						$display_special = $this->currency->format(
+							$this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')),
+							$this->session->data['currency']
+						);
+
+						$display_price = $formatted_base_price;
+					} else {
+						$display_special = false;
+						$display_price   = $formatted_base_price;
+					}
+				}
+
 				$data['products'][] = array(
 					'product_id'  => $result['product_id'],
 					'thumb'       => $image,
 					'name'        => $result['name'],
 					'description' => utf8_substr(trim(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8'))), 0, $this->config->get('theme_' . $this->config->get('config_theme') . '_product_description_length')) . '..',
-					'price'       => $price,
-					'special'     => $special,
+					'price'       => $display_price,
+					'special'     => $display_special,
+					'promo'       => $promo_data,
 					'tax'         => $tax,
 					'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
 					'rating'      => $rating,
-					'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
+					'href'        => $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $result['product_id'] . $url)
 				);
 			}
 

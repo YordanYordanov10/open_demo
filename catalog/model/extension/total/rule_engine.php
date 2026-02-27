@@ -32,7 +32,6 @@ class ModelExtensionTotalRuleEngine extends Model {
             }
 
 
-
             // Прилагане на действията (Actions)
            foreach ($actions as $action) {
 
@@ -143,9 +142,9 @@ class ModelExtensionTotalRuleEngine extends Model {
     ");
 
     return $query->num_rows > 0;
-}
+    }
 
-    // --- Database Helpers ---
+    
     private function getRules() {
         return $this->db->query("SELECT * FROM " . DB_PREFIX . "rules WHERE status = '1' ORDER BY priority ASC")->rows;
     }
