@@ -27,7 +27,10 @@ class ModelMarketingCategoryPromo extends Model
         // Ако няма category промоция
         if ($max_category_percent <= 0) {
             return [
-                'has_discount' => false
+                'has_discount'     => false,
+                'final_price'      => (float)$base_price,
+                'discount_percent' => 0,
+                'discount_type'    => null
             ];
         }
 

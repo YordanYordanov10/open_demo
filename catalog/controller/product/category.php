@@ -199,11 +199,19 @@ class ControllerProductCategory extends Controller
 
 				$this->load->model('marketing/category_promo');
 
-				$promo_data = $this->model_marketing_category_promo
-					->getProductPromoData($result['product_id'], $result['price'], $result['special']);
+				$promo_data = $this->model_marketing_category_promo->getProductPromoData(
+					$result['product_id'],
+					$result['price'],
+					$result['special']
+					);
+
 
 				// Базова форматирана цена
-				if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
+				if ($this->customer->isLogged() || !$this->config->get('config_customer_price') ) {
+						$formatted_base_price = $this->currency->format(
+							$this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')),
+							$this->session->data['currency']
+						);
 					$formatted_base_price = $this->currency->format(
 						$this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')),
 						$this->session->data['currency']
