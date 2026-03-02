@@ -118,41 +118,26 @@
 											<a href="{{ product.href }}">{{ product.name }}</a>
 										</h4>
 										<p>{{ product.description }}</p>
+
 										{% if product.price %}
 											<p class="price">
-
-												{% if product.promo and product.promo.has_discount %}
-
-													<span class="label label-danger">
-														-{{ product.promo.discount_percent }}%
-													</span>
-{# 
-													<span class="price-old">{{ product.price }}</span>
-													<span class="price-new">{{ product.promo.final_price }}</span> #}
-                          	<span class="price-old">{{ product.price }}</span>
-													<span class="price-new">{{ product.promo.final_price }}</span>
-
-												{% elseif product.special %}
-
+												{% if product.special %}
+													{# Ако има промо цена (от промо модула или от стандартен Special) #}
 													<span class="price-old">{{ product.price }}</span>
 													<span class="price-new">{{ product.special }}</span>
-
 												{% else %}
-
+													{# Ако няма промоция, показваме само редовната цена #}
 													{{ product.price }}
-
 												{% endif %}
 
+												{% if product.tax %}
+													<br/>
+													<span class="price-tax">{{ text_tax }}
+														{{ product.tax }}</span>
+												{% endif %}
 											</p>
 										{% endif %}
-										{# {% if product.promo.has_discount %}
-										                <span class="label label-danger">
-										                 -{{ product.promo.discount_percent }}%
-										                </span>
-										
-										                <span class="price-old">{{ product.price }}</span>
-										                <span class="price-new">{{ product.promo.final_price }}</span>
-										                {% endif %} #}
+
 										{% if product.rating %}
 											<div class="rating">
 												{% for i in 1..5 %}
