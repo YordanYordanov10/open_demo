@@ -260,8 +260,8 @@ class ControllerMarketingCategoryPromo extends Controller
         }
 
 
-        if ($this->request->post['percent'] === '' || $this->request->post['percent'] < 0 || $this->request->post['percent'] > 100) {
-            $this->error['warning'] = 'Discount percent must be between 0 and 100!';
+        if ($this->request->post['percent'] === '' || $this->request->post['percent'] < 0 || $this->request->post['percent'] > 99) {
+            $this->error['warning'] = 'Discount percent must be between 0 and 99!';
         }
 
 
