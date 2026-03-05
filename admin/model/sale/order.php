@@ -480,10 +480,80 @@ class ModelSaleOrder extends Model {
 		return $query->row['total'];
 	}
 
-	// SELECT SUM(total) AS totalsales FROM `oc_order`;
+	
 	public function getTotalSalesByYear($year) {
 		$query = $this->db->query("SELECT SUM(total) AS total FROM `" . DB_PREFIX . "order` WHERE YEAR(date_added) = '" . (int)$year . "' AND order_status_id > '0'");
 
 		return $query->row['total'];
 	}
+
+	public function getOrderDiscounts($order_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "'");
+
+		return $query->rows;
+	}
+
+	public function calculateAndStoreOrderProfit($order_id) {
+    $this->load->model('catalog/product');
+
+    $order_products = $this->model_sale_order->getOrderProducts($order_id);
+    $order_totals = $this->model_sale_order->getOrderTotals($order_id);
+
+    $loyalty_points = 0;
+    $category_promo = 0;
+    $loyalty_coupon = 0;
+    $tier_discount  = 0;
+
+    foreach ($order_totals as $total) {
+        switch ($total['code']) {
+            case 'loyalty_points': $loyalty_points = (float)$total['value']; break;
+            case 'category_promo': $category_promo = (float)$total['value']; break;
+            case 'loyalty_coupon': $loyalty_coupon = (float)$total['value']; break;
+            case 'tier_discount':  $tier_discount  = (float)$total['value']; break;
+        }
+    }
+
+    
+    $sum_discounts = $loyalty_points + $category_promo + $loyalty_coupon + $tier_discount;
+
+    $total_profit = 0;
+    $total_cost = 0;
+
+    foreach ($order_products as $product) {
+        $product_cost = $this->model_catalog_product->getOrderProductCost($product['product_id']);
+        
+       
+        if (!$product_cost) $product_cost = 0;
+
+        
+        $total_cost += ($product_cost * $product['quantity']);
+        
+       
+        $total_profit += ($product['price'] - $product_cost) * $product['quantity'];
+    }   
+
+    
+    $final_profit = $total_profit + $sum_discounts;
+
+   
+    $this->db->query("INSERT INTO " . DB_PREFIX . "order_profit SET 
+        order_id = '" . (int)$order_id . "', 
+        profit = '" . (float)$final_profit . "', 
+        cost = '" . (float)$total_cost . "', 
+        loyalty_points = '" . (float)$loyalty_points . "', 
+        category_promo = '" . (float)$category_promo . "', 
+        loyalty_coupon = '" . (float)$loyalty_coupon . "', 
+        tier_discount = '" . (float)$tier_discount . "'
+    ");
+    
+    return true;
+}
+
+	public function getOrderProfit($order_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_profit WHERE order_id = '" . (int)$order_id . "'");
+
+		return $query->row;
+	}
+
+
 }

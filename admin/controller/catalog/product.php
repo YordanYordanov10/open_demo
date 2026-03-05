@@ -33,6 +33,7 @@ class ControllerCatalogProduct extends Controller {
 			if (isset($this->request->get['filter_model'])) {
 				$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
 			}
+			
 
 			if (isset($this->request->get['filter_price'])) {
 				$url .= '&filter_price=' . $this->request->get['filter_price'];
@@ -545,6 +546,18 @@ class ControllerCatalogProduct extends Controller {
 			$data['error_keyword'] = '';
 		}
 
+		if (isset($this->error['cost'])) {
+			$data['error_cost'] = $this->error['cost'];
+		} else {
+			$data['error_cost'] = '';
+		}
+
+		if (isset($this->error['price'])) {
+			$data['error_price'] = $this->error['price'];
+		} else {
+			$data['error_price'] = '';
+		}
+
 		$url = '';
 
 		if (isset($this->request->get['filter_name'])) {
@@ -553,6 +566,10 @@ class ControllerCatalogProduct extends Controller {
 
 		if (isset($this->request->get['filter_model'])) {
 			$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
+		}
+
+		if (isset($this->request->get['filter_cost'])) {
+			$url .= '&filter_cost=' . $this->request->get['filter_cost'];
 		}
 
 		if (isset($this->request->get['filter_price'])) {
@@ -721,6 +738,14 @@ class ControllerCatalogProduct extends Controller {
 			$data['free_item_shipping'] = $product_info['free_item_shipping'];
 		} else {
 			$data['free_item_shipping'] = 0;
+		}
+
+		if(isset($this->request->post['cost'])) {
+			$data['cost'] = $this->request->post['cost'];
+		} elseif (!empty($product_info)) {
+			$data['cost'] = $product_info['cost'];
+		} else {
+			$data['cost'] = '';
 		}
 
 		if (isset($this->request->post['price'])) {
@@ -991,6 +1016,7 @@ class ControllerCatalogProduct extends Controller {
 						'option_value_id'         => $product_option_value['option_value_id'],
 						'quantity'                => $product_option_value['quantity'],
 						'subtract'                => $product_option_value['subtract'],
+						'cost'                    => $product_option_value['cost'],
 						'price'                   => $product_option_value['price'],
 						'price_prefix'            => $product_option_value['price_prefix'],
 						'points'                  => $product_option_value['points'],
@@ -1041,6 +1067,7 @@ class ControllerCatalogProduct extends Controller {
 				'customer_group_id' => $product_discount['customer_group_id'],
 				'quantity'          => $product_discount['quantity'],
 				'priority'          => $product_discount['priority'],
+				'cost'              => $product_discount['cost'],
 				'price'             => $product_discount['price'],
 				'date_start'        => ($product_discount['date_start'] != '0000-00-00') ? $product_discount['date_start'] : '',
 				'date_end'          => ($product_discount['date_end'] != '0000-00-00') ? $product_discount['date_end'] : ''
@@ -1222,11 +1249,17 @@ class ControllerCatalogProduct extends Controller {
 			$this->error['model'] = $this->language->get('error_model');
 		}
 
-		// check if price is above 0
-		if ($this->request->post['price'] !== '' && (float)$this->request->post['price'] < 1) {
-			$this->error['price'] = $this->language->get('error_price');
-		}		
+		if ($this->request->post['cost'] !== '' && (float)$this->request->post['cost'] <= 0) {
+			$this->error['cost'] = $this->language->get('error_cost');
+		}
 
+		// check if price is above 0
+		if ($this->request->post['price'] !== '' && (float)$this->request->post['price'] <= 0) {
+			$this->error['price'] = $this->language->get('error_price');
+		}
+		
+
+		
 		if ($this->request->post['product_seo_url']) {
 			$this->load->model('design/seo_url');
 
@@ -1276,6 +1309,8 @@ class ControllerCatalogProduct extends Controller {
 
 	public function autocomplete() {
 		$json = array();
+
+
 
 		if (isset($this->request->get['filter_name']) || isset($this->request->get['filter_model'])) {
 			$this->load->model('catalog/product');
@@ -1332,6 +1367,7 @@ class ControllerCatalogProduct extends Controller {
 								);
 							}
 						}
+							
 
 						$option_data[] = array(
 							'product_option_id'    => $product_option['product_option_id'],
@@ -1344,6 +1380,8 @@ class ControllerCatalogProduct extends Controller {
 						);
 					}
 				}
+
+			
 
 				$json[] = array(
 					'product_id' => $result['product_id'],

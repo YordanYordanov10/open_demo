@@ -21,7 +21,7 @@ class ControllerExtensionModuleFeatured extends Controller
 			foreach ($products as $product_id) {
 				$product_info = $this->model_catalog_product->getProduct($product_id);
 
-				$this->load->model('marketing/category_promo'); // Load the promo model
+				$this->load->model('marketing/category_promo'); 
 
 
 				if ($product_info) {

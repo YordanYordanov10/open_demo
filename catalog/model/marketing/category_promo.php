@@ -13,6 +13,11 @@ class ModelMarketingCategoryPromo extends Model
 
         $max_category_percent = 0;
 
+        $hasDiscount = true;
+        $final_price = $base_price;
+        $discount_percent = 0;
+        $discount_type = null;
+
         // Намираме най-голямата category отстъпка
         foreach ($promotions as $promotion) {
             foreach ($categories as $category) {
@@ -26,12 +31,7 @@ class ModelMarketingCategoryPromo extends Model
 
         // Ако няма category промоция
         if ($max_category_percent <= 0) {
-            return [
-                'has_discount'     => false,
-                'final_price'      => (float)$base_price,
-                'discount_percent' => 0,
-                'discount_type'    => null
-            ];
+            $hasDiscount = false;
         }
 
         // Изчисляваме category цена
@@ -48,31 +48,32 @@ class ModelMarketingCategoryPromo extends Model
             // Сравняваме коя отстъпка е по-голяма
             if ($special_discount >= $category_discount) {
 
-                return [
-                    'has_discount'     => true,
-                    'final_price'      => (float)$special_price,
-                    'discount_percent' => round(($special_discount / $base_price) * 100, 2),
-                    'discount_type'    => 'special'
-                ];
+                $final_price = $special_price;
+                $discount_percent = round(($special_discount / $base_price) * 100, 2);
+                $discount_type = 'special';
+
             } else {
 
-                return [
-                    'has_discount'     => true,
-                    'final_price'      => round($category_price, 2),
-                    'discount_percent' => $max_category_percent,
-                    'discount_type'    => 'category'
-                ];
+                $final_price = $category_price;
+                $discount_percent = $max_category_percent;
+                $discount_type = 'category';
+
             }
         } else {
 
             //  Няма special → връщаме category
-            return [
-                'has_discount'     => true,
-                'final_price'      => round($category_price, 2),
-                'discount_percent' => $max_category_percent,
-                'discount_type'    => 'category'
-            ];
+                $final_price = $category_price;
+                $discount_percent = $max_category_percent;
+                $discount_type = 'category';
+
         }
+
+        return array(
+            'has_discount' => $hasDiscount,
+            'final_price' => $final_price,
+            'discount_percent' => $discount_percent,
+            'discount_type' => $discount_type
+        );
     }
 
 

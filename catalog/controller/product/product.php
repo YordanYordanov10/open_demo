@@ -320,8 +320,6 @@ class ControllerProductProduct extends Controller
 				$product['special']
 			);
 
-			// echo '<pre>';
-			// print_r($promo_data);
 
 			// Промо данните за продукта горната част на продукта!!!
 			if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {

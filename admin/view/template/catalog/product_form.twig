@@ -200,6 +200,15 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input-cost">{{ entry_cost }}</label>
+								<div class="col-sm-10">
+									<input type="text" name="cost" value="{{ cost }}" placeholder="{{ entry_cost }}" id="input-cost" class="form-control"/>
+									{% if error_cost %}
+										<div class="text-danger">{{ error_cost }}</div>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-sm-2 control-label" for="input-price">{{ entry_price }}</label>
 								<div class="col-sm-10">
 									<input type="text" name="price" value="{{ price }}" placeholder="{{ entry_price }}" id="input-price" class="form-control"/>
@@ -1376,7 +1385,7 @@
 $('input[name=\'manufacturer\']').autocomplete({
 'source': function (request, response) {
 $.ajax({
-url: 'index.php?route=catalog/manufacturer/autocomplete&user_token= {{ user_token }}&filter_name=' + encodeURIComponent(request),
+url: 'index.php?route=catalog/manufacturer/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
 dataType: 'json',
 success: function (json) {
 json.unshift({manufacturer_id: 0, name: '{{ text_none }}'});
@@ -1397,7 +1406,7 @@ $('input[name=\'manufacturer_id\']').val(item['value']);
 $('input[name=\'category\']').autocomplete({
 'source': function (request, response) {
 $.ajax({
-url: 'index.php?route=catalog/category/autocomplete&user_token= {{ user_token }}&filter_name=' + encodeURIComponent(request),
+url: 'index.php?route=catalog/category/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
 dataType: 'json',
 success: function (json) {
 response($.map(json, function (item) {
@@ -1423,7 +1432,7 @@ $(this).parent().remove();
 $('input[name=\'filter\']').autocomplete({
 'source': function (request, response) {
 $.ajax({
-url: 'index.php?route=catalog/filter/autocomplete&user_token= {{ user_token }}&filter_name=' + encodeURIComponent(request),
+url: 'index.php?route=catalog/filter/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
 dataType: 'json',
 success: function (json) {
 response($.map(json, function (item) {
@@ -1449,7 +1458,7 @@ $(this).parent().remove();
 $('input[name=\'download\']').autocomplete({
 'source': function (request, response) {
 $.ajax({
-url: 'index.php?route=catalog/download/autocomplete&user_token= {{ user_token }}&filter_name=' + encodeURIComponent(request),
+url: 'index.php?route=catalog/download/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
 dataType: 'json',
 success: function (json) {
 response($.map(json, function (item) {
@@ -1475,7 +1484,7 @@ $(this).parent().remove();
 $('input[name=\'related\']').autocomplete({
 'source': function (request, response) {
 $.ajax({
-url: 'index.php?route=catalog/product/autocomplete&user_token= {{ user_token }}&filter_name=' + encodeURIComponent(request),
+url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
 dataType: 'json',
 success: function (json) {
 response($.map(json, function (item) {
@@ -1524,7 +1533,7 @@ function attributeautocomplete(attribute_row) {
 $('input[name=\'product_attribute[' + attribute_row + '][name]\']').autocomplete({
 'source': function (request, response) {
 $.ajax({
-url: 'index.php?route=catalog/attribute/autocomplete&user_token= {{ user_token }}&filter_name=' + encodeURIComponent(request),
+url: 'index.php?route=catalog/attribute/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
 dataType: 'json',
 success: function (json) {
 response($.map(json, function (item) {
@@ -1553,7 +1562,7 @@ attributeautocomplete(index);
 $('input[name=\'option\']').autocomplete({
 'source': function (request, response) {
 $.ajax({
-url: 'index.php?route=catalog/option/autocomplete&user_token= {{ user_token }}&filter_name=' + encodeURIComponent(request),
+url: 'index.php?route=catalog/option/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
 dataType: 'json',
 success: function (json) {
 response($.map(json, function (item) {
