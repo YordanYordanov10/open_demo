@@ -1,7 +1,7 @@
 <?php
 
-class ControllerExtensionDashboardProfit extends Controller
-{
+class ControllerExtensionDashboardProfit extends Controller{
+    
     public function index()
     {
         $this->load->language('extension/dashboard/profit');
@@ -101,7 +101,53 @@ class ControllerExtensionDashboardProfit extends Controller
 
         $results = $this->model_sale_order->getOrders($filter_data);
 
+        // Total revenue today
+        $query = $this->db->query("
+            SELECT SUM(o.total) as total 
+            FROM " . DB_PREFIX . "order o
+            WHERE DATE(o.date_added) = CURDATE()
+            AND o.order_status_id = 5
+        ");
 
+        $revenue_today = $query->row['total'];
+
+        // Total profit today
+        $query = $this->db->query("
+            SELECT SUM(op.profit) as total 
+            FROM " . DB_PREFIX . "order_profit op
+            LEFT JOIN " . DB_PREFIX . "order o 
+            ON op.order_id = o.order_id
+            WHERE DATE(o.date_added) = CURDATE()
+            AND o.order_status_id = 5
+        ");
+
+        $profit_today = $query->row['total'];
+
+        // Orders today
+                $query = $this->db->query("
+            SELECT COUNT(*) as total
+            FROM " . DB_PREFIX . "order
+            WHERE DATE(date_added) = CURDATE()
+            AND order_status_id = 5
+        ");
+
+        $orders_today = $query->row['total'];
+
+        // Margin
+        $margin = 0;
+        if ($revenue_today > 0) {
+            $margin = ($profit_today / $revenue_today) * 100;
+        }
+
+        $currency = $this->config->get('config_currency');
+        $currency_value = $this->currency->getValue($currency);
+
+        $data['revenue_today'] = $this->currency->format($revenue_today, $currency, $currency_value);
+        $data['profit_today'] = $this->currency->format($profit_today, $currency, $currency_value);
+        $data['orders_today'] = $orders_today;
+        $data['margin_today'] = round($margin, 2) . '%';
+
+     
         foreach ($results as $result) {
             $profit_info = $this->model_sale_order->getOrderProfit($result['order_id']);
 
@@ -113,11 +159,16 @@ class ControllerExtensionDashboardProfit extends Controller
 
             $profit_value = (isset($profit_info['profit'])) ? $profit_info['profit'] : 0;
             if ($profit_value > 0) {
-                $currentClass = 'text-success'; 
+                $currentClass = 'text-success';
             } else {
-                $currentClass = 'text-danger';  
+                $currentClass = 'text-danger';
             }
 
+           
+            $data['revenue_link'] = $this->url->link('report/profit_stats/revenue', 'user_token=' . $this->session->data['user_token'], true);
+            $data['profit_link'] = $this->url->link('report/profit_stats/profit', 'user_token=' . $this->session->data['user_token'], true);
+            $data['margin_link'] = $this->url->link('report/profit_stats/margin', 'user_token=' . $this->session->data['user_token'], true);
+            $data['orders_link'] = $this->url->link('report/profit_stats/orders', 'user_token=' . $this->session->data['user_token'], true);
 
             $data['orders'][] = array(
                 'order_id' => $result['order_id'],
@@ -126,7 +177,6 @@ class ControllerExtensionDashboardProfit extends Controller
                 'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
                 'total' => $this->currency->format($result['total'], $result['currency_code'], $result['currency_value']),
                 'cost' => $this->currency->format($profit_info['cost'], $result['currency_code'], $result['currency_value']),
-                'tier_discount' => $this->currency->format($profit_info['tier_discount'], $result['currency_code'], $result['currency_value']),
                 'loyalty_points' => $this->currency->format($profit_info['loyalty_points'], $result['currency_code'], $result['currency_value']),
                 'category_promo' => $this->currency->format($profit_info['category_promo'], $result['currency_code'], $result['currency_value']),
                 'loyalty_coupon' => $this->currency->format($profit_info['loyalty_coupon'], $result['currency_code'], $result['currency_value']),

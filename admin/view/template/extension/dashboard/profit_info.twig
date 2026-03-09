@@ -1,53 +1,105 @@
 {{header}}
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><i class="fa fa-shopping-cart"></i> {{ heading_title }}</h3>
-  </div>
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover">
-      <thead>
-        <tr>
-          <td class="text-right">{{ column_order_id }}</td>
-          <td>{{ column_customer }}</td>
-          <td>{{ column_status }}</td>
-          <td>{{ column_date_added }}</td>
-          <td class="text-right">{{ column_total }}</td>
-          <td class="text-right">{{ column_cost }}</td>
-          <td class="text-right">{{ column_tier_discount }}</td>
-          <td class="text-right">{{ column_loyalty_points }}</td>
-          <td class="text-right">{{ column_category_promo }}</td>
-          <td class="text-right">{{ column_loyalty_coupon }}</td>
-          <td class="text-right">{{ column_profit }}</td>
-          <td class="text-right">{{ column_action }}</td>
-        </tr>
-      </thead>
-      <tbody>
-        {% if orders %}
-        {% for order in orders %}
-        
-        <tr style="{{ order.style }}">
-          <td class="text-right">{{ order.order_id }}</td>
-          <td>{{ order.customer }}</td>
-          <td>{{ order.status }}</td>
-          <td>{{ order.date_added }}</td>
-          <td class="text-right">{{ order.total }}</td>
-          <td class="text-right">{{ order.cost }}</td>
-          <td class="text-right">{{ order.tier_discount }}</td>
-          <td class="text-right">{{ order.loyalty_points }}</td>
-          <td class="text-right">{{ order.category_promo }}</td>
-          <td class="text-right">{{ order.loyalty_coupon }}</td>
-          <td class="text-right {{ order.profit_class }}">{{ order.profit }}</td>
-           <td class="text-right"><a href="{{ order.view }}" data-toggle="tooltip" title="{{ button_view }}" class="btn btn-info"><i class="fa fa-eye"></i></a></td>
-        </tr>
-        {% endfor %}
-        {% else %}
-        <tr>
-          <td class="text-center" colspan="7">{{ text_no_results }}</td>
-        </tr>
-        {% endif %}
-      </tbody>
-    </table>
+<div class="row">
+
+	<div class="col-lg-3 col-md-3 col-sm-6">
+		<div class="tile bg-primary">
+			<div class="tile-heading">Revenue Today</div>
+			<div class="tile-body">
+				<i class="fa fa-shopping-cart"></i>
+				<h2>{{ revenue_today }}</h2>
+			</div>
+        <div class="tile-footer"><a href="{{ revenue_link }}">{{ text_view }}</a></div>
+		</div>
+	</div>
+
+	<div class="col-lg-3 col-md-3 col-sm-6">
+		<div class="tile bg-success">
+			<div class="tile-heading">Profit Today</div>
+			<div class="tile-body">
+				<i class="fa fa-money"></i>
+				<h2>{{ profit_today }}</h2>
+			</div>
+        <div class="tile-footer"><a href="{{ profit_link }}">{{ text_view }}</a></div>
+		</div>
+	</div>
+
+	<div class="col-lg-3 col-md-3 col-sm-6">
+		<div class="tile bg-info">
+			<div class="tile-heading">Orders Today</div>
+			<div class="tile-body">
+				<i class="fa fa-shopping-bag"></i>
+				<h2>{{ orders_today }}</h2>
+			</div>
+        <div class="tile-footer"><a href="{{ orders_link }}">{{ text_view }}</a></div>
+		</div>
+	</div>
+
+	<div class="col-lg-3 col-md-3 col-sm-6">
+		<div class="tile bg-warning">
+			<div class="tile-heading">Margin</div>
+			<div class="tile-body">
+				<i class="fa fa-line-chart"></i>
+				<h2>{{ margin_today }}</h2>
+			</div>
+        <div class="tile-footer"><a href="{{ margin_link }}">{{ text_view }}</a></div>
+		</div>
+	</div>
+
 </div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<i class="fa fa-shopping-cart"></i>
+			{{ heading_title }}</h3>
+	</div>
+
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<td class="text-right">{{ column_order_id }}</td>
+					<td>{{ column_customer }}</td>
+					<td>{{ column_status }}</td>
+					<td>{{ column_date_added }}</td>
+					<td class="text-right">{{ column_total }}</td>
+					<td class="text-right">{{ column_cost }}</td>
+					<td class="text-right">{{ column_loyalty_points }}</td>
+					<td class="text-right">{{ column_category_promo }}</td>
+					<td class="text-right">{{ column_loyalty_coupon }}</td>
+					<td class="text-right">{{ column_profit }}</td>
+					<td class="text-right">{{ column_action }}</td>
+				</tr>
+			</thead>
+			<tbody>
+				{% if orders %}
+					{% for order in orders %}
+
+						<tr style="{{ order.style }}">
+							<td class="text-right">{{ order.order_id }}</td>
+							<td>{{ order.customer }}</td>
+							<td>{{ order.status }}</td>
+							<td>{{ order.date_added }}</td>
+							<td class="text-right">{{ order.total }}</td>
+							<td class="text-right">{{ order.cost }}</td>
+							<td class="text-right">{{ order.loyalty_points }}</td>
+							<td class="text-right">{{ order.category_promo }}</td>
+							<td class="text-right">{{ order.loyalty_coupon }}</td>
+							<td class="text-right {{ order.profit_class }}">{{ order.profit }}</td>
+							<td class="text-right">
+								<a href="{{ order.view }}" data-toggle="tooltip" title="{{ button_view }}" class="btn btn-info">
+									<i class="fa fa-eye"></i>
+								</a>
+							</td>
+						</tr>
+					{% endfor %}
+				{% else %}
+					<tr>
+						<td class="text-center" colspan="12">{{ text_no_results }}</td>
+					</tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
 
 
-  {{footer}}
+	{{footer}}

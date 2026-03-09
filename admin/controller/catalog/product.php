@@ -235,6 +235,8 @@ class ControllerCatalogProduct extends Controller {
 	}
 
 	protected function getList() {
+
+	
 		if (isset($this->request->get['filter_name'])) {
 			$filter_name = $this->request->get['filter_name'];
 		} else {
