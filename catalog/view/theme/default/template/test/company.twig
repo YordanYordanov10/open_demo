@@ -1,37 +1,229 @@
+
+{{ header }}
+<div class="container">
+
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <div class="row">
+
+        {{ column_left }}
+
+        {% if column_left and column_right %}
+            {% set class = 'col-sm-6' %}
+        {% elseif column_left or column_right %}
+            {% set class = 'col-sm-9' %}
+        {% else %}
+            {% set class = 'col-sm-12' %}
+        {% endif %}
+
+        <div id="content" class="{{ class }}">
+
+<style>
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+#preloader {
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-circle {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+
 <h2>Тест Company API</h2>
 
-<input type="text" id="eik" placeholder="ЕИК">
-<button onclick="loadCompany()">Зареди</button>
+<div class="search-section">
+
+    <label for="eik">Търсене по ЕИК (автоматично при 9 цифри):</label>
+
+    <div style="display:flex; align-items:center; gap:10px;">
+
+        <input type="text"
+               id="eik"
+               placeholder="Въведете 9 цифри..."
+               maxlength="9"
+               autocomplete="off"
+               class="form-control">
+
+        <div id="preloader">
+            <div class="loader-circle"></div>
+        </div>
+    <input type="hidden" id="eik_token" value="{{ eik_token }}">
+    </div>
+
+    <!-- Honeypot -->
+    <div style="display:none;">
+        <input type="text" id="subject_line" name="subject_line" tabindex="-1" autocomplete="off">
+    </div>
+
+    <span id="error-eik" style="color:red;font-size:12px;margin-top:5px;display:block;min-height:15px;"></span>
+
+</div>
 
 
-<input type="text" id="company" placeholder="Фирма">
-<input type="text" id="city" placeholder="Град">
-<input type="text" id="address" placeholder="Адрес">
-<input type="text" id="manager" placeholder="Управител">
+<div id="company-details">
 
-<div id="result"></div>
+    <div class="form-group">
+        <label>Име на фирмата:</label>
+        <input type="text" id="company" placeholder="Фирма" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label>Град:</label>
+        <input type="text" id="city" placeholder="Град" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label>Адрес:</label>
+        <input type="text" id="address" placeholder="Адрес" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label>Управител:</label>
+        <input type="text" id="manager" placeholder="Управител" class="form-control">
+    </div>
+
+</div>
+
 
 <script>
 
+$(document).ready(function(){
 
-function loadCompany() {
+    $('#eik').on('input', function(){
 
-    let eik = document.getElementById('eik').value;
+        let eik = $(this).val().trim();
+        let errorSpan = $('#error-eik');
+        let honey = $('#subject_line').val();
 
-    if (eik.length < 9) {
-        return;
-    }
+        if(honey.length > 0){
+            console.log("Bot detected");
+            return;
+        }
 
-    fetch('index.php?route=api/company/eik&eik=' + eik)
-    .then(r => r.json())
-    .then(data => {
+        errorSpan.text('');
+        $(this).css('border-color','#ccc');
 
-        document.getElementById('company').value = data.name;
-        document.getElementById('city').value = data.city;
-        document.getElementById('address').value = data.address;
-        document.getElementById('manager').value = data.manager;
+        if(eik.length === 9){
+
+            if(/^\d+$/.test(eik)){
+                loadCompany(eik);
+            }else{
+                errorSpan.text('ЕИК трябва да съдържа само цифри');
+                $(this).css('border-color','red');
+            }
+
+        }
+
+    });
+
+});
+
+
+function loadCompany(eik){
+
+    let eikField = $('#eik');
+    let preloader = $('#preloader');
+
+    $.ajax({
+
+        url: 'index.php?route=test/company/eik&eik_token=' + encodeURIComponent($('#eik_token').val()) + '&eik=' + encodeURIComponent(eik),
+        dataType: 'json',
+
+        beforeSend: function(){
+
+            preloader.css('display','flex');
+            eikField.prop('readonly', true);
+
+            $('#company,#city,#address,#manager').val('');
+
+        },
+
+        success: function(json){
+
+            setTimeout(function(){
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+
+                if(json.error){
+                    $('#error-eik').text(json.error);
+                    eikField.css('border-color','red');
+                    return;
+                }
+
+                $('#company').val(json.name);
+                $('#city').val(json.city);
+                $('#address').val(json.address);
+                $('#manager').val(json.manager);
+
+            }, 500);
+
+        },
+
+        error: function(){
+
+            setTimeout(function(){
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+                $('#error-eik').text('Грешка при връзка със сървъра.');
+
+            }, 500);
+
+        }
 
     });
 
 }
+
 </script>
+
+        </div>
+
+        {{ column_right }}
+
+    </div>
+
+</div>
+
+{{ footer }}

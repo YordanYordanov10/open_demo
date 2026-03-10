@@ -80,7 +80,8 @@ class ModelReportProfitStats extends Model
             'profit' => $query->row['profit'] ?? 0,
             'cost' => $query->row['cost'] ?? 0,
             'revenue' => $query->row['revenue'] ?? 0,
-            'margin' => ($query->row['revenue'] > 0) ? round(($query->row['profit'] / $query->row['revenue']) * 100, 2) . '%' : '0%'
+            'margin' => ($query->row['revenue'] > 0) ? round(($query->row['profit'] / $query->row['revenue']) * 100, 2) . '%' : '0%',
+            'orders' => $query->row['orders'] ?? 0
         ];
     }
 
