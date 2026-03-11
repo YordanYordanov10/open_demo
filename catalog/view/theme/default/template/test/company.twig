@@ -70,24 +70,40 @@ input {
 
 
 <h2>Тест Company API</h2>
+<div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;"></div>
 
+{# 
+    {{ csrfInput() }}
+    <input type="hidden" name="action" value="users/send-password-reset-email">
+    {{ redirectInput("") }}
+
+    <h3><label for="loginName">Username or email</label></h3>
+    <input id="loginName" type="text" name="loginName"
+        value="{% if loginName is defined %}{{ loginName }}{% else %}{{ craft.app.user.rememberedUsername }}{% endif %}">
+
+    {% if errors is defined %}
+        <ul class="errors">
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <input type="submit" value="Submit"> #}
+
+<form id="company-form" method="post" accept-charset="UTF-8">
 <div class="search-section">
 
     <label for="eik">Търсене по ЕИК (автоматично при 9 цифри):</label>
 
     <div style="display:flex; align-items:center; gap:10px;">
 
-        <input type="text"
-               id="eik"
-               placeholder="Въведете 9 цифри..."
-               maxlength="9"
-               autocomplete="off"
-               class="form-control">
+        <input type="text" id="eik" name="eik" placeholder="Въведете 9 цифри..." maxlength="9" autocomplete="off" class="form-control">
 
         <div id="preloader">
             <div class="loader-circle"></div>
         </div>
-    <input type="hidden" id="eik_token" value="{{ eik_token }}">
+    <input type="hidden" id="eik_token" name="eik_token" value="{{ eik_token }}">
     </div>
 
     <!-- Honeypot -->
@@ -104,28 +120,39 @@ input {
 
     <div class="form-group">
         <label>Име на фирмата:</label>
-        <input type="text" id="company" placeholder="Фирма" class="form-control">
+        <input type="text" id="company" name="company" placeholder="Фирма" class="form-control">
+      <span id="error-company"  class="text-danger" style="color:red; font-size:12px;"></span>
     </div>
 
     <div class="form-group">
         <label>Град:</label>
-        <input type="text" id="city" placeholder="Град" class="form-control">
+        <input type="text" id="city" name="city" placeholder="Град" class="form-control">
+        <span id="error-city" class="text-danger" style="color:red; font-size:12px;"></span>
     </div>
 
     <div class="form-group">
         <label>Адрес:</label>
-        <input type="text" id="address" placeholder="Адрес" class="form-control">
+        <input type="text" id="address" name="address" placeholder="Адрес" class="form-control">
+        <span id="error-address" class="text-danger" style="color:red; font-size:12px;"></span>
     </div>
 
     <div class="form-group">
         <label>Управител:</label>
-        <input type="text" id="manager" placeholder="Управител" class="form-control">
+        <input type="text" id="manager" name="manager" placeholder="Управител" class="form-control">
+        <span id="error-manager" class="text-danger" style="color:red; font-size:12px;"></span>
     </div>
 
 </div>
+</form>
 
+{# Submit button #}
+<div style="margin-top:20px;">
+    <button type="button" id="submit-btn" class="btn btn-primary">Изпрати</button>
+</div>
 
 <script>
+
+
 
 $(document).ready(function(){
 
@@ -158,6 +185,26 @@ $(document).ready(function(){
 
 });
 
+function showNotification(message, type = 'success') {
+    const color = (type === 'success') ? '#d4edda' : '#f8d7da';
+    const textColor = (type === 'success') ? '#155724' : '#c57078';
+    const borderColor = (type === 'success') ? '#c3e6cb' : '#f5c6cb';
+
+    const html = `
+        <div class="alert-box" style="background:${color}; color:${textColor}; border:1px solid ${borderColor}; padding:15px; border-radius:5px; margin-bottom:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: opacity 0.5s ease;">
+            <strong>${type === 'success' ? 'Успех!' : 'Грешка!'}</strong> ${message}
+        </div>
+    `;
+
+    const $msg = $(html).appendTo('#alert-container');
+
+  
+    setTimeout(function() {
+        $msg.css('opacity', '0'); // Fade out effect
+        setTimeout(function() { $msg.remove(); }, 500); 
+    }, 3000);
+}
+
 
 function loadCompany(eik){
 
@@ -173,9 +220,6 @@ function loadCompany(eik){
 
             preloader.css('display','flex');
             eikField.prop('readonly', true);
-
-            $('#company,#city,#address,#manager').val('');
-
         },
 
         success: function(json){
@@ -186,10 +230,13 @@ function loadCompany(eik){
                 eikField.prop('readonly', false);
 
                 if(json.error){
-                    $('#error-eik').text(json.error);
-                    eikField.css('border-color','red');
+                    showNotification('Фирмата не беше намерена. Можете да въведете данните ръчно.', 'error');
+                    $('#company').focus();
+
                     return;
+
                 }
+                $('#company,#city,#address,#manager').val('');
 
                 $('#company').val(json.name);
                 $('#city').val(json.city);
@@ -215,6 +262,57 @@ function loadCompany(eik){
     });
 
 }
+
+$('#submit-btn').on('click', function() {
+    $.ajax({
+        url: 'index.php?route=test/company/submit&eik_token=' + encodeURIComponent($('#eik_token').val()),
+        type: 'post',
+        dataType: 'json',
+        data: {
+            eik: $('#eik').val(),
+            company: $('#company').val(),
+            city: $('#city').val(),
+            address: $('#address').val(),
+            manager: $('#manager').val(),
+            token: $('#eik_token').val(),
+            subject_line: $('#subject_line').val()
+        },
+        success: function(json) {
+            // 1. Clear old errors
+            $('.text-danger').text(''); 
+            $('.form-control').css('border-color', '#ccc');
+
+            // 2. Handle Validation Errors
+            if (json.errors) {
+                $.each(json.errors, function(key, message) {
+                    $('#error-' + key).text(message);
+                    $('#' + key).css('border-color', 'red');
+                });
+                
+                if (typeof showNotification === "function") {
+                    showNotification('Моля, попълнете правилно всички полета.', 'error');
+                }
+            }
+
+            // 3. Handle Success
+            if (json.success) {
+                if (typeof showNotification === "function") {
+                    showNotification(json.success, 'success');
+                }
+                
+                // Clear the form
+                $('#company-form')[0].reset();
+            }
+        }, // <-- This was the comma causing the issue earlier
+        error: function(xhr, ajaxOptions, thrownError) {
+            if (typeof showNotification === "function") {
+                showNotification('Грешка при изпращане на данните. Моля, опитайте отново.', 'error');
+            }
+            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
 
 </script>
 

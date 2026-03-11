@@ -2,7 +2,7 @@
 class ModelToolCompany extends Model
 {
 
-    public function getCompanyByEik($eik)
+    public function getCompanyFromApi($eik)
     {
         if (!$eik) {
             return ['error' => 'Липсва ЕИК'];
@@ -73,7 +73,28 @@ class ModelToolCompany extends Model
             'name'    => $company['companyName']['name'] ?? 'Неизвестно име',
             'city'    => $company['seat']['settlement'] ?? '',
             'address' => $address,
-            'manager' => $manager
+            'manager' => $manager,
+            'source'  => 'api'
         ];
+    }
+
+    public function saveCompanyData($data) {
+        $this->db->query("INSERT INTO " . DB_PREFIX . "company SET eik = '" . $this->db->escape($data['eik']) . "', company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "', date_added = NOW()");
+    }
+
+    public function updateCompanyData($data) {
+        $this->db->query("UPDATE " . DB_PREFIX . "company SET company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "', date_modified = NOW() WHERE eik = '" . $this->db->escape($data['eik']) . "'");
+    }
+
+    public function checkEikExists($eik) {
+        $query = $this->db->query("SELECT company_id FROM " . DB_PREFIX . "company WHERE eik = '" . $this->db->escape($eik) . "'");
+
+        return $query->num_rows > 0;
+    }
+
+    public function getCompanyByEik($eik) {
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "company WHERE eik = '" . $this->db->escape($eik) . "'");
+
+        return $query->row;
     }
 }
