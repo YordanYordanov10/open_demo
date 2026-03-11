@@ -16,6 +16,9 @@ class ControllerAccountRegister extends Controller {
 		$this->document->addScript('catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js');
 		$this->document->addStyle('catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css');
 
+		$this->session->data['eik_page_load'] = time();
+		$this->session->data['eik_token'] = bin2hex(random_bytes(16));
+
 		$this->load->model('account/customer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
@@ -97,6 +100,12 @@ class ControllerAccountRegister extends Controller {
 			$data['error_confirm'] = '';
 		}
 
+		if (isset($this->error['eik'])) {
+			$data['error_eik'] = $this->error['eik'];
+		} else {
+			$data['error_eik'] = '';
+		}
+
 		$data['action'] = $this->url->link('account/register', '', true);
 
 		$data['customer_groups'] = array();
@@ -142,6 +151,38 @@ class ControllerAccountRegister extends Controller {
 		} else {
 			$data['telephone'] = '';
 		}
+
+		if (isset($this->request->post['company'])) {
+			$data['company'] = $this->request->post['company'];
+		} else {
+			$data['company'] = '';
+		}
+
+		if (isset($this->request->post['city'])) {
+			$data['city'] = $this->request->post['city'];
+		} else {
+			$data['city'] = '';
+		}
+
+		if (isset($this->request->post['address'])) {
+			$data['address'] = $this->request->post['address'];
+		} else {
+			$data['address'] = '';
+		}
+
+		if (isset($this->request->post['manager'])) {
+			$data['manager'] = $this->request->post['manager'];
+		} else {
+			$data['manager'] = '';
+		}
+
+		if (isset($this->request->post['eik'])) {
+			$data['eik'] = $this->request->post['eik'];
+		} else {
+			$data['eik'] = '';
+		}
+
+		$data['eik_token'] = $this->session->data['eik_token'];
 
 		// Custom Fields
 		$data['custom_fields'] = array();
@@ -238,6 +279,14 @@ class ControllerAccountRegister extends Controller {
 			$this->error['telephone'] = $this->language->get('error_telephone');
 		}
 
+		if (!empty($this->request->post['eik']) && !preg_match('/^\d{9}$/', $this->request->post['eik'])) {
+			$this->error['eik'] = 'ЕИК трябва да съдържа точно 9 цифри.';
+		}
+
+		if (!empty($this->request->post['eik']) && !isset($this->error['eik']) && $this->model_account_customer->getTotalCustomersByEik($this->request->post['eik'])) {
+			$this->error['eik'] = 'Вече има регистриран потребител с този ЕИК.';
+		}
+
 		// Customer Group
 		if (isset($this->request->post['customer_group_id']) && is_array($this->config->get('config_customer_group_display')) && in_array($this->request->post['customer_group_id'], $this->config->get('config_customer_group_display'))) {
 			$customer_group_id = $this->request->post['customer_group_id'];
@@ -315,4 +364,110 @@ class ControllerAccountRegister extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
 	}
+
+	 public function eik(){
+
+        $json = [];
+
+        // IP базирано rate limiting
+        $ip = $this->request->server['REMOTE_ADDR'];
+
+        if (!isset($this->session->data['ip_rate'])) {
+            $this->session->data['ip_rate'] = [];
+        }
+
+        if (isset($this->session->data['ip_rate'][$ip])) {
+
+            if (time() - $this->session->data['ip_rate'][$ip] < 2) {
+
+                $json['error'] = 'Прекалено много заявки.';
+            }
+        }
+
+        $this->session->data['ip_rate'][$ip] = time();
+
+
+        // CSRF Токен проверка
+        if (!isset($this->request->get['eik_token']) || !isset($this->session->data['eik_token']) || ($this->request->get['eik_token'] !== $this->session->data['eik_token'])) {
+            $json['error'] = 'Невалиден защитен токен.';
+        }
+
+        //  Honeypot
+        if (!empty($this->request->get['subject_line'])) {
+
+            $this->log->write('Honeypot triggered by IP: ' . $this->request->server['REMOTE_ADDR']);
+
+            $json['error'] = 'Security check failed';
+        }
+
+
+        //  AJAX проверка
+        if (
+            !isset($this->request->server['HTTP_X_REQUESTED_WITH']) ||
+            strtolower($this->request->server['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest'
+        ) {
+
+            $json['error'] = 'Невалидна заявка';
+        }
+
+
+        //  Проверка дали страницата е заредена
+        if (isset($this->session->data['eik_page_load'])) {
+
+            $duration = time() - $this->session->data['eik_page_load'];
+
+            if ($duration < 2) {
+
+                $this->log->write('Too fast request (bot?) IP: ' . $this->request->server['REMOTE_ADDR']);
+
+                $json['error'] = 'Системна проверка. Моля, опитайте пак.';
+            }
+        }
+
+
+
+        $this->session->data['last_eik_search'] = time();
+
+
+        //  Валидация на ЕИК
+        $eik = $this->request->get['eik'] ?? '';
+
+        if (!preg_match('/^\d{9}$/', $eik)) {
+
+            $json['error'] = 'Невалиден формат на ЕИК';
+        }
+
+
+        //  Модел
+        if (!$json) {
+
+            $this->load->model('tool/company');
+
+            $company = $this->model_tool_company->getCompanyByEik($eik);
+
+            if ($company) {
+                $json = [
+                    'name' => $company['company'],
+                    'city' => $company['city'],
+                    'address' => $company['address'],
+                    'manager' => $company['manager'],
+                    'source' => 'db'
+                ];
+            } else {
+
+                $result = $this->model_tool_company->getCompanyFromApi($eik);
+
+                if (isset($result['error'])) {
+                    $json['error'] = $result['error'];
+                } else {
+                    $json = $result;
+                }
+            }
+        }
+
+
+        //  Success
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
 }

@@ -72,25 +72,6 @@ input {
 <h2>Тест Company API</h2>
 <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;"></div>
 
-{# 
-    {{ csrfInput() }}
-    <input type="hidden" name="action" value="users/send-password-reset-email">
-    {{ redirectInput("") }}
-
-    <h3><label for="loginName">Username or email</label></h3>
-    <input id="loginName" type="text" name="loginName"
-        value="{% if loginName is defined %}{{ loginName }}{% else %}{{ craft.app.user.rememberedUsername }}{% endif %}">
-
-    {% if errors is defined %}
-        <ul class="errors">
-            {% for error in errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    <input type="submit" value="Submit"> #}
-
 <form id="company-form" method="post" accept-charset="UTF-8">
 <div class="search-section">
 
@@ -100,9 +81,8 @@ input {
 
         <input type="text" id="eik" name="eik" placeholder="Въведете 9 цифри..." maxlength="9" autocomplete="off" class="form-control">
 
-        <div id="preloader">
-            <div class="loader-circle"></div>
-        </div>
+        <div id="preloader"><div class="loader-circle"></div> </div>
+        
     <input type="hidden" id="eik_token" name="eik_token" value="{{ eik_token }}">
     </div>
 
@@ -166,11 +146,12 @@ $(document).ready(function(){
             console.log("Bot detected");
             return;
         }
-
+  
         errorSpan.text('');
         $(this).css('border-color','#ccc');
 
         if(eik.length === 9){
+            
 
             if(/^\d+$/.test(eik)){
                 loadCompany(eik);

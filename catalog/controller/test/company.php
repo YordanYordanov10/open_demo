@@ -1,9 +1,7 @@
 <?php
-class ControllerTestCompany extends Controller
-{
+class ControllerTestCompany extends Controller{
 
-    public function index()
-    {
+    public function index(){
 
 
         $this->document->setTitle('Тест Company API');
@@ -36,8 +34,7 @@ class ControllerTestCompany extends Controller
 
 
 
-    public function eik()
-    {
+    public function eik(){
 
         $json = [];
 
@@ -116,7 +113,7 @@ class ControllerTestCompany extends Controller
             $this->load->model('tool/company');
 
             $company = $this->model_tool_company->getCompanyByEik($eik);
-           
+
             if ($company) {
                 $json = [
                     'name' => $company['company'],
@@ -143,8 +140,7 @@ class ControllerTestCompany extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
-    public function submit()
-    {
+    public function submit(){
         $json = [];
 
 
@@ -161,14 +157,6 @@ class ControllerTestCompany extends Controller
 
         if (!isset($this->request->post['token']) || $this->request->post['token'] !== $this->session->data['eik_token']) {
             $json['error'] = 'Невалидна сесия. Моля, презаредете страницата.';
-        }
-
-        //  Валидация на ЕИК
-        $eik = $this->request->post['eik'] ?? '';
-
-        if (!preg_match('/^\d{9}$/', $eik)) {
-
-            $json['error'] = 'Невалиден формат на ЕИК';
         }
 
         //  AJAX проверка
@@ -198,9 +186,15 @@ class ControllerTestCompany extends Controller
         $this->session->data['ip_rate'][$ip] = time();
 
 
+        //  Валидация на ЕИК
+        $eik = $this->request->post['eik'] ?? '';
 
+        if (!preg_match('/^\d{9}$/', $eik)) {
 
-        if (!$json) {
+            $json['errors']['eik'] = 'ЕИК трябва да съдържа точно 9 цифри.';
+        }
+
+        if (!isset($json['errors']) && !isset($json['error'])) {
 
             $eik     = trim($this->request->post['eik'] ?? '');
             $company = trim($this->request->post['company'] ?? '');
@@ -208,19 +202,18 @@ class ControllerTestCompany extends Controller
             $address = trim($this->request->post['address'] ?? '');
             $city    = trim($this->request->post['city'] ?? '');
 
-
-            if (empty($eik)) {
-                $json['errors']['eik'] = 'ЕИК е задължително поле.';
-            }
             if (empty($company)) {
                 $json['errors']['company'] = 'Име на фирмата е задължително поле.';
             }
+
             if (empty($manager)) {
                 $json['errors']['manager'] = 'Управител е задължително поле.';
             }
+
             if (empty($address)) {
                 $json['errors']['address'] = 'Адрес е задължително поле.';
             }
+
             if (empty($city)) {
                 $json['errors']['city'] = 'Град е задължително поле.';
             }

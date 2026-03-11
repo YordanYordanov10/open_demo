@@ -40,6 +40,45 @@
               {% endif %}
               {% endfor %}</div>
           </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-eik">ЕИК</label>
+            <div class="col-sm-10">
+            <input type="text" name="eik" value="{{ eik }}" id="input-eik" class="form-control" maxlength="9">
+            <div id="preloader"><div class="loader-circle"></div> </div>
+             <input type="hidden" id="eik_token" name="eik_token" value="{{ eik_token }}">
+             <div id="error-eik" class="text-danger">{% if error_eik %}{{ error_eik }}{% endif %}</div>
+          </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="company">Фирма</label>
+            <div class="col-sm-10">
+              <input type="text" name="company" value="{{ company }}" placeholder="Фирма" id="company" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="city">Град</label>
+            <div class="col-sm-10">
+              <input type="text" name="city" value="{{ city }}" placeholder="Град" id="city" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="address">Адрес</label>
+            <div class="col-sm-10">
+              <input type="text" name="address" value="{{ address }}" placeholder="Адрес" id="address" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="manager">Управител</label>
+            <div class="col-sm-10">
+              <input type="text" name="manager" value="{{ manager }}" placeholder="Управител" id="manager" class="form-control" />
+            </div>
+          </div>
+
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-firstname">{{ entry_firstname }}</label>
             <div class="col-sm-10">
@@ -398,22 +437,104 @@ $('button[id^=\'button-custom-field\']').on('click', function() {
 		}
 	}, 500);
 });
-//--></script> 
-<script type="text/javascript"><!--
-$('.date').datetimepicker({
-	language: '{{ datepicker }}',
-	pickTime: false
+
+
+$(document).ready(function(){
+
+  $('#input-eik').on('input', function(){
+
+        let eik = $(this).val().trim();
+        let errorSpan = $('#error-eik');
+        // let honey = $('#subject_line').val();
+
+        // if(honey.length > 0){
+        //     console.log("Bot detected");
+        //     return;
+        // }
+  
+        errorSpan.text('');
+        $(this).css('border-color','#ccc');
+
+        if(eik.length === 9){
+            
+
+            if(/^\d+$/.test(eik)){
+                loadCompany(eik);
+            }else{
+                errorSpan.text('ЕИК трябва да съдържа само цифри');
+                $(this).css('border-color','red');
+            }
+
+        }
+
+    });
+
 });
 
-$('.time').datetimepicker({
-	language: '{{ datepicker }}',
-	pickDate: false
-});
+function loadCompany(eik){
 
-$('.datetime').datetimepicker({
-	language: '{{ datepicker }}',
-	pickDate: true,
-	pickTime: true
-});
+  let eikField = $('#input-eik');
+    let preloader = $('#preloader');
+
+    $.ajax({
+
+        url: 'index.php?route=account/register/eik&eik_token=' + encodeURIComponent($('#eik_token').val()) + '&eik=' + encodeURIComponent(eik),
+        dataType: 'json',
+
+        beforeSend: function(){
+
+            preloader.css('display','flex');
+            eikField.prop('readonly', true);
+        },
+
+        success: function(json){
+
+            setTimeout(function(){
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+
+                if(json.error){
+                  $('#error-eik').text(json.error);
+                  return;
+                }
+
+                $('#error-eik').text('');
+
+                if ($('#company').length) {
+                  $('#company').val(json.name);
+                }
+
+                if ($('#city').length) {
+                  $('#city').val(json.city);
+                }
+
+                if ($('#address').length) {
+                  $('#address').val(json.address);
+                }
+
+                if ($('#manager').length) {
+                  $('#manager').val(json.manager);
+                }
+
+            }, 500);
+
+        },
+
+        error: function(){
+
+            setTimeout(function(){
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+                $('#error-eik').text('Грешка при връзка със сървъра.');
+
+            }, 500);
+
+        }
+
+    });
+
+}
 //--></script> 
 {{ footer }} 

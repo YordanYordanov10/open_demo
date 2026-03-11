@@ -333,6 +333,14 @@ class ControllerCommonColumnLeft extends Controller {
 				);
 			}
 
+			if ($this->user->hasPermission('access', 'customer/companies')) {
+				$customer[] = array(
+					'name'	   => 'Companies',
+					'href'     => $this->url->link('customer/companies', 'user_token=' . $this->session->data['user_token'], true),
+					'children' => array()
+				);
+			}
+
 			if ($customer) {
 				$data['menus'][] = array(
 					'id'       => 'menu-customer',

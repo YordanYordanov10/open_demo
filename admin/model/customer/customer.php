@@ -271,6 +271,180 @@ class ModelCustomerCustomer extends Model {
 
 		return $query->row['total'];
 	}
+
+	public function addCompany($data) {
+		$this->db->query("INSERT INTO " . DB_PREFIX . "company SET eik = '" . $this->db->escape($data['eik']) . "', company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "', date_added = NOW(), date_modified = NOW()");
+
+		return $this->db->getLastId();
+	}
+
+	public function editCompany($company_id, $data) {
+		$this->db->query("UPDATE " . DB_PREFIX . "company SET eik = '" . $this->db->escape($data['eik']) . "', company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "', date_modified = NOW() WHERE company_id = '" . (int)$company_id . "'");
+	}
+
+	public function deleteCompany($company_id) {
+		$this->db->query("DELETE FROM " . DB_PREFIX . "company WHERE company_id = '" . (int)$company_id . "'");
+	}
+
+	public function getCompany($company_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "company WHERE company_id = '" . (int)$company_id . "'");
+
+		return $query->row;
+	}
+
+	public function getCompanies($data = array()) {
+		$sql = "SELECT * FROM " . DB_PREFIX . "company WHERE 1=1";
+
+		if (!empty($data['filter_company'])) {
+			$sql .= " AND company LIKE '%" . $this->db->escape($data['filter_company']) . "%'";
+		}
+
+		if (!empty($data['filter_eik'])) {
+			$sql .= " AND eik LIKE '" . $this->db->escape($data['filter_eik']) . "%'";
+		}
+
+		if (!empty($data['filter_city'])) {
+			$sql .= " AND city LIKE '%" . $this->db->escape($data['filter_city']) . "%'";
+		}
+
+		$sort_data = array(
+			'company',
+			'eik',
+			'city',
+			'date_added'
+		);
+
+		if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+			$sql .= " ORDER BY " . $data['sort'];
+		} else {
+			$sql .= " ORDER BY company";
+		}
+
+		if (isset($data['order']) && $data['order'] == 'DESC') {
+			$sql .= " DESC";
+		} else {
+			$sql .= " ASC";
+		}
+
+		if (isset($data['start']) || isset($data['limit'])) {
+			if ($data['start'] < 0) {
+				$data['start'] = 0;
+			}
+
+			if ($data['limit'] < 1) {
+				$data['limit'] = 20;
+			}
+
+			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+		}
+
+		$query = $this->db->query($sql);
+
+		return $query->rows;
+	}
+
+	public function getTotalCompanies($data = array()) {
+		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "company WHERE 1=1";
+
+		if (!empty($data['filter_company'])) {
+			$sql .= " AND company LIKE '%" . $this->db->escape($data['filter_company']) . "%'";
+		}
+
+		if (!empty($data['filter_eik'])) {
+			$sql .= " AND eik LIKE '" . $this->db->escape($data['filter_eik']) . "%'";
+		}
+
+		if (!empty($data['filter_city'])) {
+			$sql .= " AND city LIKE '%" . $this->db->escape($data['filter_city']) . "%'";
+		}
+
+		$query = $this->db->query($sql);
+
+		return (int)$query->row['total'];
+	}
+
+	public function getTotalCompaniesByEik($eik, $company_id = 0) {
+		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "company WHERE eik = '" . $this->db->escape($eik) . "'";
+
+		if ((int)$company_id) {
+			$sql .= " AND company_id != '" . (int)$company_id . "'";
+		}
+
+		$query = $this->db->query($sql);
+
+		return (int)$query->row['total'];
+	}
+
+	public function getCustomerCompanies($data = array()) {
+		$sql = "SELECT c.customer_id AS company_id, c.eik, c.company, c.city, c.address, c.manager, c.date_added, c.firstname, c.lastname, c.email, c.telephone, c.status, c.newsletter, c.safe, cgd.name AS customer_group FROM " . DB_PREFIX . "customer c LEFT JOIN " . DB_PREFIX . "customer_group_description cgd ON (c.customer_group_id = cgd.customer_group_id AND cgd.language_id = '" . (int)$this->config->get('config_language_id') . "') WHERE c.eik IS NOT NULL AND c.eik != ''";
+
+		if (!empty($data['filter_company'])) {
+			$sql .= " AND c.company LIKE '%" . $this->db->escape($data['filter_company']) . "%'";
+		}
+
+		if (!empty($data['filter_eik'])) {
+			$sql .= " AND c.eik LIKE '" . $this->db->escape($data['filter_eik']) . "%'";
+		}
+
+		if (!empty($data['filter_city'])) {
+			$sql .= " AND c.city LIKE '%" . $this->db->escape($data['filter_city']) . "%'";
+		}
+
+		$sort_data = array(
+			'company',
+			'eik',
+			'city',
+			'date_added'
+		);
+
+		if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+			$sql .= " ORDER BY c." . $data['sort'];
+		} else {
+			$sql .= " ORDER BY c.company";
+		}
+
+		if (isset($data['order']) && $data['order'] == 'DESC') {
+			$sql .= " DESC";
+		} else {
+			$sql .= " ASC";
+		}
+
+		if (isset($data['start']) || isset($data['limit'])) {
+			if ($data['start'] < 0) {
+				$data['start'] = 0;
+			}
+
+			if ($data['limit'] < 1) {
+				$data['limit'] = 20;
+			}
+
+			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+		}
+
+		$query = $this->db->query($sql);
+
+		return $query->rows;
+	}
+
+	public function getTotalCustomerCompanies($data = array()) {
+		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer c WHERE c.eik IS NOT NULL AND c.eik != ''";
+
+		if (!empty($data['filter_company'])) {
+			$sql .= " AND c.company LIKE '%" . $this->db->escape($data['filter_company']) . "%'";
+		}
+
+		if (!empty($data['filter_eik'])) {
+			$sql .= " AND c.eik LIKE '" . $this->db->escape($data['filter_eik']) . "%'";
+		}
+
+		if (!empty($data['filter_city'])) {
+			$sql .= " AND c.city LIKE '%" . $this->db->escape($data['filter_city']) . "%'";
+		}
+
+		$query = $this->db->query($sql);
+
+		return (int)$query->row['total'];
+	}
         
     public function getAffiliateByTracking($tracking) {
         $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer_affiliate WHERE tracking = '" . $this->db->escape($tracking) . "'");

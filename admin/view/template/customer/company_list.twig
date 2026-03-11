@@ -1,0 +1,184 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a href="{{ add }}" data-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus"></i></a>
+        <button type="button" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger" onclick="confirm('{{ text_confirm }}') ? $('#form-company').submit() : false;"><i class="fa fa-trash-o"></i></button>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-filter"></i> {{ text_filter }}</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <label class="control-label" for="input-filter-company">{{ entry_name }}</label>
+            <input type="text" name="filter_company" value="{{ filter_company }}" placeholder="{{ entry_name }}" id="input-filter-company" class="form-control" />
+          </div>
+          <div class="col-sm-4">
+            <label class="control-label" for="input-filter-eik">{{ entry_eik }}</label>
+            <input type="text" name="filter_eik" value="{{ filter_eik }}" placeholder="{{ entry_eik }}" id="input-filter-eik" class="form-control" />
+          </div>
+          <div class="col-sm-4">
+            <label class="control-label" for="input-filter-city">{{ entry_city }}</label>
+            <input type="text" name="filter_city" value="{{ filter_city }}" placeholder="{{ entry_city }}" id="input-filter-city" class="form-control" />
+          </div>
+        </div>
+        <br/>
+        <div class="text-right">
+          <button type="button" id="button-filter" class="btn btn-default"><i class="fa fa-filter"></i> {{ button_filter }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-company">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                  <td class="text-left">{% if sort == 'eik' %}<a href="{{ sort_eik }}" class="{{ order|lower }}">{{ column_eik }}</a>{% else %}<a href="{{ sort_eik }}">{{ column_eik }}</a>{% endif %}</td>
+                  <td class="text-left">{% if sort == 'company' %}<a href="{{ sort_company }}" class="{{ order|lower }}">{{ column_name }}</a>{% else %}<a href="{{ sort_company }}">{{ column_name }}</a>{% endif %}</td>
+                  <td class="text-left">{% if sort == 'city' %}<a href="{{ sort_city }}" class="{{ order|lower }}">{{ column_city }}</a>{% else %}<a href="{{ sort_city }}">{{ column_city }}</a>{% endif %}</td>
+                  <td class="text-left">{{ column_address }}</td>
+                  <td class="text-left">{{ column_manager }}</td>
+                  <td class="text-left">{% if sort == 'date_added' %}<a href="{{ sort_date_added }}" class="{{ order|lower }}">{{ column_date_added }}</a>{% else %}<a href="{{ sort_date_added }}">{{ column_date_added }}</a>{% endif %}</td>
+                  <td class="text-right">{{ column_action }}</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% if companies %}
+                {% for company in companies %}
+                <tr>
+                  <td class="text-center">{% if company.company_id in selected %}
+                    <input type="checkbox" name="selected[]" value="{{ company.company_id }}" checked="checked" />
+                    {% else %}
+                    <input type="checkbox" name="selected[]" value="{{ company.company_id }}" />
+                    {% endif %}
+                  </td>
+                  <td class="text-left">{{ company.eik }}</td>
+                  <td class="text-left">{{ company.company }}</td>
+                  <td class="text-left">{{ company.city }}</td>
+                  <td class="text-left">{{ company.address }}</td>
+                  <td class="text-left">{{ company.manager }}</td>
+                  <td class="text-left">{{ company.date_added }}</td>
+                  <td class="text-right"><a href="{{ company.edit }}" data-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa fa-pencil"></i></a></td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td class="text-center" colspan="8">{{ text_no_results }}</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </form>
+        </div>
+        <div class="row">
+          <div class="col-sm-6 text-left">{{ pagination }}</div>
+          <div class="col-sm-6 text-right">{{ results }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-user"></i> Customer Details</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <td class="text-left">{{ column_eik }}</td>
+                <td class="text-left">{{ column_name }}</td>
+                <td class="text-left">Customer Name</td>
+                <td class="text-left">{{ entry_customer_group }}</td>
+                <td class="text-left">{{ column_email }}</td>
+                <td class="text-left">{{ entry_telephone }}</td>
+                <td class="text-left">{{ column_status }}</td>
+                <td class="text-left">Newsletter</td>
+                <td class="text-left">Safe</td>
+                <td class="text-left">{{ column_date_added }}</td>
+                <td class="text-right">{{ column_action }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% if customer_details %}
+              {% for customer in customer_details %}
+              <tr>
+                <td class="text-left">{{ customer.eik }}</td>
+                <td class="text-left">{{ customer.company }}</td>
+                <td class="text-left">{{ customer.customer_name }}</td>
+                <td class="text-left">{{ customer.customer_group }}</td>
+                <td class="text-left">{{ customer.email }}</td>
+                <td class="text-left">{{ customer.telephone }}</td>
+                <td class="text-left">{{ customer.status }}</td>
+                <td class="text-left">{{ customer.newsletter }}</td>
+                <td class="text-left">{{ customer.safe }}</td>
+                <td class="text-left">{{ customer.date_added }}</td>
+                <td class="text-right"><a href="{{ customer.edit_customer }}" data-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa fa-pencil"></i></a></td>
+              </tr>
+              {% endfor %}
+              {% else %}
+              <tr>
+                <td class="text-center" colspan="11">{{ text_no_results }}</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript"><!--
+  $('#button-filter').on('click', function() {
+    var url = 'index.php?route=customer/companies&user_token={{ user_token }}';
+
+    var filter_company = $('input[name=\'filter_company\']').val();
+    if (filter_company) {
+      url += '&filter_company=' + encodeURIComponent(filter_company);
+    }
+
+    var filter_eik = $('input[name=\'filter_eik\']').val();
+    if (filter_eik) {
+      url += '&filter_eik=' + encodeURIComponent(filter_eik);
+    }
+
+    var filter_city = $('input[name=\'filter_city\']').val();
+    if (filter_city) {
+      url += '&filter_city=' + encodeURIComponent(filter_city);
+    }
+
+    location = url;
+  });
+  //--></script>
+</div>
+{{ footer }}
