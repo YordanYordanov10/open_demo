@@ -139,6 +139,8 @@ class ControllerCustomerCompanies extends Controller {
 
         $results = $this->model_customer_customer->getCustomerCompanies($filter_data);
 
+        $customer_results = $results;
+
         foreach ($results as $result) {
             $data['companies'][] = array(
                 'company_id'  => $result['company_id'],
@@ -151,6 +153,9 @@ class ControllerCustomerCompanies extends Controller {
                 'edit'        => $this->url->link('customer/companies/edit', 'user_token=' . $this->session->data['user_token'] . '&company_id=' . $result['company_id'] . $url, true)
             );
 
+        }
+
+        foreach ($customer_results as $result) {
             $data['customer_details'][] = array(
                 'company_id'      => $result['company_id'],
                 'eik'             => $result['eik'],
@@ -293,6 +298,8 @@ class ControllerCustomerCompanies extends Controller {
             $company_info = array();
         }
 
+        $data['eik_readonly'] = isset($this->request->get['company_id']) ? true : false;
+
         if (isset($this->request->post['eik'])) {
             $data['eik'] = $this->request->post['eik'];
         } elseif (!empty($company_info)) {
@@ -356,6 +363,14 @@ class ControllerCustomerCompanies extends Controller {
         }
 
         $company_id = isset($this->request->get['company_id']) ? (int)$this->request->get['company_id'] : 0;
+
+        if ($company_id) {
+            $company_info = $this->model_customer_customer->getCompany($company_id);
+
+            if ($company_info && isset($company_info['eik']) && $this->request->post['eik'] !== $company_info['eik']) {
+                $this->error['eik'] = $this->language->get('error_eik_locked');
+            }
+        }
 
         if (isset($this->request->post['eik']) && $this->model_customer_customer->getTotalCompaniesByEik($this->request->post['eik'], $company_id)) {
             $this->error['eik'] = $this->language->get('error_eik_exists');

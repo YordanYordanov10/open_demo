@@ -2,8 +2,33 @@
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
+      <style>
+        
+        #preloader {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-circle {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+      </style>
       <div class="pull-right">
+        <div id="preloader"><div class="loader-circle"></div> </div>
         <button type="submit" form="form-company" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <button type="button" id="button-api" data-toggle="tooltip" title="{{ button_api }}" class="btn btn-success" ><i class="fa fa-gear"></i></button>
+    
         <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
       </div>
       <h1>{{ heading_title }}</h1>
@@ -30,7 +55,7 @@
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-eik">{{ entry_eik }}</label>
             <div class="col-sm-10">
-              <input type="text" name="eik" value="{{ eik }}" placeholder="{{ entry_eik }}" id="input-eik" class="form-control" maxlength="9" />
+              <input type="text" name="eik" value="{{ eik }}" placeholder="{{ entry_eik }}" id="input-eik" class="form-control" maxlength="9" {% if eik_readonly %}readonly="readonly"{% endif %} />
               {% if error_eik %}
               <div class="text-danger">{{ error_eik }}</div>
               {% endif %}
@@ -81,4 +106,56 @@
     </div>
   </div>
 </div>
+
+<script>
+
+  $('#button-api').on('click', function() {
+
+      let preloader = $('#preloader');
+      let eikField = $('#input-eik');
+     $.ajax({
+
+        url: 'index.php?route=customer/company_api/eik&user_token={{ user_token }}&eik=' + encodeURIComponent(eikField.val()),
+        dataType: 'json',
+
+        beforeSend: function(){
+            preloader.css('display','flex');
+        },
+
+        success: function(json){
+
+            setTimeout(function(){
+
+                preloader.hide();
+              
+                if(json.error){
+                    showNotification(json.error, 'error');
+                    $('#input-company').focus();
+
+                    return;
+                }
+                
+                $('#input-company').val(json.name);
+                $('#input-city').val(json.city);
+                $('#input-address').val(json.address);
+                $('#input-manager').val(json.manager);
+
+            }, 500);
+
+        },
+
+        error: function(){
+
+            setTimeout(function(){
+
+                preloader.hide();
+                $('#error-eik').text('Грешка при връзка със сървъра.');
+
+            }, 500);
+
+        }
+
+    });
+  });
+</script>
 {{ footer }}

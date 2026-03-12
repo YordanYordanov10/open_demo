@@ -30,6 +30,9 @@ $_['text_login']                = 'Login into Store';
 $_['text_unlock']               = 'Unlock Account';
 $_['text_companies']            = 'Companies';
 
+// Buttons
+$_['button_api']        = 'Check API';
+
 // Column
 $_['column_eik']                = 'EIK';
 $_['column_name']               = 'Company Name';
@@ -120,6 +123,7 @@ $_['error_tracking']            = 'Tracking Code required!';
 $_['error_tracking_exists']     = 'Tracking code is being used by another affiliate!';
 $_['error_eik']                 = 'EIK must contain exactly 9 digits!';
 $_['error_eik_exists']          = 'Warning: This EIK is already in use!';
+$_['error_eik_locked']          = 'Warning: EIK cannot be changed after registration!';
 $_['error_company']             = 'Company Name must be between 1 and 255 characters!';
 $_['error_cheque']              = 'Cheque Payee Name required!';
 $_['error_paypal']              = 'PayPal Email Address does not appear to be valid!';

@@ -79,7 +79,7 @@ input {
 
     <div style="display:flex; align-items:center; gap:10px;">
 
-        <input type="text" id="eik" name="eik" placeholder="Въведете 9 цифри..." maxlength="9" autocomplete="off" class="form-control">
+        <input type="text" id="eik" name="eik" placeholder="Въведете 9 цифри..." maxlength="20" autocomplete="off" class="form-control">
 
         <div id="preloader"><div class="loader-circle"></div> </div>
         
@@ -136,9 +136,13 @@ input {
 
 $(document).ready(function(){
 
+    let eikTimer = null;
+
     $('#eik').on('input', function(){
 
-        let eik = $(this).val().trim();
+        let raw = $(this).val();
+        let eik = raw.replace(/\s/g, '');
+
         let errorSpan = $('#error-eik');
         let honey = $('#subject_line').val();
 
@@ -146,18 +150,26 @@ $(document).ready(function(){
             console.log("Bot detected");
             return;
         }
-  
+
         errorSpan.text('');
         $(this).css('border-color','#ccc');
 
-        if(eik.length === 9){
-            
+        // спираме предишния таймер
+        clearTimeout(eikTimer);
 
-            if(/^\d+$/.test(eik)){
-                loadCompany(eik);
-            }else{
+        if(eik.length === 9){
+
+            if(/^\d{9}$/.test(eik)){
+
+                eikTimer = setTimeout(function(){
+                    loadCompany(eik);
+                }, 300); // изчаква 300ms
+
+            } else {
+
                 errorSpan.text('ЕИК трябва да съдържа само цифри');
-                $(this).css('border-color','red');
+                $('#eik').css('border-color','red');
+
             }
 
         }
@@ -168,7 +180,7 @@ $(document).ready(function(){
 
 function showNotification(message, type = 'success') {
     const color = (type === 'success') ? '#d4edda' : '#f8d7da';
-    const textColor = (type === 'success') ? '#155724' : '#c57078';
+    const textColor = (type === 'success') ? '#155724' : '#dd4b59';
     const borderColor = (type === 'success') ? '#c3e6cb' : '#f5c6cb';
 
     const html = `

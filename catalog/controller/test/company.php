@@ -101,6 +101,8 @@ class ControllerTestCompany extends Controller{
         //  Валидация на ЕИК
         $eik = $this->request->get['eik'] ?? '';
 
+        // $eik = trim($this->request->get['eik'] ?? '');
+
         if (!preg_match('/^\d{9}$/', $eik)) {
 
             $json['error'] = 'Невалиден формат на ЕИК';

@@ -273,27 +273,27 @@ class ModelCustomerCustomer extends Model {
 	}
 
 	public function addCompany($data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "company SET eik = '" . $this->db->escape($data['eik']) . "', company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "', date_added = NOW(), date_modified = NOW()");
+		$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "', firstname = '', lastname = '', email = '', telephone = '', custom_field = '[]', newsletter = '0', salt = '" . $this->db->escape($salt = token(9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1(token(10))))) . "', status = '1', safe = '0', eik = '" . $this->db->escape($data['eik']) . "', company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "', date_added = NOW()");
 
 		return $this->db->getLastId();
 	}
 
 	public function editCompany($company_id, $data) {
-		$this->db->query("UPDATE " . DB_PREFIX . "company SET eik = '" . $this->db->escape($data['eik']) . "', company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "', date_modified = NOW() WHERE company_id = '" . (int)$company_id . "'");
+		$this->db->query("UPDATE " . DB_PREFIX . "customer SET company = '" . $this->db->escape($data['company']) . "', city = '" . $this->db->escape($data['city']) . "', address = '" . $this->db->escape($data['address']) . "', manager = '" . $this->db->escape($data['manager']) . "' WHERE customer_id = '" . (int)$company_id . "'");
 	}
 
 	public function deleteCompany($company_id) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "company WHERE company_id = '" . (int)$company_id . "'");
+		$this->deleteCustomer($company_id);
 	}
 
 	public function getCompany($company_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "company WHERE company_id = '" . (int)$company_id . "'");
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$company_id . "' AND eik IS NOT NULL AND eik != ''");
 
 		return $query->row;
 	}
 
 	public function getCompanies($data = array()) {
-		$sql = "SELECT * FROM " . DB_PREFIX . "company WHERE 1=1";
+		$sql = "SELECT customer_id AS company_id, eik, company, city, address, manager, date_added FROM " . DB_PREFIX . "customer WHERE eik IS NOT NULL AND eik != ''";
 
 		if (!empty($data['filter_company'])) {
 			$sql .= " AND company LIKE '%" . $this->db->escape($data['filter_company']) . "%'";
@@ -344,7 +344,7 @@ class ModelCustomerCustomer extends Model {
 	}
 
 	public function getTotalCompanies($data = array()) {
-		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "company WHERE 1=1";
+		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer WHERE eik IS NOT NULL AND eik != ''";
 
 		if (!empty($data['filter_company'])) {
 			$sql .= " AND company LIKE '%" . $this->db->escape($data['filter_company']) . "%'";
@@ -364,10 +364,10 @@ class ModelCustomerCustomer extends Model {
 	}
 
 	public function getTotalCompaniesByEik($eik, $company_id = 0) {
-		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "company WHERE eik = '" . $this->db->escape($eik) . "'";
+		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "customer WHERE eik = '" . $this->db->escape($eik) . "'";
 
 		if ((int)$company_id) {
-			$sql .= " AND company_id != '" . (int)$company_id . "'";
+			$sql .= " AND customer_id != '" . (int)$company_id . "'";
 		}
 
 		$query = $this->db->query($sql);
