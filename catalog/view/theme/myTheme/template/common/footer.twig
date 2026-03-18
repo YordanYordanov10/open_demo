@@ -1,0 +1,90 @@
+<footer class="bg-white border-t border-gray-100 pt-10 pb-6 mt-10">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+      {% if informations %}
+      <div>
+        <h5 class="text-gray-900 font-bold uppercase text-[10px] tracking-widest mb-2">{{ text_information }}</h5>
+        <ul class="space-y-1.5 p-0 list-none">
+          {% for information in informations %}
+          <li><a href="{{ information.href }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ information.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div>
+        <h5 class="text-gray-900 font-bold uppercase text-[10px] tracking-widest mb-2">{{ text_service }}</h5>
+        <ul class="space-y-1.5 p-0 list-none">
+          <li><a href="{{ contact }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_contact }}</a></li>
+          <li><a href="{{ return }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_return }}</a></li>
+          <li><a href="{{ sitemap }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_sitemap }}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-gray-900 font-bold uppercase text-[10px] tracking-widest mb-2">{{ text_extra }}</h5>
+        <ul class="space-y-1.5 p-0 list-none">
+          <li><a href="{{ manufacturer }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_manufacturer }}</a></li>
+          <li><a href="{{ voucher }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_voucher }}</a></li>
+          <li><a href="{{ affiliate }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_affiliate }}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-gray-900 font-bold uppercase text-[10px] tracking-widest mb-2">{{ text_account }}</h5>
+        <ul class="space-y-1.5 p-0 list-none">
+          <li><a href="{{ account }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_account }}</a></li>
+          <li><a href="{{ wishlist }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_wishlist }}</a></li>
+          <li><a href="{{ newsletter }}" class="text-gray-500 hover:text-blue-600 transition-colors text-[13px]">{{ text_newsletter }}</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+      <div class="bg-blue-600 rounded-xl py-2 px-4 flex items-center justify-center gap-3 shadow-md text-white">
+        <i class="fa fa-users text-lg opacity-50"></i>
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] uppercase font-bold tracking-tighter opacity-80 whitespace-nowrap">Total Customers:</span>
+            <span class="text-base font-black leading-none">{{ total_customers }}</span>
+        </div>
+      </div>
+
+      {% if working_hours and working_days %}
+        <div class="bg-emerald-500 rounded-xl py-2 px-4 flex items-center justify-center gap-3 shadow-md text-white">
+          <i class="fa fa-clock-o text-lg opacity-50"></i>
+          <span class="font-bold text-[11px] uppercase leading-none">Open: 8:00 - 18:00</span>
+        </div>
+      {% elseif not working_hours and working_days %}
+        <div class="bg-rose-500 rounded-xl py-2 px-4 flex items-center justify-center gap-3 shadow-md text-white">
+          <i class="fa fa-lock text-lg opacity-50"></i>
+          <span class="font-bold text-[11px] uppercase leading-none">Closed: Opens at 8:00</span>
+        </div>
+      {% elseif not working_days %}
+        <div class="bg-amber-400 rounded-xl py-2 px-4 flex items-center justify-center gap-3 shadow-md text-amber-900">
+          <i class="fa fa-coffee text-lg opacity-40"></i>
+          <span class="font-bold text-[11px] uppercase leading-none tracking-tighter">Weekend: Mon - Fri</span>
+        </div>
+      {% endif %}
+
+      <div class="bg-slate-800 rounded-xl py-2 px-4 flex items-center justify-center gap-3 shadow-md text-white">
+        <i class="fa fa-globe text-lg opacity-50"></i>
+        <div class="flex items-center gap-2">
+             <span class="text-[10px] uppercase font-bold tracking-tighter opacity-60">Server Time:</span>
+             <span class="text-sm font-mono leading-none">{{ current_time }}</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-gray-100 mb-4">
+
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-gray-400 text-[11px] italic">{{ powered }}</p>
+      
+      <div class="flex gap-3">
+        <a href="#" class="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all text-xs"><i class="fa fa-facebook"></i></a>
+        <a href="#" class="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-400 hover:text-white transition-all text-xs"><i class="fa fa-twitter"></i></a>
+        <a href="#" class="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-rose-500 hover:text-white transition-all text-xs"><i class="fa fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>

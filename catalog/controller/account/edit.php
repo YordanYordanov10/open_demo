@@ -20,6 +20,12 @@ class ControllerAccountEdit extends Controller {
 
 		$this->load->model('account/customer');
 
+		$customer_info = $this->model_account_customer->getCustomer($this->customer->getId());
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && isset($customer_info['eik'])) {
+			$this->request->post['eik'] = $customer_info['eik'];
+		}
+
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$this->model_account_customer->editCustomer($this->customer->getId(), $this->request->post);
 
@@ -83,10 +89,6 @@ class ControllerAccountEdit extends Controller {
 
 		$data['action'] = $this->url->link('account/edit', '', true);
 
-		if ($this->request->server['REQUEST_METHOD'] != 'POST') {
-			$customer_info = $this->model_account_customer->getCustomer($this->customer->getId());
-		}
-
 		if (isset($this->request->post['firstname'])) {
 			$data['firstname'] = $this->request->post['firstname'];
 		} elseif (!empty($customer_info)) {
@@ -118,6 +120,48 @@ class ControllerAccountEdit extends Controller {
 		} else {
 			$data['telephone'] = '';
 		}
+
+		if (isset($this->request->post['company'])) {
+			$data['company'] = $this->request->post['company'];
+		} elseif (!empty($customer_info)) {
+			$data['company'] = $customer_info['company'];
+		} else {
+			$data['company'] = '';
+		}
+
+		if (isset($this->request->post['city'])) {
+			$data['city'] = $this->request->post['city'];
+		} elseif (!empty($customer_info)) {
+			$data['city'] = $customer_info['city'];
+		} else {
+			$data['city'] = '';
+		}
+
+		if (isset($this->request->post['address'])) {
+			$data['address'] = $this->request->post['address'];
+		} elseif (!empty($customer_info)) {
+			$data['address'] = $customer_info['address'];
+		} else {
+			$data['address'] = '';
+		}
+
+		if (isset($this->request->post['manager'])) {
+			$data['manager'] = $this->request->post['manager'];
+		} elseif (!empty($customer_info)) {
+			$data['manager'] = $customer_info['manager'];
+		} else {
+			$data['manager'] = '';
+		}
+
+		if (isset($this->request->post['eik'])) {
+			$data['eik'] = $this->request->post['eik'];
+		} elseif (!empty($customer_info)) {
+			$data['eik'] = $customer_info['eik'];
+		} else {
+			$data['eik'] = '';
+		}
+
+		$data['show_company_details'] = !empty($data['company']) || !empty($data['city']) || !empty($data['address']) || !empty($data['manager']) || !empty($data['eik']);
 
 		if (isset($this->request->post['custom_field']['account'])) {
 			$data['account_custom_field'] = $this->request->post['custom_field']['account'];

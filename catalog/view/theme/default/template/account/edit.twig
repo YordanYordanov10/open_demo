@@ -57,6 +57,38 @@
               {% endif %}
             </div>
           </div>
+          {% if show_company_details %}
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-eik">{{ entry_eik }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="eik" value="{{ eik }}" placeholder="{{ entry_eik }}" id="input-eik" class="form-control" readonly="readonly" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-company">{{ entry_company }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="company" value="{{ company }}" placeholder="{{ entry_company }}" id="input-company" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-city">{{ entry_city }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="city" value="{{ city }}" placeholder="{{ entry_city }}" id="input-city" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-address">{{ entry_address }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="address" value="{{ address }}" placeholder="{{ entry_address }}" id="input-address" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-manager">{{ entry_manager }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="manager" value="{{ manager }}" placeholder="{{ entry_manager }}" id="input-manager" class="form-control" />
+            </div>
+          </div>
+          {% endif %}
           {% for custom_field in custom_fields %}
           {% if custom_field.type == 'select' %}
           <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">

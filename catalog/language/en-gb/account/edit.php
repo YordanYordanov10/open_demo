@@ -13,6 +13,11 @@ $_['entry_firstname']    = 'First Name';
 $_['entry_lastname']     = 'Last Name';
 $_['entry_email']        = 'E-Mail';
 $_['entry_telephone']    = 'Telephone';
+$_['entry_eik']            = 'ЕИК';
+$_['entry_company']        = 'Фирма';
+$_['entry_city']           = 'Град';
+$_['entry_address']        = 'Адрес';
+$_['entry_manager']        = 'Управител';
 
 // Error
 $_['error_exists']       = 'Warning: E-Mail address is already registered!';

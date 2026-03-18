@@ -1,0 +1,358 @@
+{{ header }}
+
+<div class="container">
+
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <div class="row">
+
+        {{ column_left }}
+
+        {% if column_left and column_right %}
+            {% set class = 'col-sm-6' %}
+        {% elseif column_left or column_right %}
+            {% set class = 'col-sm-9' %}
+        {% else %}
+            {% set class = 'col-sm-12' %}
+        {% endif %}
+
+        <div id="content" class="{{ class }}">
+
+<style>
+.company-form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+}
+
+.company-form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.search-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    /* border-bottom: 1px solid #eee; */
+}
+
+#company-details {
+    position: relative;
+    min-height: 200px;
+}
+
+#preloader {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.6);
+    z-index: 10;
+}
+
+.loader-circle {
+    border: 15px solid #f3f3f3;
+    border-top: 15px solid #116066;
+    border-radius: 50%;
+    width: 140px;
+    height: 140px;
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.inputicon {
+    position: relative;
+    max-width: 400px; 
+}
+
+.inputicon i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%); 
+    color: #888;
+    pointer-events: none; 
+}
+
+.inputicon input {
+    padding-left: 35px !important; 
+    padding-right: 35px !important;
+}
+
+
+
+</style>
+
+<h2>Sample Company API</h2>
+<div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;"></div>
+
+<form id="company-form" method="post" accept-charset="UTF-8">
+
+    <div class="search-section">
+        <label for="eik">Търсене по ЕИК:</label>
+
+        <div class="inputicon" style="display:flex; align-items:center; gap:10px;">
+            <input type="text" id="eik" name="eik" placeholder="Въведете ЕИК..." maxlength="18" autocomplete="off" class="form-control" style="max-width:400px;">
+            <i class="fa fa-search" style="font-size:18px; color:#888;"></i>
+        </div>
+
+        <input type="hidden" id="eik_token" name="eik_token" value="{{ eik_token }}">
+
+        <!-- Honeypot -->
+        <div style="display:none;">
+            <input type="text" id="subject_line" name="subject_line" tabindex="-1" autocomplete="off">
+        </div>
+
+    </div>
+
+    <div id="company-details">
+        <div id="preloader"><div class="loader-circle"></div></div>
+
+        <div class="company-form-group">
+            <label for="company">Име на фирмата:</label>
+            <input type="text" id="company" name="company" placeholder="Фирма" class="form-control">
+            <span id="error-company" class="text-danger" style="font-size:12px;"></span>
+        </div>
+
+        <div class="company-form-group">
+            <label for="city">Град:</label>
+            <input type="text" id="city" name="city" placeholder="Град" class="form-control">
+            <span id="error-city" class="text-danger" style="font-size:12px;"></span>
+        </div>
+
+        <div class="company-form-group">
+            <label for="address">Адрес:</label>
+            <input type="text" id="address" name="address" placeholder="Адрес" class="form-control">
+            <span id="error-address" class="text-danger" style="font-size:12px;"></span>
+        </div>
+
+        <div class="company-form-group">
+            <label for="manager">Управител:</label>
+            <input type="text" id="manager" name="manager" placeholder="Управител" class="form-control">
+            <span id="error-manager" class="text-danger" style="font-size:12px;"></span>
+        </div>
+    </div>
+
+</form>
+
+<div style="margin-top:20px;">
+    <button type="button" id="submit-btn" class="btn btn-primary">Изпрати</button>
+</div>
+
+<script>
+
+
+
+/* -------------------------------------------------------
+   EIK input handler
+------------------------------------------------------- */
+let lastLoadedEik = '';
+let eikTimer = null;
+
+$('#eik').on('input', function () {
+
+    var raw = $(this).val();
+    var eik = normalizeEik(raw);
+
+    clearTimeout(eikTimer);
+
+    if (eik.length === 9) {
+       
+        eikTimer = setTimeout(function() {
+            loadCompany(eik);
+        }, 400); 
+    } else {
+        lastLoadedEik = '';
+        $('#company, #city, #address, #manager').val('');
+    }
+
+});
+
+
+/* -------------------------------------------------------
+   Normalize EIK
+------------------------------------------------------- */
+function normalizeEik(value){
+
+    if(!value) return '';
+
+    value = value.trim();
+    value = value.replace(/^bg/i,''); 
+    value = value.replace(/\D/g,'');
+
+    return value;
+}
+
+
+/* -------------------------------------------------------
+   Load company from API
+------------------------------------------------------- */
+
+
+function loadCompany(eik) {
+
+    var eikField = $('#eik');
+    var preloader = $('#preloader');
+
+     if (eik === lastLoadedEik) {
+        return;
+    }
+
+    $.ajax({
+        url: 'index.php?route=catalog/company/eik&eik_token=' +
+             encodeURIComponent($('#eik_token').val()) +
+             '&eik=' + encodeURIComponent(eik),
+
+        dataType: 'json',
+
+        beforeSend: function () {
+            
+            preloader.css('display', 'flex');
+            eikField.prop('readonly', true);
+        },
+
+        success: function (json) {
+
+            setTimeout(function () {
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+
+                if (json.error) {
+                  
+                    return;
+                }
+
+                $('#company, #city, #address, #manager').val('');
+
+                $('#company').val(json.name);
+                $('#city').val(json.city);
+                $('#address').val(json.address);
+                $('#manager').val(json.manager);
+
+                lastLoadedEik = eik;
+
+            }, 500);
+
+        },
+
+        error: function () {
+
+            setTimeout(function () {
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+
+            }, 500);
+
+        },
+
+    });
+
+}
+
+function showNotification(message, type = 'success') {
+    const color = (type === 'success') ? '#d4edda' : '#f8d7da';
+    const textColor = (type === 'success') ? '#155724' : '#dd4b59';
+    const borderColor = (type === 'success') ? '#c3e6cb' : '#f5c6cb';
+
+    const html = `
+        <div class="alert-box" style="background:${color}; color:${textColor}; border:1px solid ${borderColor}; padding:15px; border-radius:5px; margin-bottom:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: opacity 0.5s ease;">
+            <strong>${type === 'success' ? 'Успех!' : 'Грешка!'}</strong> ${message}
+        </div>
+    `;
+
+    const $msg = $(html).appendTo('#alert-container');
+
+  
+    setTimeout(function() {
+        $msg.css('opacity', '0'); // Fade out effect
+        setTimeout(function() { $msg.remove(); }, 500); 
+    }, 3000);
+}
+
+
+/* -------------------------------------------------------
+   Submit form
+------------------------------------------------------- */
+$('#submit-btn').on('click', function () {
+    console.log("Click detected! Starting validation...");
+    $.ajax({
+
+        url: 'index.php?route=catalog/company/submit&eik_token=' +
+             encodeURIComponent($('#eik_token').val()),
+
+        type: 'post',
+        dataType: 'json',
+
+        data: {
+
+            eik:          $('#eik').val(),
+            company:      $('#company').val(),
+            city:         $('#city').val(),
+            address:      $('#address').val(),
+            manager:      $('#manager').val(),
+            token:        $('#eik_token').val(),
+            subject_line: $('#subject_line').val()
+        },
+
+        success: function (json) {
+
+            $('.text-danger').text('');
+            $('.form-control').css('border-color', '#ccc');
+
+            if (json.errors) {
+
+                $.each(json.errors, function (key, message) {
+
+                    $('#error-' + key).text(message);
+                    $('#' + key).css('border-color', 'red');
+
+                });
+                if (typeof showNotification === "function") {
+                    showNotification('Моля, попълнете правилно всички полета.', 'error');
+                }
+            }
+
+            if (json.success) {
+
+                if (typeof showNotification === "function") {
+                    showNotification(json.success, 'success');
+                }
+                // Clear the form
+                $('#company-form')[0].reset();
+                lastLoadedEik = '';
+
+            }
+
+        },
+
+        error: function(xhr, ajaxOptions, thrownError) {
+            if (typeof showNotification === "function") {
+                showNotification('Грешка при изпращане на данните. Моля, опитайте отново.', 'error');
+            }
+            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+
+});
+</script>
+
+        </div>
+
+        {{ column_right }}
+
+    </div>
+
+</div>
+{{ footer }}

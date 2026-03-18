@@ -47,7 +47,12 @@ class ControllerCommonMenu extends Controller {
 				'column'   => 1,
 				'href'     => $this->url->link('test/company')
 			];
-
+		$data['categories'][] = [
+			'name'     => 'Sample Company API',
+			'children' => [],
+			'column'   => 1,
+			'href'     => $this->url->link('catalog/company')
+		];
 		return $this->load->view('common/menu', $data);
 	}
 }

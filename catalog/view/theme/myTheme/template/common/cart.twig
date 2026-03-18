@@ -1,0 +1,19 @@
+<div id="cart" class="relative inline-block w-full">
+  <button type="button" data-toggle="dropdown" 
+          class="flex items-center justify-between w-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl shadow-md transition-all group">
+    <div class="flex items-center gap-3">
+        <i class="fa fa-shopping-basket text-xl group-hover:scale-110 transition-transform"></i>
+        <span id="cart-total" class="text-sm font-semibold tracking-tight">{{ text_items }}</span>
+    </div>
+    <i class="fa fa-chevron-down text-[10px] opacity-70"></i>
+  </button>
+  
+  <ul class="dropdown-menu absolute right-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl border border-gray-100 hidden z-[100] p-4">
+    {% if products or vouchers %}
+        {% else %}
+        <li class="py-8 text-center text-gray-400">
+            <p>{{ text_empty }}</p>
+        </li>
+    {% endif %}
+  </ul>
+</div>

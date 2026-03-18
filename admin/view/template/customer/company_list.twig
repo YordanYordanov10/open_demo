@@ -158,7 +158,47 @@
     </div>
   </div>
 
+
+
+
   <script type="text/javascript"><!--
+
+    
+ {# Ajax for autocomplete searching by EIK and loading company name #}
+
+  $('#input-filter-eik').autocomplete({
+    'source': function(request, response) {
+      if (request.length < 1) {
+        response([]);
+        return;
+      }
+
+      $.ajax({
+        url: 'index.php?route=customer/companies/autocomplete&user_token={{ user_token }}&filter_eik=' + encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return {
+              label: item['label'],
+              value: item['value'],
+              company: item['company']
+            }
+          }));
+        }
+      });
+    },
+    'select': function(item) {
+      $('#input-filter-eik').val(item.value);
+      $('#input-filter-company').val(item.company);
+    }
+  });
+
+  $('#input-filter-eik').on('input', function() {
+    if (!$(this).val()) {
+      $('#input-filter-company').val('');
+    }
+  });
+
   $('#button-filter').on('click', function() {
     var url = 'index.php?route=customer/companies&user_token={{ user_token }}';
 

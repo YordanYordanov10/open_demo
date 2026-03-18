@@ -1,0 +1,396 @@
+
+{{ header }}
+
+<div class="container mx-auto px-4">
+    <nav class="bg-transparent py-4 mb-6">
+        <ul class="flex items-center gap-2 text-sm list-none p-0 m-0">
+            {% for breadcrumb in breadcrumbs %}
+            <li class="flex items-center gap-2">
+                {% if not loop.last %}
+                    <a href="{{ breadcrumb.href }}" class="text-blue-600 hover:text-blue-800 transition-colors font-medium">
+                        {{ breadcrumb.text }}
+                    </a>
+                    <span class="text-gray-300">
+                        <i class="fa fa-angle-right text-[10px]"></i>
+                    </span>
+                {% else %}
+                    <span class="text-gray-400">
+                        {{ breadcrumb.text }}
+                    </span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
+
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            {{ column_left }}
+
+            <div id="content" class="flex-1">
+                <div class="bg-white rounded-3xl shadow-xl shadow-blue-900/5 border border-gray-100 overflow-hidden">
+                    
+                    <div class="bg-white border-b border-gray-50 px-8 py-6">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+                            <i class="fa fa-building text-blue-500"></i> 
+                            Данни за фирмата
+                        </h2>
+                        <p class="text-gray-400 text-sm mt-1">Въведете ЕИК, за да попълним данните автоматично.</p>
+                    </div>
+
+                    <form id="company-form" class="p-4">
+                        {# Preloader #}
+                        <div id="preloader" class="rounded-3xl">
+                            <div class="flex flex-col items-center gap-4">
+                                <div class="loader-circle"></div>
+                                <span class="text-blue-600 font-bold animate-pulse text-sm">Търсене в Търговски регистър...</span>
+                            </div>
+                        </div>
+
+                        <div id="alert-container" class="fixed top-5 right-5 z-[9999] w-80 space-y-2"></div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <div class="md:col-span-2 lg:col-span-1">
+                                <label for="eik" class="block text-sm font-bold text-gray-700 mb-2 ml-1">ЕИК / БУЛСТАТ</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                        <i class="fa fa-search text-lg"></i>
+                                    </div>
+                                    <input type="text" id="eik" name="eik" placeholder="Въведете 9 цифри..." maxlength="18" autocomplete="off" 
+                                           class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-2 pl-12 pr-12 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-medium">
+                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                        <i class="fa fa-check-circle success-tick text-green-500 text-xl" style="display: none;"></i>
+                                    </div>
+                                </div>
+                                <p id="error-eik" class="text-red-500 text-xs font-bold mt-2 ml-1"></p>
+                            </div>
+
+                            <div class="hidden lg:block"></div> <div class="md:col-span-2">
+                                <label for="company" class="block text-sm font-bold text-gray-700 mb-2 ml-1">Име на фирмата</label>
+                                <input type="text" id="company" name="company" placeholder="Име на фирма..." 
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-2 px-5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-medium">
+                                <p id="error-company" class="text-red-500 text-xs font-bold mt-2 ml-1"></p>
+                            </div>
+
+                            <div>
+                                <label for="city" class="block text-sm font-bold text-gray-700 mb-2 ml-1">Град</label>
+                                <input type="text" id="city" name="city" placeholder="Град" 
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-2 px-5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-medium">
+                                <p id="error-city" class="text-red-500 text-xs font-bold mt-2 ml-1"></p>
+                            </div>
+
+                            <div>
+                                <label for="manager" class="block text-sm font-bold text-gray-700 mb-2 ml-1">Управител</label>
+                                <input type="text" id="manager" name="manager" placeholder="Имена на управител" 
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-2 px-5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-medium">
+                                <p id="error-manager" class="text-red-500 text-xs font-bold mt-2 ml-1"></p>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="address" class="block text-sm font-bold text-gray-700 mb-2 ml-1">Адрес на регистрация</label>
+                                <input type="text" id="address" name="address" placeholder="ул. Примерна №10..." 
+                                       class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-2 px-5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-medium">
+                                <p id="error-address" class="text-red-500 text-xs font-bold mt-2 ml-1"></p>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="eik_token" name="eik_token" value="{{ eik_token }}">
+                        <div style="display:none;">
+                            <input type="text" id="subject_line" name="subject_line" tabindex="-1" autocomplete="off">
+                        </div>
+
+                        <div class="mt-10 flex flex-col items-center">
+                            <button type="button" id="submit-btn" class="w-full md:w-auto min-w-[200px] bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-4 px-12 rounded-2xl shadow-lg shadow-blue-200 hover:-translate-y-1 transition-all active:scale-95">
+                                Изпрати данните
+                            </button>
+                            <p class="text-gray-400 text-xs mt-4 italic">Всички данни се обработват съгласно ЗЗЛД.</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{ column_right }}
+        </div>
+    </div>
+</div>
+
+<style>
+#preloader {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.9);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.loader-circle {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #2563eb;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.is-valid { border-color: #10b981 !important; background-color: #f0fdf4 !important; }
+.alert-box { animation: slideIn 0.3s ease-out; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+
+
+
+
+<script>
+
+
+let eikTimer = null;
+let lastLoadedEik = '';
+
+$('#eik').on('input', function(){
+
+    let raw = $(this).val();
+    let eik = normalizeEik(raw);
+
+    clearTimeout(eikTimer);
+
+    $('#error-eik').text('');
+    $('#eik').css('border-color','#ccc');
+
+    if (/[^0-9\s|bg|BG|\-]/.test(raw)) {
+        $('#error-eik').text('Позволени са само цифри, интервали и "BG" отпред');
+        $('#eik').css('border-color', 'red');
+        return; // СТОП - не продължаваме към API-то
+    }
+
+    if(eik.length === 9){
+
+        if(validateEik(eik)){
+
+            eikTimer = setTimeout(function(){
+                loadCompany(eik);
+            },300);
+
+        }else{
+            
+            $('#error-eik').text('Невалиден ЕИК / БУЛСТАТ');
+            $('#eik').css('border-color','red');
+
+            $('#homepage-search-no-results')
+            .removeClass('success-msg')
+            .text('Няма намерени резултати.')
+            .fadeIn();
+    
+
+        }
+
+    }
+});
+
+function normalizeEik(value){
+
+    if(!value) return '';
+
+    value = value.trim();
+    
+    value = value.replace(/^bg/i,''); 
+    value = value.replace(/\D/g, '');    
+
+    return value;
+}
+
+function validateEik(eik){
+
+    if(!/^\d{9}$/.test(eik)){
+        return false;
+    }
+
+    let weights1 = [1,2,3,4,5,6,7,8];
+    let sum = 0;
+
+    for(let i=0;i<8;i++){
+        sum += parseInt(eik[i]) * weights1[i];
+    }
+
+    let remainder = sum % 11;
+
+    if(remainder < 10){
+        return remainder === parseInt(eik[8]);
+    }
+
+    let weights2 = [3,4,5,6,7,8,9,10];
+    sum = 0;
+
+    for(let i=0;i<8;i++){
+        sum += parseInt(eik[i]) * weights2[i];
+    }
+
+    remainder = sum % 11;
+
+    if(remainder === 10){
+        remainder = 0;
+    }
+
+    return remainder === parseInt(eik[8]);
+}
+
+
+function showNotification(message, type = 'success') {
+    const color = (type === 'success') ? '#d4edda' : '#f8d7da';
+    const textColor = (type === 'success') ? '#155724' : '#dd4b59';
+    const borderColor = (type === 'success') ? '#c3e6cb' : '#f5c6cb';
+
+    const html = `
+        <div class="alert-box" style="background:${color}; color:${textColor}; border:1px solid ${borderColor}; padding:15px; border-radius:5px; margin-bottom:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: opacity 0.5s ease;">
+            <strong>${type === 'success' ? 'Успех!' : 'Грешка!'}</strong> ${message}
+        </div>
+    `;
+
+    const $msg = $(html).appendTo('#alert-container');
+
+  
+    setTimeout(function() {
+        $msg.css('opacity', '0'); // Fade out effect
+        setTimeout(function() { $msg.remove(); }, 500); 
+    }, 3000);
+}
+
+
+function loadCompany(eik){
+     let eikField = $('#eik');
+     let preloader = $('#preloader');
+
+    // Ако е същият, не прави нищо
+    if (eik === lastLoadedEik){
+        eikField.addClass('is-valid'); 
+        $('.success-tick').fadeIn();
+                return;
+    } 
+
+    $.ajax({
+
+        url: 'index.php?route=test/company/eik&eik_token=' + encodeURIComponent($('#eik_token').val()) + '&eik=' + encodeURIComponent(eik),
+        dataType: 'json',
+
+        beforeSend: function(){
+
+            preloader.css('display','flex');
+            eikField.prop('readonly', true);
+        },
+
+        success: function(json){
+          
+
+            setTimeout(function(){
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+
+                if(json.error){
+                    eikField.removeClass('is-valid');
+                    $('.success-tick').hide();
+
+                    showNotification('Фирмата не беше намерена. Можете да въведете данните ръчно.', 'error');
+                    // $('#company').focus();
+
+                    return;
+
+                }
+                eikField.addClass('is-valid'); 
+                $('.success-tick').fadeIn();
+
+                $('#company,#city,#address,#manager').val('');
+
+                $('#company').val(json.name);
+                $('#city').val(json.city);
+                $('#address').val(json.address);
+                $('#manager').val(json.manager);
+
+                lastLoadedEik = eik;
+
+            }, 500);
+
+        },
+
+        error: function(){
+
+            setTimeout(function(){
+
+                preloader.hide();
+                eikField.prop('readonly', false);
+                $('#error-eik').text('Грешка при връзка със сървъра.');
+
+            }, 500);
+
+        }
+
+    });
+
+}
+
+$('#submit-btn').on('click', function() {
+    const btn = $(this);
+    
+    $.ajax({
+        url: 'index.php?route=test/company/submit&eik_token=' + encodeURIComponent($('#eik_token').val()),
+        type: 'post',
+        dataType: 'json',
+        data: {
+            eik:          $('#eik').val(),
+            company:      $('#company').val(),
+            city:         $('#city').val(),
+            address:      $('#address').val(),
+            manager:      $('#manager').val(),
+            token:        $('#eik_token').val(),
+            subject_line: $('#subject_line').val()
+        },
+       
+      
+success: function(json) {
+    // 1. Махаме червените рамки и грешките
+    $('p[id^="error-"]').text(''); 
+    $('input').removeClass('border-red-500 ring-2 ring-red-200').addClass('border-gray-200');
+
+    if (json.errors) {
+        $.each(json.errors, function (key, message) {
+            $('#error-' + key).text(message);
+            // Добавяме Tailwind класове за грешка
+            $('#' + key).addClass('border-red-500 ring-2 ring-red-200').removeClass('border-gray-200');
+        });
+        showNotification('Моля, попълнете правилно полетата.', 'error');
+    }
+
+    if (json.success) {
+        showNotification(json.success, 'success');
+        $('#company-form')[0].reset(); 
+        $('.success-tick').hide();
+        $('#eik').removeClass('is-valid'); // Махаме зеленото от ЕИК
+        lastLoadedEik = '';
+    }
+},
+        error: function(xhr, ajaxOptions, thrownError) {
+            if (typeof showNotification === "function") {
+                showNotification('Грешка при връзка със сървъра.', 'error');
+            }
+            console.log(xhr.responseText);
+        },
+
+    });
+});
+
+
+</script>
+
+        </div>
+
+        {{ column_right }}
+
+    </div>
+
+</div>
+
+{{ footer }}

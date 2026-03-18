@@ -1,0 +1,68 @@
+{% if categories %}
+<div class="container mx-auto px-4 mt-2">
+  <nav id="menu" class="relative z-[999]">
+    
+    <div class="md:hidden flex items-center justify-between bg-white border border-gray-100 rounded-xl px-4 py-3 mb-2 shadow-sm cursor-pointer" 
+         onclick="$('#menu-list').toggleClass('hidden');">
+      <span class="font-bold text-gray-700 uppercase text-xs tracking-widest">{{ text_category }}</span>
+      <i class="fa fa-bars text-blue-600 text-lg"></i>
+    </div>
+
+    <div id="menu-list" class="hidden md:block bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-xl md:shadow-none border md:border-0 border-gray-50 overflow-hidden md:overflow-visible">
+      <ul class="flex flex-col md:flex-row items-stretch md:items-center gap-0 md:gap-2 list-none p-0 m-0">
+        {% for category in categories %}
+          {% if category.children %}
+          <li class="relative group list-none border-b md:border-0 border-gray-50">
+            <a href="{{ category.href }}" 
+               class="flex items-center justify-between gap-2 px-5 py-4 md:py-3 text-[14px] font-bold text-gray-800 hover:text-blue-600 hover:bg-blue-50 transition-all rounded-xl">
+              {{ category.name }}
+              <i class="fa fa-chevron-down text-[9px] opacity-40 group-hover:rotate-180 transition-transform hidden md:inline"></i>
+            </a>
+
+            <div class="md:absolute md:left-0 md:top-full hidden group-hover:block z-[1000] min-w-[260px] bg-white md:shadow-2xl md:border border-gray-100 md:rounded-2xl p-2 md:p-5">
+              <div class="flex flex-col gap-1">
+                {% for children in category.children|batch(category.children|length / category.column|round(1, 'ceil')) %}
+                  {% for child in children %}
+                    <a href="{{ child.href }}" class="block px-4 py-2.5 text-[13px] text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all border-l-2 border-transparent hover:border-blue-600">
+                      {{ child.name }}
+                    </a>
+                  {% endfor %}
+                {% endfor %}
+                <hr class="my-2 border-gray-50">
+                <a href="{{ category.href }}" class="block text-center text-[11px] font-black text-blue-500 uppercase py-2 tracking-widest">
+                  {{ text_all }} {{ category.name }}
+                </a>
+              </div>
+            </div>
+          </li>
+          {% else %}
+          <li class="list-none border-b md:border-0 border-gray-50">
+            <a href="{{ category.href }}" 
+               class="block px-5 py-4 md:py-3 text-[14px] font-bold text-gray-800 hover:text-blue-600 hover:bg-blue-50 transition-all rounded-xl">
+              {{ category.name }}
+            </a>
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<style>
+/* Пълно пренаписване на пречещите стилове */
+#menu { background: transparent !important; border: none !important; min-height: auto !important; margin-bottom: 20px !important; }
+#menu .navbar-collapse { padding: 0 !important; box-shadow: none !important; border: none !important; }
+
+/* Важно: Показваме линковете, които OpenCart може да е скрил */
+#menu-list a { color: #1f2937 !important; text-decoration: none !important; display: flex !important; align-items: center; }
+#menu-list a:hover { color: #2563eb !important; }
+
+/* На мобилни устройства */
+@media (max-width: 767px) {
+    #menu-list { position: absolute; top: 100%; left: 0; right: 0; z-index: 999; background: white !important; }
+    #menu-list.hidden { display: none !important; }
+    .group-hover\:block { display: block !important; position: static !important; box-shadow: none !important; padding-left: 2rem !important; }
+}
+</style>
+{% endif %}

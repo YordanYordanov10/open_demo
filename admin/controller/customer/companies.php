@@ -416,4 +416,40 @@ class ControllerCustomerCompanies extends Controller {
 
         return $url;
     }
+
+    public function autocomplete() {
+        $json = array();
+
+        if (
+            isset($this->request->get['user_token']) &&
+            isset($this->session->data['user_token']) &&
+            $this->request->get['user_token'] === $this->session->data['user_token'] &&
+            isset($this->request->get['filter_eik'])
+        ) {
+            $this->load->model('customer/customer');
+
+            $filter_data = array(
+                'filter_eik'     => trim($this->request->get['filter_eik']),
+                'sort'           => 'eik',
+                'order'          => 'ASC',
+                'start'          => 0,
+                'limit'          => 10
+            );
+
+            $results = $this->model_customer_customer->getCustomerCompanies($filter_data);
+
+            foreach ($results as $result) {
+                $json[] = array(
+                    'company_id' => $result['company_id'],
+                    'eik'        => $result['eik'],
+                    'company'    => strip_tags(html_entity_decode($result['company'], ENT_QUOTES, 'UTF-8')),
+                    'label'      => $result['eik'] . ' - ' . strip_tags(html_entity_decode($result['company'], ENT_QUOTES, 'UTF-8')),
+                    'value'      => $result['eik']
+                );
+            }
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
 }

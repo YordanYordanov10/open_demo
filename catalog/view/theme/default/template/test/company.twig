@@ -47,25 +47,88 @@ input {
     border-bottom: 1px solid #eee;
 }
 
+#company-details {
+    position: relative;
+    min-height: 200px;
+}
+
 #preloader {
     display: none;
+    position: absolute;
+    inset: 0;
+
+    /* display: flex; */
     align-items: center;
     justify-content: center;
+
+    background: rgba(255,255,255,0.6);
+    z-index: 10;
 }
 
 .loader-circle {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
+    border: 15px solid #f3f3f3;
+    border-top: 15px solid #116066;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
+    width: 140px;
+    height: 140px;
+    animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.inputicon {
+    position: relative;
+    max-width: 400px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.inputicon i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%); 
+    color: #888;
+    pointer-events: none; 
+}
+
+.inputicon input {
+    padding-left: 35px !important; 
+     padding-right: 35px !important;
+}
+
+.is-valid {
+    border-color: #28a745 !important;
+    background-color: #f8fff9; /* Леко зелен фон за акцент */
+}
+
+#homepage-search-no-results {
+    display: none;
+    margin-top: 6px;
+
+    width: 100%;              
+    max-width: 400px;       
+
+    padding: 8px 10px;
+    border-radius: 4px;
+
+    background: #ffffff;     
+    color: #888;             
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-size: 12px;
+}
+/* Когато ЕИК е валиден, можем да сменим цвета на съобщението на зелено */
+#homepage-search-no-results.success-msg {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+
+
 </style>
 
 
@@ -75,29 +138,30 @@ input {
 <form id="company-form" method="post" accept-charset="UTF-8">
 <div class="search-section">
 
-    <label for="eik">Търсене по ЕИК (автоматично при 9 цифри):</label>
+    <label for="eik">Търсене по ЕИК:</label>
 
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div class="inputicon" style="display:flex; align-items:center; gap:10px;">
 
-        <input type="text" id="eik" name="eik" placeholder="Въведете 9 цифри..." maxlength="20" autocomplete="off" class="form-control">
-
-        <div id="preloader"><div class="loader-circle"></div> </div>
-        
-    <input type="hidden" id="eik_token" name="eik_token" value="{{ eik_token }}">
+        <input type="text" id="eik" name="eik" placeholder="Въведете ЕИК..." maxlength="20" autocomplete="off" class="form-control">
+     <i class="fa fa-search" style="font-size:18px; color:#888;"></i>
+     <i class="fa fa-check success-tick" style="font-size:16px; color: #28a745; position: absolute; left: 370px; display: none;"></i>
     </div>
+    <input type="hidden" id="eik_token" name="eik_token" value="{{ eik_token }}">
+    
 
     <!-- Honeypot -->
     <div style="display:none;">
         <input type="text" id="subject_line" name="subject_line" tabindex="-1" autocomplete="off">
     </div>
-
-    <span id="error-eik" style="color:red;font-size:12px;margin-top:5px;display:block;min-height:15px;"></span>
+    <div id="homepage-search-no-results" class="p-4 text-center text-gray-500 text-sm"> Няма намерени резултати </div>
+    {# <span id="error-eik" style="color:red;font-size:12px;margin-top:5px;display:block;min-height:15px;"></span> #}
 
 </div>
 
 
 <div id="company-details">
-
+     <div id="preloader"><div class="loader-circle"></div> </div>
+    
     <div class="form-group">
         <label>Име на фирмата:</label>
         <input type="text" id="company" name="company" placeholder="Фирма" class="form-control">
@@ -109,7 +173,6 @@ input {
         <input type="text" id="city" name="city" placeholder="Град" class="form-control">
         <span id="error-city" class="text-danger" style="color:red; font-size:12px;"></span>
     </div>
-
     <div class="form-group">
         <label>Адрес:</label>
         <input type="text" id="address" name="address" placeholder="Адрес" class="form-control">
@@ -132,50 +195,117 @@ input {
 
 <script>
 
+let lastLoadedEik = '';
+let eikTimer = null;
 
+$('#eik').on('input', function(){
 
-$(document).ready(function(){
+    let raw = $(this).val();
+    let eik = normalizeEik(raw);
 
-    let eikTimer = null;
+    clearTimeout(eikTimer);
 
-    $('#eik').on('input', function(){
+    $('#error-eik').text('');
+    $('#eik').css('border-color','#ccc');
 
-        let raw = $(this).val();
-        let eik = raw.replace(/\s/g, '');
+    if (/[^0-9\s|bg|BG|\-]/.test(raw)) {
+        $('#error-eik').text('Позволени са само цифри, интервали и "BG" отпред');
+        $('#eik').css('border-color', 'red');
+        return; // СТОП - не продължаваме към API-то
+    }
 
-        let errorSpan = $('#error-eik');
-        let honey = $('#subject_line').val();
+    if(eik.length === 9){
 
-        if(honey.length > 0){
-            console.log("Bot detected");
-            return;
-        }
+        if(validateEik(eik)){
 
-        errorSpan.text('');
-        $(this).css('border-color','#ccc');
+            eikTimer = setTimeout(function(){
+                loadCompany(eik);
+            },300);
 
-        // спираме предишния таймер
-        clearTimeout(eikTimer);
+        }else{
+            
+            $('#error-eik').text('Невалиден ЕИК / БУЛСТАТ');
+            $('#eik').css('border-color','red');
 
-        if(eik.length === 9){
-
-            if(/^\d{9}$/.test(eik)){
-
-                eikTimer = setTimeout(function(){
-                    loadCompany(eik);
-                }, 300); // изчаква 300ms
-
-            } else {
-
-                errorSpan.text('ЕИК трябва да съдържа само цифри');
-                $('#eik').css('border-color','red');
-
-            }
+            $('#homepage-search-no-results')
+            .removeClass('success-msg')
+            .text('Няма намерени резултати.')
+            .fadeIn();
+    
 
         }
-    });
 
+    }
+
+    else if(eik.length > 9) {
+        $('#error-eik').text('ЕИК трябва да бъде точно 9 цифри (въвели сте ' + eik.length + ')');
+        $('#eik').css('border-color','red');
+       
+    }
+
+    else {
+
+    $('#company, #city, #address, #manager').val('');
+    eikTimer = setTimeout(function(){
+                loadCompany(eik);
+            },300);
+
+
+    $('#eik').removeClass('is-valid');
+    $('.success-tick').hide();
+
+    // Скриваме съобщението ако ЕИК не е 9 цифри
+    $('#homepage-search-no-results').hide();
+    }
 });
+
+function normalizeEik(value){
+
+    if(!value) return '';
+
+    value = value.trim();
+    
+    value = value.replace(/^bg/i,''); 
+    value = value.replace(/\D/g, '');    
+
+    return value;
+}
+
+function validateEik(eik){
+
+    if(!/^\d{9}$/.test(eik)){
+        return false;
+    }
+
+    let weights1 = [1,2,3,4,5,6,7,8];
+    let sum = 0;
+
+    for(let i=0;i<8;i++){
+        sum += parseInt(eik[i]) * weights1[i];
+    }
+
+    let remainder = sum % 11;
+
+    if(remainder < 10){
+        return remainder === parseInt(eik[8]);
+    }
+
+    let weights2 = [3,4,5,6,7,8,9,10];
+    sum = 0;
+
+    for(let i=0;i<8;i++){
+        sum += parseInt(eik[i]) * weights2[i];
+    }
+
+    remainder = sum % 11;
+
+    if(remainder === 10){
+        remainder = 0;
+    }
+
+    return remainder === parseInt(eik[8]);
+}
+
 
 function showNotification(message, type = 'success') {
     const color = (type === 'success') ? '#d4edda' : '#f8d7da';
@@ -198,10 +328,17 @@ function showNotification(message, type = 'success') {
 }
 
 
-function loadCompany(eik){
 
-    let eikField = $('#eik');
-    let preloader = $('#preloader');
+function loadCompany(eik){
+     let eikField = $('#eik');
+     let preloader = $('#preloader');
+
+    // Ако е същият, не прави нищо
+    if (eik === lastLoadedEik){
+        eikField.addClass('is-valid'); 
+        $('.success-tick').fadeIn();
+                return;
+    } 
 
     $.ajax({
 
@@ -215,6 +352,7 @@ function loadCompany(eik){
         },
 
         success: function(json){
+            lastLoadedEik = eik;
 
             setTimeout(function(){
 
@@ -222,12 +360,18 @@ function loadCompany(eik){
                 eikField.prop('readonly', false);
 
                 if(json.error){
+                    eikField.removeClass('is-valid');
+                    $('.success-tick').hide();
+
                     showNotification('Фирмата не беше намерена. Можете да въведете данните ръчно.', 'error');
-                    $('#company').focus();
+                    // $('#company').focus();
 
                     return;
 
                 }
+                eikField.addClass('is-valid'); 
+                $('.success-tick').fadeIn();
+
                 $('#company,#city,#address,#manager').val('');
 
                 $('#company').val(json.name);
@@ -258,9 +402,11 @@ function loadCompany(eik){
 $('#submit-btn').on('click', function() {
     $.ajax({
         url: 'index.php?route=test/company/submit&eik_token=' + encodeURIComponent($('#eik_token').val()),
-        type: 'post',
-        dataType: 'json',
-        data: {
+       
+       type: 'post',
+       dataType: 'json',
+       
+       data: {
             eik: $('#eik').val(),
             company: $('#company').val(),
             city: $('#city').val(),
@@ -276,12 +422,13 @@ $('#submit-btn').on('click', function() {
 
             // 2. Handle Validation Errors
             if (json.errors) {
-                $.each(json.errors, function(key, message) {
+                $.each(json.errors, function (key, message) {
+
                     $('#error-' + key).text(message);
                     $('#' + key).css('border-color', 'red');
+
                 });
-                
-                if (typeof showNotification === "function") {
+                 if (typeof showNotification === "function") {
                     showNotification('Моля, попълнете правилно всички полета.', 'error');
                 }
             }

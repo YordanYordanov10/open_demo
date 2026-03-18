@@ -160,6 +160,10 @@
 											<i class="fa fa-shopping-cart"></i>
 											<span class="hidden-xs hidden-sm hidden-md">{{ button_cart }}</span>
 										</button>
+										<button type="button" class="btn-quick-view" data-product-id="{{ product.product_id }}" title="Quick view">
+											<i class="fa fa-eye"></i>
+											<span class="hidden-xs hidden-sm hidden-md">Quick view</span>
+										</button>
 										<button type="button" data-toggle="tooltip" title="{{ button_wishlist }}" onclick="wishlist.add('{{ product.product_id }}');">
 											<i class="fa fa-heart"></i>
 										</button>
@@ -188,4 +192,35 @@
 			{{ content_bottom }}</div>
 		{{ column_right }}</div>
 </div>
+
+<div id="modal-quick-view" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content"></div>
+	</div>
+</div>
+
+<script type="text/javascript"><!--
+$(document).on('click', '.btn-quick-view', function() {
+	var productId = $(this).data('product-id');
+
+	if (!productId) {
+		return;
+	}
+
+	$('#modal-quick-view .modal-content').html('<div class="modal-body text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+	$('#modal-quick-view').modal('show');
+
+	$.ajax({
+		url: 'index.php?route=product/product/quickview&product_id=' + encodeURIComponent(productId),
+		type: 'get',
+		dataType: 'html',
+		success: function(html) {
+			$('#modal-quick-view .modal-content').html(html);
+		},
+		error: function() {
+			$('#modal-quick-view .modal-content').html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">Quick view</h4></div><div class="modal-body"><p>Unable to load quick view.</p></div>');
+		}
+	});
+});
+//--></script>
 {{ footer }}

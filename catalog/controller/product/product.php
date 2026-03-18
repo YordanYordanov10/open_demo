@@ -2,6 +2,49 @@
 class ControllerProductProduct extends Controller
 {
 	private $error = array();
+	public function quickview()
+	{
+		$this->load->language('product/product');
+		$this->load->model('catalog/product');
+		$this->load->model('tool/image');
+
+		$product_id = isset($this->request->get['product_id']) ? (int)$this->request->get['product_id'] : 0;
+		$product_info = $this->model_catalog_product->getProduct($product_id);
+
+		if (!$product_info) {
+			$this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . ' 404 Not Found');
+			$this->response->setOutput('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">Quick view</h4></div><div class="modal-body"><p>' . $this->language->get('text_error') . '</p></div>');
+			return;
+		}
+
+		if ($product_info['image']) {
+			$data['thumb'] = $this->model_tool_image->resize($product_info['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_height'));
+		} else {
+			$data['thumb'] = '';
+		}
+
+		if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
+			$data['price'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
+		} else {
+			$data['price'] = false;
+		}
+
+		if ((float)$product_info['special']) {
+			$data['special'] = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
+		} else {
+			$data['special'] = false;
+		}
+
+		$data['product_id'] = $product_info['product_id'];
+		$data['name'] = $product_info['name'];
+		$data['description'] = html_entity_decode($product_info['description'], ENT_QUOTES, 'UTF-8');
+		$data['minimum'] = $product_info['minimum'] > 0 ? $product_info['minimum'] : 1;
+		$data['button_cart'] = $this->language->get('button_cart');
+		$data['href'] = $this->url->link('product/product', 'product_id=' . $product_info['product_id']);
+
+		$this->response->setOutput($this->load->view('product/product_quickview', $data));
+	}
+
 
 	public function index()
 	{
@@ -511,7 +554,7 @@ class ControllerProductProduct extends Controller
 					'tax'         => $tax,
 					'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
 					'rating'      => $rating,
-					'href'        => $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $result['product_id'] . $url)
+					'href'        => $this->url->link('product/product', (isset($this->request->get['path']) ? 'path=' . $this->request->get['path'] . '&' : '') . 'product_id=' . $result['product_id'] . $url)
 				);
 			}
 
