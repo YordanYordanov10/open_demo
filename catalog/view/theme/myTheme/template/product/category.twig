@@ -1,0 +1,187 @@
+{{ header }}
+
+<div id="product-category" class="bg-gray-50 min-h-screen pb-12">
+    <div class="container mx-auto px-4 py-4">
+        <nav class="flex text-sm text-gray-500 mb-4">
+            <ul class="flex items-center gap-2 list-none p-0 m-0">
+                {% for breadcrumb in breadcrumbs %}
+                <li class="flex items-center gap-2">
+                    {% if not loop.last %}
+                    <a href="{{ breadcrumb.href }}" class="hover:text-blue-600 transition-colors">{{ breadcrumb.text }}</a>
+                    <i class="fa fa-angle-right text-[10px] opacity-40"></i>
+                    {% else %}
+                    <span class="text-gray-900 font-medium">{{ breadcrumb.text }}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        
+        <h1 class="text-3xl font-black text-gray-900 mb-6">{{ heading_title }}</h1>
+    </div>
+
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            {% if column_left %}
+            <aside class="w-full lg:w-1/4 space-y-6">
+                {{ column_left }}
+            </aside>
+            {% endif %}
+
+            <div id="content" class="flex-1">
+                {{ content_top }}
+
+                {% if thumb or description %}
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8">
+                    <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                        {% if thumb %}
+                        <div class="w-32 h-32 flex-shrink-0">
+                            <img src="{{ thumb }}" alt="{{ heading_title }}" class="w-full h-full object-contain rounded-2xl border border-gray-50" />
+                        </div>
+                        {% endif %}
+                        {% if description %}
+                        <div class="text-gray-600 text-sm leading-relaxed">{{ description }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if categories %}
+                <div class="mb-10">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4 ml-1">{{ text_refine }}</h3>
+                    <div class="flex flex-wrap gap-3">
+                        {% for category in categories %}
+                        <a href="{{ category.href }}" class="bg-white px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm">
+                            {{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if products %}
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="hidden md:flex bg-gray-100 p-1 rounded-lg">
+                            <button type="button" id="list-view" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white transition-all" title="{{ button_list }}"><i class="fa fa-th-list"></i></button>
+                            <button type="button" id="grid-view" class="w-8 h-8 flex items-center justify-center rounded-md bg-white shadow-sm transition-all" title="{{ button_grid }}"><i class="fa fa-th"></i></button>
+                        </div>
+                        <a href="{{ compare }}" id="compare-total" class="text-xs font-bold text-blue-600 hover:underline">{{ text_compare }}</a>
+                    </div>
+
+                    <div class="flex items-center gap-4 flex-1 justify-end">
+                        <div class="flex items-center gap-2">
+                            <label class="text-[10px] font-black uppercase text-gray-400 whitespace-nowrap">{{ text_sort }}</label>
+                            <select id="input-sort" class="bg-gray-50 border-none text-xs font-bold rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100" onchange="location = this.value;">
+                                {% for sorts in sorts %}
+                                <option value="{{ sorts.href }}" {% if sorts.value == '%s-%s'|format(sort, order) %}selected{% endif %}>{{ sorts.text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-[10px] font-black uppercase text-gray-400 whitespace-nowrap">{{ text_limit }}</label>
+                            <select id="input-limit" class="bg-gray-50 border-none text-xs font-bold rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100" onchange="location = this.value;">
+                                {% for limits in limits %}
+                                <option value="{{ limits.href }}" {% if limits.value == limit %}selected{% endif %}>{{ limits.text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                    {% for product in products %}
+                    <div class="product-layout group bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500">
+                        <div class="relative overflow-hidden aspect-square p-4">
+                            <a href="{{ product.href }}">
+                                <img src="{{ product.thumb }}" alt="{{ product.name }}" class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500" />
+                            </a>
+                            
+                            <div class="absolute top-4 right-4 flex flex-col gap-2 translate-x-12 group-hover:translate-x-0 transition-transform duration-300">
+                                <button type="button" onclick="wishlist.add('{{ product.product_id }}');" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-rose-500 hover:text-white transition-all"><i class="fa fa-heart"></i></button>
+                                <button type="button" class="btn-quick-view w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-blue-600 hover:text-white transition-all" data-product-id="{{ product.product_id }}"><i class="fa fa-eye"></i></button>
+                            </div>
+
+                            {% if product.special %}
+                            <div class="absolute top-4 left-4 bg-rose-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Промо</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="p-6">
+                            <h4 class="text-sm font-bold text-gray-800 mb-2 h-10 overflow-hidden line-clamp-2 leading-tight">
+                                <a href="{{ product.href }}" class="hover:text-blue-600 transition-colors">{{ product.name }}</a>
+                            </h4>
+                            
+                            <div class="flex items-end justify-between mt-4">
+                                <div class="flex flex-col">
+                                    {% if product.price %}
+                                        {% if not product.special %}
+                                            <span class="text-lg font-black text-gray-900 leading-none">{{ product.price }}</span>
+                                        {% else %}
+                                            <span class="text-xs text-gray-400 line-through leading-none mb-1">{{ product.price }}</span>
+                                            <span class="text-lg font-black text-rose-500 leading-none">{{ product.special }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                
+                                <button type="button" onclick="cart.add('{{ product.product_id }}', '{{ product.minimum }}');" 
+                                        class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-100 hover:bg-black transition-all active:scale-90">
+                                    <i class="fa fa-shopping-cart text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-12 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-8">
+                    <div class="pagination-container">{{ pagination }}</div>
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ results }}</div>
+                </div>
+
+                {% else %}
+                <div class="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                        <i class="fa fa-search text-3xl"></i>
+                    </div>
+                    <p class="text-gray-500 font-medium mb-6">{{ text_empty }}</p>
+                    <a href="{{ continue }}" class="inline-block bg-blue-600 text-white px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black transition-all">
+                        {{ button_continue }}
+                    </a>
+                </div>
+                {% endif %}
+
+                {{ content_bottom }}
+            </div>
+
+            {% if column_right %}
+            <aside class="w-full lg:w-1/4">
+                {{ column_right }}
+            </aside>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div id="modal-quick-view" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content overflow-hidden rounded-3xl border-none"></div>
+    </div>
+</div>
+
+<style>
+/* Стили за пагинацията на OpenCart, за да се впише в Tailwind */
+.pagination { display: flex; gap: 8px; list-style: none; padding: 0; }
+.pagination li a, .pagination li span { 
+    display: block; padding: 8px 16px; border-radius: 12px; background: white; 
+    border: 1px solid #f3f4f6; color: #1f2937; font-weight: 700; font-size: 14px; 
+    transition: all 0.3s;
+}
+.pagination li.active span { background: #2563eb; color: white; border-color: #2563eb; }
+.pagination li a:hover { border-color: #2563eb; color: #2563eb; }
+</style>
+
+<script type="text/javascript"></script>
+
+{{ footer }}

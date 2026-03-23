@@ -1,0 +1,37 @@
+{% if modules %}
+<aside id="column-left" class="w-full lg:w-[240px] shrink-0 hidden md:block">
+  <div class="flex flex-col gap-5">
+    {% for module in modules %}
+      <div class="aside-module-wrapper">
+        {{ module }}
+      </div>
+    {% endfor %}
+  </div>
+</aside>
+
+<style>
+/* Принуждаваме модулите в колоните да са вертикални */
+#column-left .product-layout, 
+#column-left .list-group-item,
+#column-left div[class*="col-"] {
+    width: 100% !important;
+    float: none !important;
+    display: block !important;
+    margin-bottom: 10px;
+}
+
+/* Оправяме разстоянието в лявата колона */
+#column-left aside > div {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Ако слайдерът е твърде голям, го ограничаваме до контейнера */
+.swiper-container, .owl-carousel {
+    max-width: 100% !important;
+}
+
+
+</style>
+{% endif %}

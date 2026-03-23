@@ -1,0 +1,68 @@
+<div class="modal-header border-b border-gray-100 p-6 flex items-center justify-between bg-gray-50/50 rounded-t-3xl">
+    <h4 class="text-xl font-black text-gray-900 leading-none">{{ name }}</h4>
+    <button type="button" class="text-gray-400 hover:text-rose-500 transition-colors text-2xl leading-none outline-none focus:outline-none" data-dismiss="modal">&times;</button>
+</div>
+
+<div class="modal-body p-8">
+    <div class="flex flex-col md:flex-row gap-8 items-start">
+        
+        {% if thumb %}
+        <div class="w-full md:w-5/12 bg-gray-50 rounded-2xl p-4 aspect-square flex items-center justify-center overflow-hidden">
+            <img src="{{ thumb }}" alt="{{ name }}" title="{{ name }}" class="max-w-full max-h-full object-contain transform hover:scale-105 transition-transform duration-500" />
+        </div>
+        
+        <div class="w-full md:w-7/12 flex flex-col h-full">
+        {% else %}
+        <div class="w-full">
+        {% endif %}
+
+            {% if price %}
+            <div class="mb-6">
+                {% if special %}
+                <div class="flex items-baseline gap-3">
+                    <span class="text-3xl font-black text-rose-500 leading-none">{{ special }}</span>
+                    <span class="text-sm text-gray-400 line-through font-bold leading-none">{{ price }}</span>
+                </div>
+                {% else %}
+                <span class="text-3xl font-black text-gray-900 leading-none">{{ price }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="text-sm text-gray-500 leading-relaxed mb-6 scrollbar-thin scrollbar-thumb-gray-200" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
+                <div class="prose prose-sm prose-slate">
+                    {{ description }}
+                </div>
+            </div>
+            
+            </div>
+    </div>
+</div>
+
+<div class="modal-footer border-t border-gray-100 p-6 flex flex-wrap gap-3 justify-end bg-gray-50/30 rounded-b-3xl">
+    <button type="button" class="bg-blue-600 hover:bg-black text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-lg shadow-blue-100 active:scale-95" onclick="cart.add('{{ product_id }}', '{{ minimum }}');">
+        <i class="fa fa-shopping-cart mr-2"></i> {{ button_cart }}
+    </button>
+    
+    <button type="button" class="bg-white border border-gray-200 text-gray-700 hover:border-blue-500 hover:text-blue-600 px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-sm" onclick="location.href='{{ href }}';">
+        {{ text_details|default('Детайли') }}
+    </button>
+    
+    <button type="button" class="text-gray-400 hover:text-gray-600 font-bold text-xs uppercase tracking-widest px-4 py-3" data-dismiss="modal">
+        {{ button_close|default('Затвори') }}
+    </button>
+</div>
+
+<style>
+/* Фина корекция за скролбара на описанието */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: #f9fafb;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+</style>

@@ -200,6 +200,7 @@ class ControllerTestCompany extends Controller{
 
             $eik     = trim($this->request->post['eik'] ?? '');
             $company = trim($this->request->post['company'] ?? '');
+            $district = trim($this->request->post['district'] ?? '');
             $manager = trim($this->request->post['manager'] ?? '');
             $address = trim($this->request->post['address'] ?? '');
             $city    = trim($this->request->post['city'] ?? '');
@@ -230,7 +231,8 @@ class ControllerTestCompany extends Controller{
                     'company' => $company,
                     'manager' => $manager,
                     'address' => $address,
-                    'city'    => $city
+                    'city'    => $city,
+                    'district' => $district
                 ];
 
                 if ($this->model_tool_company->checkEikExists($eik)) {

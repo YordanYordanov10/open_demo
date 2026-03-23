@@ -1,0 +1,60 @@
+{% if modules %}
+<aside id="column-right" class="w-full lg:w-[240px] shrink-0 hidden md:block">
+  <div class="flex flex-col gap-5">
+    {% for module in modules %}
+      <div class="aside-module-wrapper">
+        {{ module }}
+      </div>
+    {% endfor %}
+  </div>
+</aside>
+
+<style>
+/* Стилизиране на стандартните OpenCart модули в дясната колона */
+#column-right .list-group {
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    margin-bottom: 0;
+}
+
+#column-right .list-group-item {
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    color: #64748b !important;
+    transition: all 0.2s ease;
+}
+
+#column-right .list-group-item:last-child {
+    border-bottom: none !important;
+}
+
+#column-right .list-group-item:hover {
+    background-color: #fdf2f8 !important; /* Леко розов нюанс за дясната колона за разлика */
+    color: #db2777 !important;
+    padding-right: 20px !important; /* Плъзгане наляво, тъй като е вдясно */
+    text-align: right;
+}
+
+#column-right .list-group-item.active {
+    background-color: #db2777 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Стилизиране на заглавията вдясно */
+#column-right h3, #column-right .panel-heading {
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+    margin-bottom: 8px !important;
+    padding-right: 5px !important;
+    text-align: right;
+}
+</style>
+{% endif %}

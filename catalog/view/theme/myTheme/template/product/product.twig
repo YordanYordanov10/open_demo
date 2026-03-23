@@ -1,0 +1,241 @@
+{{ header }}
+
+<div id="product-category" class="min-h-screen bg-slate-50 pb-14">
+    <div class="bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.14),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(249,115,22,0.12),_transparent_26%),linear-gradient(180deg,_#ffffff_0%,_#f8fafc_100%)] border-b border-slate-200/70">
+        <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+            <nav aria-label="breadcrumb" class="mb-5">
+                <ul class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-slate-500">
+                    {% for breadcrumb in breadcrumbs %}
+                    <li class="flex items-center gap-3">
+                        {% if not loop.last %}
+                        <a href="{{ breadcrumb.href }}" class="transition-colors hover:text-sky-600">{{ breadcrumb.text }}</a>
+                        <span class="text-slate-300">/</span>
+                        {% else %}
+                        <span class="font-semibold text-slate-900">{{ breadcrumb.text }}</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+
+            <div class="grid gap-5 rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.45)] backdrop-blur md:grid-cols-[minmax(0,1fr)_280px] md:items-start lg:p-8">
+                <div class="min-w-0">
+                    <p class="mb-3 text-[11px] font-black uppercase tracking-[0.28em] text-sky-600">Curated selection</p>
+                    <h1 class="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{{ heading_title }}</h1>
+
+                    {% if description %}
+                    <div class="prose prose-sm mt-4 max-w-none text-slate-600">
+                        {{ description }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-1">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4">
+                        <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Browse</p>
+                        <p class="mt-2 text-sm font-semibold text-slate-700">Use the filters and sorting controls to narrow the catalog faster.</p>
+                    </div>
+                    {% if thumb %}
+                    <div class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                        <img src="{{ thumb }}" alt="{{ heading_title }}" class="mx-auto h-28 w-full object-contain sm:h-32" />
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+        <div class="flex flex-col gap-8 xl:flex-row xl:items-start">
+            {% if column_left %}
+            <div class="shrink-0 xl:sticky xl:top-6 xl:self-start">
+                {{ column_left }}
+            </div>
+            {% endif %}
+
+            <main id="content" class="min-w-0 flex-1">
+                {{ content_top }}
+
+                {% if categories %}
+                <section class="mb-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <h2 class="text-xs font-black uppercase tracking-[0.28em] text-slate-400">{{ text_refine }}</h2>
+                        <span class="rounded-full bg-sky-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-700">{{ categories|length }} options</span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3">
+                        {% for category in categories %}
+                        <a href="{{ category.href }}" class="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-bold text-slate-700 transition-all hover:-translate-y-0.5 hover:border-sky-500 hover:bg-white hover:text-sky-700">
+                            {{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if products %}
+                <section class="mb-6 rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <div class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                                <button type="button" id="grid-view" class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm shadow-sky-600/20" title="{{ button_grid }}">
+                                    <i class="fa fa-th"></i>
+                                </button>
+                                <button type="button" id="list-view" class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-white hover:text-slate-900" title="{{ button_list }}">
+                                    <i class="fa fa-th-list"></i>
+                                </button>
+                            </div>
+
+                            {% if compare is defined and text_compare is defined %}
+                            <a href="{{ compare }}" id="compare-total" class="rounded-full border border-slate-200 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-sky-500 hover:text-sky-700">
+                                {{ text_compare }}
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
+                            <label class="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600">
+                                <span class="whitespace-nowrap text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">{{ text_sort }}</span>
+                                <select onchange="location = this.value;" class="min-w-[170px] border-0 bg-transparent p-0 text-xs font-bold text-slate-900 focus:ring-0">
+                                    {% for sorts in sorts %}
+                                    <option value="{{ sorts.href }}" {% if sorts.value == '%s-%s'|format(sort, order) %}selected{% endif %}>{{ sorts.text }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            {% if limits is defined and text_limit is defined %}
+                            <label class="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600">
+                                <span class="whitespace-nowrap text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">{{ text_limit }}</span>
+                                <select onchange="location = this.value;" class="min-w-[96px] border-0 bg-transparent p-0 text-xs font-bold text-slate-900 focus:ring-0">
+                                    {% for limits in limits %}
+                                    <option value="{{ limits.href }}" {% if limits.value == limit %}selected{% endif %}>{{ limits.text }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-1 gap-5 sm:grid-cols-2 {% if column_left and column_right %}2xl:grid-cols-2{% elseif column_left or column_right %}2xl:grid-cols-3{% else %}xl:grid-cols-3 2xl:grid-cols-4{% endif %}">
+                    {% for product in products %}
+                    <article class="group overflow-hidden rounded-[1.9rem] border border-slate-200 bg-white shadow-[0_18px_48px_-36px_rgba(15,23,42,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_-34px_rgba(14,165,233,0.28)]">
+                        <div class="relative border-b border-slate-100 bg-[linear-gradient(180deg,_#f8fafc_0%,_#ffffff_100%)] p-5">
+                            {% if product.special %}
+                            <span class="absolute left-5 top-5 rounded-full bg-rose-500 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-white shadow-lg shadow-rose-500/20">Sale</span>
+                            {% endif %}
+
+                            <a href="{{ product.href }}" class="block aspect-square overflow-hidden rounded-[1.35rem] bg-white">
+                                <img src="{{ product.thumb }}" alt="{{ product.name }}" class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" />
+                            </a>
+
+                            <div class="pointer-events-none absolute inset-x-5 bottom-5 flex justify-end opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:opacity-100">
+                                <button type="button" onclick="cart.add('{{ product.product_id }}'{% if product.minimum is defined %}, '{{ product.minimum }}'{% endif %});" class="flex h-11 items-center gap-2 rounded-full bg-slate-950 px-5 text-xs font-black uppercase tracking-[0.22em] text-white transition-colors hover:bg-sky-600">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span>Add</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 p-5">
+                            <h3 class="product-card-title min-h-[3.25rem] text-base font-black leading-6 text-slate-900">
+                                <a href="{{ product.href }}" class="transition-colors hover:text-sky-700">{{ product.name }}</a>
+                            </h3>
+
+                            <div class="flex items-end justify-between gap-3">
+                                <div>
+                                    {% if product.price %}
+                                        {% if product.special %}
+                                        <span class="mb-1 block text-xs font-semibold text-slate-400 line-through">{{ product.price }}</span>
+                                        <span class="text-2xl font-black tracking-tight text-rose-500">{{ product.special }}</span>
+                                        {% else %}
+                                        <span class="text-2xl font-black tracking-tight text-slate-950">{{ product.price }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+
+                                <button type="button" onclick="cart.add('{{ product.product_id }}'{% if product.minimum is defined %}, '{{ product.minimum }}'{% endif %});" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-700 transition-all hover:border-sky-500 hover:bg-sky-600 hover:text-white">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </section>
+
+                <section class="mt-10 flex flex-col gap-4 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+                    <div class="pagination-custom overflow-x-auto">{{ pagination }}</div>
+                    <div class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">{{ results }}</div>
+                </section>
+                {% else %}
+                <section class="rounded-[2rem] border border-dashed border-slate-300 bg-white/80 p-10 text-center shadow-sm sm:p-14">
+                    <div class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-3xl text-slate-300">
+                        <i class="fa fa-search"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900">{{ text_empty }}</h2>
+                    <p class="mx-auto mt-3 max-w-lg text-sm leading-6 text-slate-500">Try another category, adjust the filters, or continue browsing the store.</p>
+                    <a href="{{ continue }}" class="mt-7 inline-flex items-center justify-center rounded-full bg-sky-600 px-8 py-3 text-xs font-black uppercase tracking-[0.24em] text-white transition-colors hover:bg-slate-950">{{ button_continue }}</a>
+                </section>
+                {% endif %}
+
+                {{ content_bottom }}
+            </main>
+
+            {% if column_right %}
+            <div class="shrink-0 xl:sticky xl:top-6 xl:self-start">
+                {{ column_right }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.pagination-custom .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination-custom .pagination li a,
+.pagination-custom .pagination li span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    padding: 0 0.95rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.pagination-custom .pagination li a:hover {
+    border-color: #0ea5e9;
+    color: #0369a1;
+}
+
+.pagination-custom .pagination li.active span {
+    border-color: #0ea5e9;
+    background: #0ea5e9;
+    color: #ffffff;
+}
+
+.product-card-title {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+</style>
+
+{{ footer }}

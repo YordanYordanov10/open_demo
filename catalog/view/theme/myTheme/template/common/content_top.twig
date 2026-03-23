@@ -1,0 +1,34 @@
+<div class="content-top space-y-8 mb-10">
+  {% for module in modules %}
+    <div class="module-wrapper rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+      {{ module }}
+    </div>
+  {% endfor %}
+</div>
+
+<style>
+/* Корекция за слайдшоуто на OpenCart (Swinper/OwlCarousel) */
+/* Правим навигационните стрелки по-модерни, ако модулът ги поддържа */
+.content-top .swiper-button-next, 
+.content-top .swiper-button-prev {
+    background: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.content-top .swiper-button-next:after, 
+.content-top .swiper-button-prev:after {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Заобляне на самите изображения вътре в модулите */
+.content-top img {
+    border-radius: 1.5rem; /* съответства на rounded-3xl */
+    display: block;
+    width: 100%;
+}
+</style>

@@ -57,6 +57,10 @@ class ModelToolCompany extends Model
         $address_parts = [];
         if (!empty($company['seat']['street'])) $address_parts[] = $company['seat']['street'];
         if (!empty($company['seat']['streetNumber'])) $address_parts[] = $company['seat']['streetNumber'];
+        if(!empty($company['seat']['block'])) $address_parts[] = $company['seat']['block'];
+        if (!empty($company['seat']['entrance'])) $address_parts[] = 'вх. ' . $company['seat']['entrance'];
+        if (!empty($company['seat']['floor'])) $address_parts[] = 'ет. ' . $company['seat']['floor'];
+        if (!empty($company['seat']['apartment'])) $address_parts[] = 'ап. ' . $company['seat']['apartment'];
         $address = implode(' ', $address_parts);
 
 
@@ -72,6 +76,7 @@ class ModelToolCompany extends Model
         return [
             'name'    => $company['companyName']['name'] ?? 'Неизвестно име',
             'city'    => $company['seat']['settlement'] ?? '',
+            'district' => $company['seat']['district'] ?? '',
             'address' => $address,
             'manager' => $manager,
             'source'  => 'api'

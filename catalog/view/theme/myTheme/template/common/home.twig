@@ -1,0 +1,58 @@
+{{ header }}
+
+<div id="common-home" class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            
+            {% if column_left %}
+            <aside id="column-left" class="w-full lg:w-1/4 space-y-6">
+                <div class="bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
+                    {{ column_left }}
+                </div>
+            </aside>
+            {% endif %}
+
+           <main id="content" class="w-full lg:flex-1 min-w-0 space-y-12">
+    <div class="content-top-wrapper overflow-hidden">
+        {{ content_top }}
+    </div>
+    <div class="content-bottom-wrapper overflow-hidden">
+        {{ content_bottom }}
+    </div>
+</main>
+            {% if column_right %}
+            <aside id="column-right" class="w-full lg:w-1/4 space-y-6">
+                <div class="bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
+                    {{ column_right }}
+                </div>
+            </aside>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<style>
+/* Тъй като модулите (Слайдшоу, Карусел) често идват със собствени стилове, 
+   тук добавяме малко "въздух" между тях, за да не се залепват.
+*/
+#content > div {
+    margin-bottom: 2rem;
+}
+
+/* Корекция за изображенията в модулите, за да не излизат от контейнерите */
+#content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1.5rem; /* Правим всички банери и слайдове заоблени */
+}
+
+/* Ако ползваш стандартния модул Featured, добавяме малко стил за заглавията му */
+.caption h4 {
+    font-weight: 800;
+    margin-top: 10px;
+}
+</style>
+
+{{ footer }}

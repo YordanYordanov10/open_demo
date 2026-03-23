@@ -1,0 +1,47 @@
+<div class="featured-section py-8">
+  <div class="container mx-auto">
+    <h3 class="text-xl font-black text-gray-800 mb-6 ml-2">{{ heading_title }}</h3>
+    
+    {# ИЗПОЛЗВАМЕ GRID, ЗА ДА НЯМА ИЗЛИЗАНЕ ОТ ЕКРАНА #}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      {% for product in products %}
+      <div class="product-layout bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all flex flex-col h-full">
+        
+        <div class="relative p-4 aspect-square bg-gray-50/30">
+          <a href="{{ product.href }}">
+            <img src="{{ product.thumb }}" alt="{{ product.name }}" class="w-full h-full object-contain mx-auto" />
+          </a>
+          
+          {% if product.special %}
+          <span class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] font-black px-2 py-1 rounded-full uppercase">Промо</span>
+          {% endif %}
+        </div>
+
+        <div class="p-4 flex flex-col flex-1">
+          <h4 class="text-xs font-bold text-gray-700 mb-2 h-8 overflow-hidden line-clamp-2 leading-tight">
+            <a href="{{ product.href }}" class="hover:text-blue-600 transition-colors">{{ product.name }}</a>
+          </h4>
+
+          <div class="mt-auto flex items-center justify-between">
+            <div class="flex flex-col">
+              {% if product.price %}
+                {% if not product.special %}
+                  <span class="text-sm font-black text-gray-900">{{ product.price }}</span>
+                {% else %}
+                  <span class="text-[10px] text-gray-400 line-through">{{ product.price }}</span>
+                  <span class="text-sm font-black text-rose-500">{{ product.special }}</span>
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <button type="button" onclick="cart.add('{{ product.product_id }}');" 
+                    class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-md hover:bg-black transition-all">
+              <i class="fa fa-shopping-cart text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
