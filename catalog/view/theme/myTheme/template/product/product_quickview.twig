@@ -1,43 +1,68 @@
-<div class="modal-header border-b border-gray-100 p-6 flex items-center justify-between bg-gray-50/50 rounded-t-3xl">
-    <h4 class="text-xl font-black text-gray-900 leading-none">{{ name }}</h4>
-    <button type="button" class="text-gray-400 hover:text-rose-500 transition-colors text-2xl leading-none outline-none focus:outline-none" data-dismiss="modal">&times;</button>
-</div>
-
-<div class="modal-body p-8">
-    <div class="flex flex-col md:flex-row gap-8 items-start">
+<section class="grid grid-cols-1 gap-6 sm:grid-cols-2 {% if column_left and column_right %}2xl:grid-cols-2{% elseif column_left or column_right %}2xl:grid-cols-3{% else %}xl:grid-cols-3 2xl:grid-cols-4{% endif %}">
+    {% for product in products %}
+    <article class="group flex flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10">
         
-        {% if thumb %}
-        <div class="w-full md:w-5/12 bg-gray-50 rounded-2xl p-4 aspect-square flex items-center justify-center overflow-hidden">
-            <img src="{{ thumb }}" alt="{{ name }}" title="{{ name }}" class="max-w-full max-h-full object-contain transform hover:scale-105 transition-transform duration-500" />
-        </div>
-        
-        <div class="w-full md:w-7/12 flex flex-col h-full">
-        {% else %}
-        <div class="w-full">
-        {% endif %}
-
-            {% if price %}
-            <div class="mb-6">
-                {% if special %}
-                <div class="flex items-baseline gap-3">
-                    <span class="text-3xl font-black text-rose-500 leading-none">{{ special }}</span>
-                    <span class="text-sm text-gray-400 line-through font-bold leading-none">{{ price }}</span>
-                </div>
-                {% else %}
-                <span class="text-3xl font-black text-gray-900 leading-none">{{ price }}</span>
-                {% endif %}
+        {# Изображение и Етикети #}
+        <div class="relative p-4">
+            {% if product.special %}
+            <div class="absolute left-6 top-6 z-10 flex flex-col gap-2">
+                <span class="rounded-full bg-rose-500 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30">Sale</span>
             </div>
             {% endif %}
 
-            <div class="text-sm text-gray-500 leading-relaxed mb-6 scrollbar-thin scrollbar-thumb-gray-200" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
-                <div class="prose prose-sm prose-slate">
-                    {{ description }}
+            <a href="{{ product.href }}" class="relative block aspect-square overflow-hidden rounded-[1.5rem] bg-slate-50">
+                <img src="{{ product.thumb }}" alt="{{ product.name }}" class="h-full w-full object-contain p-4 transition-transform duration-700 group-hover:scale-110" />
+            </a>
+        </div>
+
+        {# Информация и Детайли #}
+        <div class="flex flex-1 flex-col px-6 pb-6">
+            <div class="mb-4 flex-1">
+                <h3 class="product-card-title text-base font-black leading-tight text-slate-900 group-hover:text-sky-600 transition-colors">
+                    <a href="{{ product.href }}">{{ product.name }}</a>
+                </h3>
+                <p class="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Модел: {{ product.model|default('Standard') }}</p>
+            </div>
+
+            {# Цена и Промоция #}
+            <div class="mb-5 flex items-end gap-3">
+                {% if product.price %}
+                    {% if product.special %}
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-slate-400 line-through decoration-rose-500/30">{{ product.price }}</span>
+                            <span class="text-2xl font-black tracking-tighter text-rose-500">{{ product.special }}</span>
+                        </div>
+                    {% else %}
+                        <span class="text-2xl font-black tracking-tighter text-slate-900">{{ product.price }}</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <hr class="mb-5 border-slate-100" />
+
+            {# ФУНКЦИОНАЛНА ЧАСТ: Количество и Количка #}
+            <div class="flex items-center gap-3">
+                <div class="flex h-12 items-center rounded-2xl border border-slate-200 bg-slate-50 px-2 transition-focus-within focus-within:border-sky-500 focus-within:bg-white">
+                    <button type="button" onclick="let input = this.parentNode.querySelector('input'); input.stepDown();" class="flex h-8 w-8 items-center justify-center text-slate-400 hover:text-sky-600">
+                        <i class="fa fa-minus text-[10px]"></i>
+                    </button>
+                    <input type="number" name="quantity" value="{{ product.minimum|default(1) }}" min="{{ product.minimum|default(1) }}" id="input-quantity-{{ product.product_id }}" class="w-10 border-none bg-transparent text-center text-xs font-black text-slate-900 focus:ring-0" />
+                    <button type="button" onclick="let input = this.parentNode.querySelector('input'); input.stepUp();" class="flex h-8 w-8 items-center justify-center text-slate-400 hover:text-sky-600">
+                        <i class="fa fa-plus text-[10px]"></i>
+                    </button>
                 </div>
+
+                <button type="button" 
+                    onclick="cart.add('{{ product.product_id }}', document.getElementById('input-quantity-{{ product.product_id }}').value);" 
+                    class="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-4 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-slate-950 active:scale-95 shadow-lg shadow-sky-600/20">
+                    <i class="fa fa-shopping-basket"></i>
+                    <span>Купи</span>
+                </button>
             </div>
-            
-            </div>
-    </div>
-</div>
+        </div>
+    </article>
+    {% endfor %}
+</section>
 
 <div class="modal-footer border-t border-gray-100 p-6 flex flex-wrap gap-3 justify-end bg-gray-50/30 rounded-b-3xl">
     <button type="button" class="bg-blue-600 hover:bg-black text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-lg shadow-blue-100 active:scale-95" onclick="cart.add('{{ product_id }}', '{{ minimum }}');">

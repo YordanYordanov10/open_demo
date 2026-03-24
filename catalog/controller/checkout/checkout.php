@@ -92,7 +92,7 @@ class ControllerCheckoutCheckout extends Controller {
 		$data['footer'] = $this->load->controller('common/footer');
 		$data['header'] = $this->load->controller('common/header');
 
-		$this->response->setOutput($this->load->view('checkout/checkout', $data));
+		$this->response->setOutput($this->load->view('checkout/checkout', $data)); 
 	}
 
 	public function country() {
@@ -145,4 +145,64 @@ class ControllerCheckoutCheckout extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
 	}
+
+	protected function getCartData() {
+    $this->load->language('checkout/cart');
+    $this->load->model('tool/image');
+
+    $data['products'] = [];
+
+    $products = $this->cart->getProducts();
+
+    foreach ($products as $product) {
+        if ($product['image']) {
+            $thumb = $this->model_tool_image->resize($product['image'], 80, 80); // Малка снимка за Tailwind списъка
+        } else {
+            $thumb = '';
+        }
+
+        $data['products'][] = [
+            'cart_id'   => $product['cart_id'],
+            'thumb'     => $thumb,
+            'name'      => $product['name'],
+            'model'     => $product['model'],
+            'quantity'  => $product['quantity'],
+            'price'     => $this->currency->format($product['price'], $this->session->data['currency']),
+            'total'     => $this->currency->format($product['total'], $this->session->data['currency']),
+            'href'      => $this->url->link('product/product', 'product_id=' . $product['product_id'])
+        ];
+    }
+
+    // Тотали (Междинна сума, ДДС, Общо)
+    $data['totals'] = [];
+    $totals = [];
+    $taxes = $this->cart->getTaxes();
+    $total = 0;
+    
+    // В OC3 това зарежда разширенията за тотали
+    $this->load->model('setting/extension');
+    $results = $this->model_setting_extension->getExtensions('total');
+
+    foreach ($results as $result) {
+        if ($this->config->get('total_' . $result['code'] . '_status')) {
+            $this->load->model('extension/total/' . $result['code']);
+            $this->{'model_extension_total_' . $result['code']}->getTotal($totals, $taxes, $total);
+        }
+    }
+
+    foreach ($totals as $result) {
+        $data['totals'][] = [
+            'title' => $result['title'],
+            'text'  => $this->currency->format($result['value'], $this->session->data['currency'])
+        ];
+    }
+
+    return $data;
+}
+
+public function refresh() {
+    $cart_info = $this->getCartData();
+    // Връщаме САМО HTML-а на малкия файл
+    $this->response->setOutput($this->load->view('checkout/checkout_list', $cart_info));
+}
 }

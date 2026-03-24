@@ -1,187 +1,197 @@
 {{ header }}
 
-<div id="product-category" class="bg-gray-50 min-h-screen pb-12">
-    <div class="container mx-auto px-4 py-4">
-        <nav class="flex text-sm text-gray-500 mb-4">
-            <ul class="flex items-center gap-2 list-none p-0 m-0">
-                {% for breadcrumb in breadcrumbs %}
-                <li class="flex items-center gap-2">
-                    {% if not loop.last %}
-                    <a href="{{ breadcrumb.href }}" class="hover:text-blue-600 transition-colors">{{ breadcrumb.text }}</a>
-                    <i class="fa fa-angle-right text-[10px] opacity-40"></i>
-                    {% else %}
-                    <span class="text-gray-900 font-medium">{{ breadcrumb.text }}</span>
+<div id="product-category" class="min-h-screen bg-slate-50 pb-14">
+    <div class="bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.14),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(249,115,22,0.12),_transparent_26%),linear-gradient(180deg,_#ffffff_0%,_#f8fafc_100%)] border-b border-slate-200/70">
+        <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+            <nav aria-label="breadcrumb" class="mb-5">
+                <ul class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-slate-500">
+                    {% for breadcrumb in breadcrumbs %}
+                    <li class="flex items-center gap-3">
+                        {% if not loop.last %}
+                        <a href="{{ breadcrumb.href }}" class="transition-colors hover:text-sky-600">{{ breadcrumb.text }}</a>
+                        <span class="text-slate-300">/</span>
+                        {% else %}
+                        <span class="font-semibold text-slate-900">{{ breadcrumb.text }}</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+
+            <div class="grid gap-5 rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.45)] backdrop-blur md:grid-cols-[minmax(0,1fr)_280px] md:items-start lg:p-8">
+                <div class="min-w-0">
+                    <p class="mb-3 text-[11px] font-black uppercase tracking-[0.28em] text-sky-600">Curated selection</p>
+                    <h1 class="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{{ heading_title }}</h1>
+                    {% if description %}
+                    <div class="prose prose-sm mt-4 max-w-none text-slate-600">{{ description }}</div>
                     {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        </nav>
-        
-        <h1 class="text-3xl font-black text-gray-900 mb-6">{{ heading_title }}</h1>
+                </div>
+                <div class="hidden md:grid gap-3">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Категория</p>
+                        <p class="mt-2 text-xs font-semibold text-slate-700">Разгледайте нашите предложения в {{ heading_title }}.</p>
+                    </div>
+                    {% if thumb %}
+                    <div class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-2">
+                        <img src="{{ thumb }}" alt="{{ heading_title }}" class="mx-auto h-24 w-full object-contain" />
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row gap-8">
+    <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+        <div class="flex flex-col gap-8 xl:flex-row xl:items-start">
             
             {% if column_left %}
-            <aside class="w-full lg:w-1/4 space-y-6">
-                {{ column_left }}
+            <aside class="w-full xl:w-72 shrink-0 xl:sticky xl:top-6">
+                <div class="rounded-[2rem] border border-slate-200 bg-white p-2 shadow-sm">
+                    {{ column_left }}
+                </div>
             </aside>
             {% endif %}
 
-            <div id="content" class="flex-1">
+            <main id="content" class="min-w-0 flex-1">
                 {{ content_top }}
 
-                {% if thumb or description %}
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8">
-                    <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                        {% if thumb %}
-                        <div class="w-32 h-32 flex-shrink-0">
-                            <img src="{{ thumb }}" alt="{{ heading_title }}" class="w-full h-full object-contain rounded-2xl border border-gray-50" />
-                        </div>
-                        {% endif %}
-                        {% if description %}
-                        <div class="text-gray-600 text-sm leading-relaxed">{{ description }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-
                 {% if categories %}
-                <div class="mb-10">
-                    <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4 ml-1">{{ text_refine }}</h3>
+                <section class="mb-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <h2 class="text-xs font-black uppercase tracking-[0.28em] text-slate-400">{{ text_refine }}</h2>
+                        <span class="rounded-full bg-sky-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-700">{{ categories|length }} категории</span>
+                    </div>
                     <div class="flex flex-wrap gap-3">
                         {% for category in categories %}
-                        <a href="{{ category.href }}" class="bg-white px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm">
+                        <a href="{{ category.href }}" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-bold text-slate-700 transition-all hover:border-sky-500 hover:bg-white hover:text-sky-700">
                             {{ category.name }}
                         </a>
                         {% endfor %}
                     </div>
-                </div>
+                </section>
                 {% endif %}
 
                 {% if products %}
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="hidden md:flex bg-gray-100 p-1 rounded-lg">
-                            <button type="button" id="list-view" class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white transition-all" title="{{ button_list }}"><i class="fa fa-th-list"></i></button>
-                            <button type="button" id="grid-view" class="w-8 h-8 flex items-center justify-center rounded-md bg-white shadow-sm transition-all" title="{{ button_grid }}"><i class="fa fa-th"></i></button>
+                <section class="mb-6 rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                                <button type="button" id="grid-view" class="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-600 text-white shadow-sm" title="{{ button_grid }}"><i class="fa fa-th"></i></button>
+                                <button type="button" id="list-view" class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-white hover:text-slate-900" title="{{ button_list }}"><i class="fa fa-th-list"></i></button>
+                            </div>
                         </div>
-                        <a href="{{ compare }}" id="compare-total" class="text-xs font-bold text-blue-600 hover:underline">{{ text_compare }}</a>
-                    </div>
 
-                    <div class="flex items-center gap-4 flex-1 justify-end">
-                        <div class="flex items-center gap-2">
-                            <label class="text-[10px] font-black uppercase text-gray-400 whitespace-nowrap">{{ text_sort }}</label>
-                            <select id="input-sort" class="bg-gray-50 border-none text-xs font-bold rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100" onchange="location = this.value;">
-                                {% for sorts in sorts %}
-                                <option value="{{ sorts.href }}" {% if sorts.value == '%s-%s'|format(sort, order) %}selected{% endif %}>{{ sorts.text }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <label class="text-[10px] font-black uppercase text-gray-400 whitespace-nowrap">{{ text_limit }}</label>
-                            <select id="input-limit" class="bg-gray-50 border-none text-xs font-bold rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100" onchange="location = this.value;">
-                                {% for limits in limits %}
-                                <option value="{{ limits.href }}" {% if limits.value == limit %}selected{% endif %}>{{ limits.text }}</option>
-                                {% endfor %}
-                            </select>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <label class="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-2 text-xs font-bold text-slate-600 border border-slate-100">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ text_sort }}</span>
+                                <select onchange="location = this.value;" class="border-0 bg-transparent p-0 text-xs font-bold text-slate-900 focus:ring-0">
+                                    {% for sorts in sorts %}
+                                    <option value="{{ sorts.href }}" {% if sorts.value == '%s-%s'|format(sort, order) %}selected{% endif %}>{{ sorts.text }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                <section class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 {% if not column_left %}xl:grid-cols-4{% endif %}">
                     {% for product in products %}
-                    <div class="product-layout group bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500">
-                        <div class="relative overflow-hidden aspect-square p-4">
-                            <a href="{{ product.href }}">
-                                <img src="{{ product.thumb }}" alt="{{ product.name }}" class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500" />
-                            </a>
+                    <article class="group flex flex-col overflow-hidden rounded-[2.2rem] border border-slate-200 bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10">
+                        
+                        {# Снимка #}
+                        <div class="relative overflow-hidden rounded-[1.8rem] bg-slate-50 p-4 aspect-square">
+                            {% if product.special %}
+                            <span class="absolute left-4 top-4 z-10 rounded-full bg-rose-500 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg">Sale</span>
+                            {% endif %}
                             
-                            <div class="absolute top-4 right-4 flex flex-col gap-2 translate-x-12 group-hover:translate-x-0 transition-transform duration-300">
-                                <button type="button" onclick="wishlist.add('{{ product.product_id }}');" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-rose-500 hover:text-white transition-all"><i class="fa fa-heart"></i></button>
-                                <button type="button" class="btn-quick-view w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-blue-600 hover:text-white transition-all" data-product-id="{{ product.product_id }}"><i class="fa fa-eye"></i></button>
+                            <a href="{{ product.href }}" class="block h-full w-full">
+                                <img src="{{ product.thumb }}" alt="{{ product.name }}" class="h-full w-full object-contain transition-transform duration-700 group-hover:scale-110" />
+                            </a>
+                        </div>
+
+                        {# Инфо #}
+                        <div class="flex flex-1 flex-col px-4 pb-4 pt-5">
+                            <h3 class="product-card-title mb-4 min-h-[3rem] text-sm font-black leading-tight text-slate-900 transition-colors group-hover:text-sky-600">
+                                <a href="{{ product.href }}">{{ product.name }}</a>
+                            </h3>
+
+                            {# Цена #}
+                            <div class="mb-5 flex flex-col">
+                                {% if product.price %}
+                                    {% if product.special %}
+                                        <span class="text-[10px] font-bold text-slate-400 line-through">{{ product.price }}</span>
+                                        <span class="text-xl font-black tracking-tight text-rose-500">{{ product.special }}</span>
+                                    {% else %}
+                                        <span class="text-xl font-black tracking-tight text-slate-950">{{ product.price }}</span>
+                                    {% endif %}
+                                {% endif %}
                             </div>
 
-                            {% if product.special %}
-                            <div class="absolute top-4 left-4 bg-rose-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Промо</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="p-6">
-                            <h4 class="text-sm font-bold text-gray-800 mb-2 h-10 overflow-hidden line-clamp-2 leading-tight">
-                                <a href="{{ product.href }}" class="hover:text-blue-600 transition-colors">{{ product.name }}</a>
-                            </h4>
-                            
-                            <div class="flex items-end justify-between mt-4">
-                                <div class="flex flex-col">
-                                    {% if product.price %}
-                                        {% if not product.special %}
-                                            <span class="text-lg font-black text-gray-900 leading-none">{{ product.price }}</span>
-                                        {% else %}
-                                            <span class="text-xs text-gray-400 line-through leading-none mb-1">{{ product.price }}</span>
-                                            <span class="text-lg font-black text-rose-500 leading-none">{{ product.special }}</span>
-                                        {% endif %}
-                                    {% endif %}
+                            {# Секция за добавяне: Количество + Бутон #}
+                            <div class="mt-auto flex items-center gap-2">
+                                <div class="flex h-11 items-center rounded-xl border border-slate-200 bg-slate-50 px-1 focus-within:border-sky-500 focus-within:bg-white transition-colors">
+                                    <button type="button" onclick="let input = this.parentNode.querySelector('input'); input.stepDown();" class="flex h-7 w-7 items-center justify-center text-slate-400 hover:text-sky-600">
+                                        <i class="fa fa-minus text-[8px]"></i>
+                                    </button>
+                                    <input type="number" name="quantity" value="{{ product.minimum|default(1) }}" min="{{ product.minimum|default(1) }}" id="qty-{{ product.product_id }}" class="w-8 border-none bg-transparent p-0 text-center text-xs font-black text-slate-900 focus:ring-0" />
+                                    <button type="button" onclick="let input = this.parentNode.querySelector('input'); input.stepUp();" class="flex h-7 w-7 items-center justify-center text-slate-400 hover:text-sky-600">
+                                        <i class="fa fa-plus text-[8px]"></i>
+                                    </button>
                                 </div>
-                                
-                                <button type="button" onclick="cart.add('{{ product.product_id }}', '{{ product.minimum }}');" 
-                                        class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-100 hover:bg-black transition-all active:scale-90">
-                                    <i class="fa fa-shopping-cart text-lg"></i>
+
+                                <button type="button" 
+                                    onclick="cart.add('{{ product.product_id }}', document.getElementById('qty-{{ product.product_id }}').value);" 
+                                    class="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-sky-600 shadow-md active:scale-95">
+                                    <i class="fa fa-shopping-basket"></i>
+                                    <span>Купи</span>
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </article>
                     {% endfor %}
-                </div>
+                </section>
 
-                <div class="mt-12 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-8">
-                    <div class="pagination-container">{{ pagination }}</div>
-                    <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ results }}</div>
-                </div>
+                <section class="mt-10 flex flex-col gap-4 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+                    <div class="pagination-custom overflow-x-auto">{{ pagination }}</div>
+                    <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ results }}</div>
+                </section>
+                {% endif %}
 
-                {% else %}
-                <div class="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100">
-                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                        <i class="fa fa-search text-3xl"></i>
+                {% if not categories and not products %}
+                <section class="rounded-[2.5rem] border border-dashed border-slate-300 bg-white/80 p-12 text-center">
+                    <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-300">
+                        <i class="fa fa-search text-2xl"></i>
                     </div>
-                    <p class="text-gray-500 font-medium mb-6">{{ text_empty }}</p>
-                    <a href="{{ continue }}" class="inline-block bg-blue-600 text-white px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black transition-all">
-                        {{ button_continue }}
-                    </a>
-                </div>
+                    <h2 class="text-xl font-black text-slate-900">{{ text_empty }}</h2>
+                    <a href="{{ continue }}" class="mt-6 inline-flex items-center justify-center rounded-full bg-sky-600 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-950">{{ button_continue }}</a>
+                </section>
                 {% endif %}
 
                 {{ content_bottom }}
-            </div>
-
-            {% if column_right %}
-            <aside class="w-full lg:w-1/4">
-                {{ column_right }}
-            </aside>
-            {% endif %}
+            </main>
         </div>
     </div>
 </div>
 
-<div id="modal-quick-view" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content overflow-hidden rounded-3xl border-none"></div>
-    </div>
-</div>
-
 <style>
-/* Стили за пагинацията на OpenCart, за да се впише в Tailwind */
-.pagination { display: flex; gap: 8px; list-style: none; padding: 0; }
-.pagination li a, .pagination li span { 
-    display: block; padding: 8px 16px; border-radius: 12px; background: white; 
-    border: 1px solid #f3f4f6; color: #1f2937; font-weight: 700; font-size: 14px; 
-    transition: all 0.3s;
+/* Корекции за пагинацията на OpenCart */
+.pagination-custom .pagination { display: flex; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.pagination-custom .pagination li a, 
+.pagination-custom .pagination li span {
+    display: flex; align-items: center; justify-center: center; min-width: 40px; height: 40px; 
+    border-radius: 12px; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 800; color: #1e293b; background: white;
 }
-.pagination li.active span { background: #2563eb; color: white; border-color: #2563eb; }
-.pagination li a:hover { border-color: #2563eb; color: #2563eb; }
-</style>
+.pagination-custom .pagination li.active span { background: #0ea5e9; border-color: #0ea5e9; color: white; }
+.pagination-custom .pagination li a:hover { border-color: #0ea5e9; color: #0ea5e9; }
 
-<script type="text/javascript"></script>
+/* Ограничаване на редовете за заглавието */
+.product-card-title {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+
+/* Скриване на стрелките на input type="number" */
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+</style>
 
 {{ footer }}

@@ -18,63 +18,45 @@
 
 <style>
     body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
-    /* Фикс за OpenCart Dropdowns */
-    .dropdown-menu { border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #f3f4f6; padding: 8px 0; }
-    .dropdown-menu li a { padding: 8px 16px; display: block; color: #374151; text-decoration: none; }
-    .dropdown-menu li a:hover { background-color: #f3f4f6; }
     
-    /* Стилизиране на вградената търсачка без промяна на search.twig */
+    /* Фикс за падащите менюта на OpenCart */
+    .dropdown { position: relative; }
+    .dropdown-menu { 
+        display: none; 
+        position: absolute; 
+        right: 0; 
+        top: 100%; 
+        z-index: 1000; 
+        min-width: 250px; 
+        background: white; 
+        border-radius: 12px; 
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+        border: 1px solid #f3f4f6; 
+        padding: 12px;
+    }
+    .open > .dropdown-menu { display: block; }
+
+    /* Стилизиране на търсачката */
     #search .input-group { display: flex; width: 100%; }
-    #search input { border-radius: 12px 0 0 12px !important; border: 1px solid #e5e7eb; padding: 10px 16px; width: 100%; outline: none; transition: all 0.2s; }
-    #search input:focus { border-color: #3b82f6; ring: 2px solid #bfdbfe; }
+    #search input { border-radius: 12px 0 0 12px !important; border: 1px solid #e5e7eb; padding: 10px 16px; width: 100%; outline: none; }
     #search .input-group-btn button { border-radius: 0 12px 12px 0 !important; background: #f3f4f6; border: 1px solid #e5e7eb; border-left: 0; padding: 10px 18px; color: #6b7280; }
 
-    /* Стилизиране на количката */
-    #cart > button { background: #2563eb; color: white; border-radius: 12px; padding: 10px 20px; width: 100%; display: flex; align-items: center; justify-content: space-between; border: none; font-weight: 600; }
-
-  /* Фикс за Валути и Езици (Dropdown) */
-#form-currency, #form-language {
-    position: relative;
-    display: inline-block;
-}
-
-#form-currency .dropdown-menu, #form-language .dropdown-menu {
-    display: none; /* Скриваме списъка по подразбиране */
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    min-width: 120px;
-}
-
-/* Показване при клик (Bootstrap стандарт) или ховър (за по-модерно) */
-#form-currency.open .dropdown-menu, 
-#form-language.open .dropdown-menu,
-#form-currency:hover .dropdown-menu, 
-#form-language:hover .dropdown-menu {
-    display: block;
-}
-
-#form-currency ul, #form-language ul {
-    list-style: none;
-    padding: 5px 0;
-    margin: 0;
-}
-
-#form-currency button, #form-language button {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 13px;
-    color: #4b5563;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
+    /* Количка - Фикс */
+    #cart { position: relative; }
+    #cart > button { 
+        background: #2563eb; 
+        color: white; 
+        border-radius: 12px; 
+        padding: 10px 20px; 
+        width: 100%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        border: none; 
+        font-weight: 600; 
+        cursor: pointer;
+    }
+    #cart.open > button { background: #1d4ed8; }
 </style>
 
 {% for style in styles %}<link href="{{ style.href }}" type="text/css" rel="{{ style.rel }}" media="{{ style.media }}" />{% endfor %}
@@ -85,81 +67,53 @@
 <body class="text-gray-900">
 
 <nav id="top" class="bg-white border-b border-gray-100 py-2">
-  <div class="container mx-auto px-4 flex flex-wrap justify-between items-center text-[13px] font-medium text-gray-600">
-    
-    <div class="flex items-center gap-6 [&_ul]:flex [&_ul]:gap-3 [&_li]:list-none cursor-pointer">
+  <div class="container mx-auto px-4 flex justify-between items-center text-[13px] font-medium text-gray-600">
+    <div class="flex items-center gap-6">
       <div class="hover:text-blue-600 transition-colors">{{ currency }}</div>
       <div class="hover:text-blue-600 transition-colors">{{ language }}</div>
-      <div class="hidden sm:block text-gray-300">|</div>
-      <a href="tel:{{ telephone }}" class="hover:text-blue-600 transition-colors items-center gap-1 hidden sm:flex">
+      <a href="tel:{{ telephone }}" class="hover:text-blue-600 transition-colors hidden sm:flex items-center gap-1">
         <i class="fa fa-phone"></i> {{ telephone }}
       </a>
     </div>
-
-    <div id="top-links" class="flex items-center gap-5">
-      <ul class="flex items-center gap-5 list-none m-0 p-0">
-        <li class="dropdown relative group">
-          <a href="{{ account }}" title="{{ text_account }}" class="flex items-center gap-1 hover:text-blue-600 dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-user"></i> <span class="hidden xs:inline">{{ text_account }}</span> <i class="fa fa-caret-down text-[10px]"></i>
-          </a>
-          <ul class="dropdown-menu absolute right-0 top-full z-50 min-w-[160px] bg-white hidden group-hover:block border">
+    
+    <div class="dropdown">
+        <a href="{{ account }}" title="{{ text_account }}" class="dropdown-toggle flex items-center gap-1 hover:text-blue-600" data-toggle="dropdown">
+            <i class="fa fa-user"></i> <span>{{ text_account }}</span> <i class="fa fa-caret-down"></i>
+        </a>
+        <ul class="dropdown-menu">
             {% if logged %}
-            <li><a href="{{ account }}">{{ text_account }}</a></li>
-            <li><a href="{{ order }}">{{ text_order }}</a></li>
-            <li><a href="{{ logout }}" class="text-red-600">{{ text_logout }}</a></li>
+            <li><a href="{{ account }}" class="block p-2 hover:bg-gray-50 rounded-lg">{{ text_account }}</a></li>
+            <li><a href="{{ order }}" class="block p-2 hover:bg-gray-50 rounded-lg">{{ text_order }}</a></li>
+            <li><a href="{{ logout }}" class="block p-2 text-red-600 hover:bg-red-50 rounded-lg">{{ text_logout }}</a></li>
             {% else %}
-            <li><a href="{{ register }}">{{ text_register }}</a></li>
-            <li><a href="{{ login }}">{{ text_login }}</a></li>
+            <li><a href="{{ register }}" class="block p-2 hover:bg-gray-50 rounded-lg">{{ text_register }}</a></li>
+            <li><a href="{{ login }}" class="block p-2 hover:bg-gray-50 rounded-lg">{{ text_login }}</a></li>
             {% endif %}
-          </ul>
-        </li>
-        <li><a href="{{ wishlist }}" id="wishlist-total" class="hover:text-blue-600 flex items-center gap-1"><i class="fa fa-heart text-red-400"></i> <span class="hidden sm:inline">{{ text_wishlist }}</span></a></li>
-        <li><a href="{{ shopping_cart }}" class="hover:text-blue-600 flex items-center gap-1"><i class="fa fa-shopping-cart"></i> <span class="hidden sm:inline">{{ text_shopping_cart }}</span></a></li>
-        <li><a href="{{ checkout }}" class="hover:text-blue-600 flex items-center gap-1"><i class="fa fa-share"></i> <span class="hidden sm:inline">{{ text_checkout }}</span></a></li>
-      </ul>
+        </ul>
     </div>
   </div>
 </nav>
 
-<div class="container mx-auto px-4 mt-4 space-y-3">
-    {% if text_greeting %}
-    <div class="flex items-center justify-center gap-3 bg-blue-50 text-blue-700 py-3.5 px-6 rounded-2xl border border-blue-100 shadow-sm animate-fade-in">
-        {% if is_vip %}<span class="bg-yellow-400 text-yellow-900 text-[10px] px-2 py-0.5 rounded-md font-extrabold uppercase tracking-tighter">VIP Member</span>{% endif %}
-        <i class="fa fa-user-circle text-lg opacity-80"></i>
-        <span class="font-semibold text-sm">{{ text_greeting }}</span>
-    </div>
-    {% endif %}
-
-    {% if discount_for_registered %}
-    <div class="flex items-center justify-center gap-2 bg-green-50 text-green-700 py-2 px-3 rounded-2xl border border-green-100 shadow-sm">
-        <i class="fa fa-gift text-lg animate-bounce"></i>
-        <span class="font-semibold text-sm">{{ discount_for_registered }}</span>
-    </div>
-    {% endif %}
-</div>
-
-<header class="py-4 bg-white/50 backdrop-blur-sm">
+<header class="py-6 bg-white shadow-sm">
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
       
       <div class="md:col-span-3 flex justify-center md:justify-start">
         <div id="logo">
           {% if logo %}
-            <a href="{{ home }}"><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="h-12 w-auto object-contain hover:scale-105 transition-transform" /></a>
+            <a href="{{ home }}"><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="h-10 w-auto object-contain" /></a>
           {% else %}
-            <h1 class="text-3xl font-black text-blue-600 uppercase tracking-tighter"><a href="{{ home }}">{{ name }}</a></h1>
+            <h1 class="text-2xl font-bold text-blue-600 uppercase tracking-tight"><a href="{{ home }}">{{ name }}</a></h1>
           {% endif %}
         </div>
       </div>
 
       <div class="md:col-span-6">
-        <div class="max-w-2xl mx-auto w-full">
-            {{ search }}
-        </div>
+          {{ search }}
       </div>
 
       <div class="md:col-span-3 flex justify-center md:justify-end">
-        <div class="w-full max-w-[240px]">
+        <div class="w-full max-w-[220px]">
             {{ cart }}
         </div>
       </div>
@@ -168,9 +122,8 @@
   </div>
 </header>
 
-<div class="container mx-auto px-4 pb-6">
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-2">
+<div class="container mx-auto px-4 mt-4">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-1">
         {{ menu }}
     </div>
 </div>
-

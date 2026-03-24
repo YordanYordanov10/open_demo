@@ -10,9 +10,53 @@
   
   <ul class="dropdown-menu absolute right-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl border border-gray-100 hidden z-[100] p-4">
     {% if products or vouchers %}
-        {% else %}
-        <li class="py-8 text-center text-gray-400">
-            <p>{{ text_empty }}</p>
+        <li class="max-h-60 overflow-y-auto mb-4">
+            <table class="w-full text-sm">
+                {% for product in products %}
+                <tr class="border-b border-gray-50 last:border-0">
+                    <td class="py-3 w-12 text-center">
+                        {% if product.thumb %}
+                            <a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="rounded-lg border border-gray-100" /></a>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-3">
+                        <a href="{{ product.href }}" class="font-medium text-gray-800 hover:text-blue-600 block leading-tight">{{ product.name }}</a>
+                        <span class="text-gray-500 text-xs">{{ product.quantity }} x {{ product.total }}</span>
+                    </td>
+                    <td class="py-3 text-right">
+                        <button type="button" onclick="cart.remove('{{ product.cart_id }}');" title="{{ button_remove }}" class="text-gray-300 hover:text-red-500 transition-colors">
+                            <i class="fa fa-times-circle"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </li>
+        
+        <li>
+            <div class="bg-gray-50 rounded-xl p-3 mb-4">
+                {% for total in totals %}
+                <div class="flex justify-between text-sm py-1">
+                    <span class="text-gray-600">{{ total.title }}:</span>
+                    <span class="font-bold text-gray-900">{{ total.text }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="{{ cart }}" class="bg-gray-100 text-gray-700 text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-colors">
+                    <i class="fa fa-shopping-cart"></i> {{ text_cart }}
+                </a>
+                <a href="{{ checkout }}" class="bg-blue-600 text-white text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors">
+                    <i class="fa fa-share"></i> {{ text_checkout }}
+                </a>
+            </div>
+        </li>
+    {% else %}
+        <li class="py-8 text-center">
+            <div class="text-gray-200 mb-2">
+                <i class="fa fa-shopping-basket text-4xl"></i>
+            </div>
+            <p class="text-gray-500 font-medium">{{ text_empty }}</p>
         </li>
     {% endif %}
   </ul>
