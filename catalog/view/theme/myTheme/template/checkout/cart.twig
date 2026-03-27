@@ -1,197 +1,175 @@
 {{ header }}
 
-<div id="checkout-cart" class="min-h-screen bg-slate-50 pb-20">
-    <div class="bg-white border-b border-slate-200/70 py-6">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <nav aria-label="breadcrumb" class="mb-4">
-                <ul class="flex items-center gap-x-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    {% for breadcrumb in breadcrumbs %}
-                    <li class="flex items-center gap-3">
-                        <a href="{{ breadcrumb.href }}" class="hover:text-sky-600">{{ breadcrumb.text }}</a>
-                        {% if not loop.last %}<span class="text-slate-300">/</span>{% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </nav>
-            <h1 class="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
-                {{ heading_title }} {% if weight %}<span class="text-lg font-medium text-slate-400">({{ weight }})</span>{% endif %}
-            </h1>
-        </div>
+<div id="checkout-cart" class="bg-slate-50 min-h-screen pb-20">
+    <div class="container mx-auto px-4 py-6">
+        <ul class="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-slate-400">
+            {% for breadcrumb in breadcrumbs %}
+                <li>
+                    <a href="{{ breadcrumb.href }}" class="transition-colors hover:text-sky-600">{{ breadcrumb.text }}</a>
+                </li>
+                {% if not loop.last %}<li><span class="text-slate-300">/</span></li>{% endif %}
+            {% endfor %}
+        </ul>
     </div>
 
-    <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-        
-        {# Известия #}
+    <div class="container mx-auto px-4">
+        <h1 class="mb-8 text-3xl font-black tracking-tight text-slate-900">
+            {{ heading_title }}{% if weight %} <span class="text-slate-400">({{ weight }})</span>{% endif %}
+        </h1>
+
         {% if attention or success or error_warning %}
-        <div class="mb-8 space-y-3">
-            {% if attention %}<div class="rounded-2xl bg-sky-50 p-4 text-sm font-bold text-sky-800 border border-sky-100"><i class="fa fa-info-circle mr-2"></i>{{ attention }}</div>{% endif %}
-            {% if success %}<div class="rounded-2xl bg-emerald-50 p-4 text-sm font-bold text-emerald-800 border border-emerald-100"><i class="fa fa-check-circle mr-2"></i>{{ success }}</div>{% endif %}
-            {% if error_warning %}<div class="rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-800 border border-rose-100"><i class="fa fa-exclamation-circle mr-2"></i>{{ error_warning }}</div>{% endif %}
-        </div>
+            <div class="mb-8 space-y-3">
+                {% if attention %}<div class="rounded-2xl bg-blue-50 p-4 text-sm font-bold text-blue-700 border border-blue-100"><i class="fa fa-info-circle mr-2"></i>{{ attention }}</div>{% endif %}
+                {% if success %}<div class="rounded-2xl bg-emerald-50 p-4 text-sm font-bold text-emerald-700 border border-emerald-100"><i class="fa fa-check-circle mr-2"></i>{{ success }}</div>{% endif %}
+                {% if error_warning %}<div class="rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700 border border-rose-100"><i class="fa fa-exclamation-circle mr-2"></i>{{ error_warning }}</div>{% endif %}
+            </div>
         {% endif %}
 
-        <div class="grid gap-10 lg:grid-cols-12">
+        <div class="grid grid-cols-1 gap-10 lg:grid-cols-3">
             
-            <div class="lg:col-span-8">
-                
-                {# Прогрес бар за безплатна доставка #}
-                {% if progress_bar_percentage is defined %}
-                <div class="mb-8 rounded-[2rem] border border-white bg-white p-6 shadow-sm">
-                    <div class="mb-4 flex items-center justify-between">
-                        <p class="text-sm font-bold text-slate-700">
-                            {% if progress_bar_percentage < 100 %}
-                            Добави още <span class="text-sky-600 font-black">{{ remaining_amount }} $</span> до безплатна доставка!
-                            {% else %}
-                            <span class="text-emerald-600 font-black">Честито! Получавате безплатна доставка!</span>
-                            {% endif %}
-                        </p>
-                        <span class="text-xs font-black text-slate-400">{{ progress_bar_percentage|round }}%</span>
-                    </div>
-                    <div class="h-3 overflow-hidden rounded-full bg-slate-100">
-                        <div class="h-full rounded-full bg-[linear-gradient(90deg,#0ea5e9,#22c55e)] transition-all duration-1000" style="width: {{ progress_bar_percentage }}%"></div>
-                    </div>
-                </div>
-                {% endif %}
-
+            <div class="lg:col-span-2 space-y-6">
                 <form action="{{ action }}" method="post" enctype="multipart/form-data" id="cart-form">
-                    <div class="space-y-4">
+                    <div class="rounded-[2.5rem] border border-slate-200 bg-white p-2 shadow-sm">
                         {% for product in products %}
-                        <div class="relative flex flex-col gap-6 rounded-[2rem] border border-slate-200 bg-white p-5 sm:flex-row sm:items-center">
+                        <div class="flex flex-col sm:flex-row items-center gap-6 p-6 {% if not loop.last %}border-b border-slate-100{% endif %}">
                             
-                            {# Премахване (Х) #}
-                            <button type="button" onclick="cart.remove('{{ product.cart_id }}');" class="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-500">
-                                <i class="fa fa-times"></i>
-                            </button>
-
-                            {# Снимка #}
-                            <div class="h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-slate-50 p-2 border border-slate-100">
-                                <a href="{{ product.href }}">
-                                    <img src="{{ product.thumb }}" alt="{{ product.name }}" class="h-full w-full object-contain" />
-                                </a>
-                            </div>
-
-                            {# Инфо #}
-                            <div class="flex-1 min-w-0">
-                                <a href="{{ product.href }}" class="block text-lg font-black text-slate-900 hover:text-sky-600 truncate">{{ product.name }}</a>
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{{ product.model }}</p>
-                                
+                            <div class="relative h-24 w-24 flex-shrink-0">
+                                {% if product.thumb %}
+                                    <a href="{{ product.href }}">
+                                        <img src="{{ product.thumb }}" alt="{{ product.name }}" class="h-full w-full object-contain rounded-2xl border border-slate-100 p-2" />
+                                    </a>
+                                {% endif %}
                                 {% if product.is_apple_product %}
-                                <span class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-black text-white uppercase tracking-tighter">
-                                    <i class="fa fa-apple"></i> Премиум
-                                </span>
-                                {% endif %}
-
-                                {# Опции #}
-                                {% if product.option %}
-                                <div class="mt-3 flex flex-wrap gap-2">
-                                    {% for option in option %}
-                                    <span class="rounded-lg bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-600 border border-slate-100">
-                                        {{ option.name }}: {{ option.value }}
+                                    <span class="absolute -top-2 -right-2 bg-black text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg">
+                                        <i class="fa fa-apple"></i>
                                     </span>
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                                
-                                {# Промо подсказки #}
-                                {% if product.promo_hint and product.product_id != 51 %}
-                                <div class="mt-3">
-                                    {% if product.quantity == 1 %}
-                                    <span class="text-[10px] font-black uppercase text-amber-600 bg-amber-50 px-2 py-1 rounded-md">Купете още 2 за отстъпка!</span>
-                                    {% elseif product.quantity == 2 %}
-                                    <span class="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">Още 1 до специална цена!</span>
-                                    {% else %}
-                                    <span class="text-[10px] font-black uppercase text-sky-600 bg-sky-50 px-2 py-1 rounded-md">10% отстъпка приложена!</span>
-                                    {% endif %}
-                                </div>
                                 {% endif %}
                             </div>
 
-                            {# Количество и Цена #}
-                            <div class="flex flex-wrap items-center justify-between gap-6 border-t border-slate-50 pt-4 sm:border-t-0 sm:pt-0">
-                                <div class="flex h-11 items-center rounded-xl border border-slate-200 bg-slate-50 px-1">
-                                    <button type="button" onclick="let i=this.parentNode.querySelector('input'); if(i.value>1) { i.value--; document.getElementById('cart-form').submit(); }" class="h-8 w-8 text-slate-400 hover:text-sky-600"><i class="fa fa-minus text-[10px]"></i></button>
-                                    <input type="text" name="quantity[{{ product.cart_id }}]" value="{{ product.quantity }}" class="w-10 border-none bg-transparent text-center text-sm font-black text-slate-900 focus:ring-0" />
-                                    <button type="button" onclick="let i=this.parentNode.querySelector('input'); i.value++; document.getElementById('cart-form').submit();" class="h-8 w-8 text-slate-400 hover:text-sky-600"><i class="fa fa-plus text-[10px]"></i></button>
+                            <div class="flex-1 text-center sm:text-left">
+                                <a href="{{ product.href }}" class="text-lg font-black text-slate-900 hover:text-sky-600 transition-colors">{{ product.name }}</a>
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ product.model }}</p>
+                                
+                                {% if not product.stock %}<p class="mt-1 text-xs font-bold text-rose-500 italic">*** Извън наличност</p>{% endif %}
+
+                                {% if product.option %}
+                                    <div class="mt-2 space-y-1">
+                                        {% for option in product.option %}
+                                            <p class="text-xs text-slate-500 font-medium"><strong>{{ option.name }}:</strong> {{ option.value }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                {% if product.promo_hint and product.product_id != 51 %}
+                                    <div class="mt-3">
+                                        {% if product.quantity == 1 %}
+                                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-orange-50 px-2.5 py-1 text-[11px] font-black text-orange-600 border border-orange-100">
+                                                <i class="fa fa-info-circle"></i> Купете още 2 за отстъпка!
+                                            </span>
+                                        {% elseif product.quantity == 2 %}
+                                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-600 border border-emerald-100">
+                                                <i class="fa fa-star"></i> Още 1 до специална цена!
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-600 border border-sky-100">
+                                                <i class="fa fa-check"></i> 10% отстъпка приложена!
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex flex-col items-center sm:items-end gap-4">
+                                <div class="text-right">
+                                    <p class="text-xs font-bold text-slate-400">Общо</p>
+                                    <p class="text-xl font-black text-slate-950 tracking-tighter">{{ product.total }}</p>
+                                    <p class="text-[11px] font-bold text-slate-400 leading-none">{{ product.price }} / бр.</p>
                                 </div>
 
-                                <div class="text-right">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Total</p>
-                                    <p class="text-xl font-black tracking-tight text-slate-950">{{ product.total }}</p>
-                                </div>
+                                {% if product.product_id != 51 %}
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex h-10 w-32 items-center rounded-xl border border-slate-200 bg-slate-50 px-1 shadow-inner">
+                                            <input type="text" name="quantity[{{ product.cart_id }}]" value="{{ product.quantity }}" class="w-full border-none bg-transparent text-center text-sm font-black text-slate-900 focus:ring-0" />
+                                        </div>
+                                        <button type="submit" class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white hover:bg-sky-600 transition-all active:scale-95 shadow-lg shadow-slate-200">
+                                            <i class="fa fa-refresh text-xs"></i>
+                                        </button>
+                                        <button type="button" onclick="cart.remove('{{ product.cart_id }}');" class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all active:scale-95">
+                                            <i class="fa fa-times text-xs"></i>
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <span class="rounded-lg bg-sky-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-sky-700">🎁 Безплатен подарък</span>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                 </form>
+
+                {% if progress_bar_percentage is defined %}
+                <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                    <div class="flex justify-between items-end mb-4">
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Безплатна доставка</p>
+                            {% if progress_bar_percentage < 100 %}
+                                <h4 class="text-lg font-black text-slate-900 leading-none">Добави още <span class="text-sky-600">{{ remaining_amount }}</span> до безплатна доставка!</h4>
+                            {% else %}
+                                <h4 class="text-lg font-black text-emerald-600 leading-none italic"><i class="fa fa-truck mr-2"></i>Честито! Доставката е за наша сметка.</h4>
+                            {% endif %}
+                        </div>
+                        <span class="text-2xl font-black text-slate-900">{{ progress_bar_percentage|round }}%</span>
+                    </div>
+                    <div class="h-4 w-full overflow-hidden rounded-full bg-slate-100 p-1">
+                        <div class="h-full rounded-full bg-sky-600 transition-all duration-1000 shadow-[0_0_15px_rgba(2,132,199,0.5)]" style="width: {{ progress_bar_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
 
-            <aside class="lg:col-span-4">
-                <div class="sticky top-6 space-y-6">
-                    
-                    {# Totals Card #}
-                    <div class="rounded-[2.5rem] border border-white bg-white/70 p-8 shadow-xl shadow-slate-200/50 backdrop-blur-xl">
-                        <h2 class="mb-6 text-xl font-black text-slate-900 uppercase tracking-tight">Order Summary</h2>
-                        
+            <div class="space-y-6">
+                {% if modules %}
+                    <div class="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 class="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">{{ text_next }}</h2>
                         <div class="space-y-4">
-                            {% for total in totals %}
-                            <div class="flex items-center justify-between {% if loop.last %}pt-4 border-t border-slate-200 mt-4{% endif %}">
-                                <span class="{% if loop.last %}text-lg font-black text-slate-900{% else %}text-sm font-bold text-slate-500{% endif %}">{{ total.title }}</span>
-                                <span class="{% if loop.last %}text-2xl font-black text-sky-600 tracking-tighter{% else %}text-sm font-black text-slate-900{% endif %}">{{ total.text }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        {# Checkout Button #}
-                        <div class="mt-8 space-y-3">
-                            {% if min_order_reach %}
-                            <a href="{{ checkout }}" class="flex h-16 items-center justify-center gap-3 rounded-2xl bg-slate-900 text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-sky-600 hover:-translate-y-1 shadow-lg shadow-slate-200">
-                                <span>{{ button_checkout }}</span>
-                                <i class="fa fa-arrow-right"></i>
-                            </a>
-                            {% else %}
-                            <button disabled class="w-full h-16 rounded-2xl bg-slate-100 text-[10px] font-black uppercase text-slate-400 cursor-not-allowed border border-slate-200">
-                                Min. order {{ config_min_order }} $
-                            </button>
-                            {% endif %}
-                            
-                            <a href="{{ continue }}" class="flex h-14 items-center justify-center text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">
-                                <i class="fa fa-shopping-bag mr-2"></i> {{ button_shopping }}
-                            </a>
-                        </div>
-                    </div>
-
-                    {# Modules Accordion (Coupon/Voucher) #}
-                    {% if modules %}
-                    <div class="rounded-[2rem] border border-slate-200 bg-white p-2">
-                        <div class="space-y-1">
                             {% for module in modules %}
                                 {{ module }}
                             {% endfor %}
                         </div>
                     </div>
-                    {% endif %}
+                {% endif %}
+
+                <div class="rounded-[2.5rem] border border-slate-900 bg-slate-900 p-8 shadow-2xl text-white">
+                    <h2 class="mb-6 text-xl font-black tracking-tight">Сума на поръчката</h2>
+                    <div class="space-y-4">
+                        {% for total in totals %}
+                            <div class="flex justify-between items-center {% if loop.last %}pt-4 border-t border-slate-800 mt-4{% endif %}">
+                                <span class="{% if loop.last %}text-lg font-bold{% else %}text-sm font-bold text-slate-400 uppercase tracking-widest{% endif %}">{{ total.title }}:</span>
+                                <span class="{% if loop.last %}text-3xl font-black text-sky-400{% else %}text-lg font-black{% endif %}">{{ total.text }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-10 space-y-3">
+                        {% if min_order_reach %}
+                            <a href="{{ checkout }}" class="flex h-16 w-full items-center justify-center rounded-2xl bg-sky-600 text-lg font-black uppercase tracking-widest text-white transition-all hover:bg-sky-500 active:scale-95 shadow-lg shadow-sky-600/30">
+                                {{ button_checkout }}
+                            </a>
+                        {% else %}
+                            <button type="button" class="w-full rounded-2xl bg-slate-800 p-4 text-xs font-bold text-slate-500 cursor-not-allowed border border-slate-700" disabled>
+                                Минималната сума за поръчка е {{ config_min_order }} $
+                            </button>
+                        {% endif %}
+                        
+                        <a href="{{ continue }}" class="flex h-14 w-full items-center justify-center rounded-2xl border border-slate-800 bg-transparent text-sm font-bold uppercase tracking-widest text-slate-400 transition-all hover:text-white hover:border-slate-600">
+                            {{ button_shopping }}
+                        </a>
+                    </div>
                 </div>
-            </aside>
+            </div>
+
         </div>
     </div>
 </div>
-
-<style>
-/* Корекция за панелите на купоните, ако ползват Bootstrap стилове */
-.panel { border: none !important; box-shadow: none !important; margin-bottom: 0 !important; }
-.panel-heading { background: transparent !important; border: none !important; padding: 15px 20px !important; }
-.panel-title a { font-size: 11px !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b !important; }
-.panel-collapse { background: #f8fafc; border-radius: 1.5rem; margin: 0 10px 10px; }
-
-/* Анимация на прогрес бара */
-@keyframes progress-stripes {
-    from { background-position: 1rem 0; }
-    to { background-position: 0 0; }
-}
-.progress-bar-striped {
-    background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
-    background-size: 1rem 1rem;
-}
-</style>
 
 {{ footer }}

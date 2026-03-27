@@ -1,0 +1,214 @@
+{{ header }}
+
+<style>
+	.loader-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 9999;
+	}
+
+	.loader {
+		border: 4px solid rgba(0, 0, 0, 0.1);
+		border-left-color: #000;
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+</style>
+
+
+<div id="checkout-simple" class="container mx-auto px-4 py-16">
+	<ul class="mb-8 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-slate-400">
+		<li>
+			<a href="{{ home }}" class="transition-colors hover:text-sky-600">Начало</a>
+		</li>
+		<li>
+			<span class="text-slate-300">/</span>
+		</li>
+		<li>
+			<a href="{{ cart }}" class="transition-colors hover:text-sky-600">Количка</a>
+		</li>
+		<li>
+			<span class="text-slate-300">/</span>
+		</li>
+		<li>
+			<span class="text-slate-900">Плащане</span>
+		</li>
+	</ul>
+</div>
+
+{# Separate content into two parts: column_left and column_right. Column_left will contain the billing details form, and column_right will contain the order summary. #}
+
+<div class="container mx-auto px-4 py-16 grid grid-cols-1 gap-10 lg:grid-cols-2">
+	<div id="column-left" class="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+		<h2 class="mb-6 text-2xl font-black tracking-tight text-slate-900">Billing Details</h2>
+		{# Payment Address, fields - name, email, phone, address, city, postcode #}
+		<form action="{{ action }}" method="post" class="space-y-6">
+			<div>
+				<label for="input-firstname" class="block text-sm font-bold uppercase tracking-widest text-slate-400 mb-2">First Name</label>
+				<input type="text" name="firstname" id="input-firstname" class="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm font-bold text-slate-900 focus:border-sky-500 focus:ring-sky-500"/>
+
+				<label for="input-lastname" class="block text-sm font-bold uppercase tracking-widest text-slate-400 mt-4 mb-2">Last Name</label>
+				<input type="text" name="lastname" id="input-lastname" class="  w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm font-bold text-slate-900 focus:border-sky-500 focus:ring-sky-500"/>
+
+				<label for="input-email" class="block text-sm font-bold uppercase tracking-widest text-slate-400 mt-4 mb-2">Email</label>
+				<input type="email" name="email" id="input-email" class="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm font-bold text-slate-900 focus:border-sky-500 focus:ring-sky-500"/>
+
+				<label for="input-telephone" class="block text-sm font-bold uppercase tracking-widest text-slate-400 mt-4 mb-2">Telephone</label>
+				<input type="tel" name="telephone" id="input-telephone" class="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm font-bold text-slate-900 focus:border-sky-500 focus:ring-sky-500"/>
+
+				<label for="input-address" class="block text-sm font-bold uppercase tracking-widest text-slate-400 mt-4 mb-2">Address</label>
+				<input type="text" name="address" id="input-address" class="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm font-bold text-slate-900 focus:border-sky-500 focus:ring-sky-500"/>
+
+				<label for="input-city" class="block text-sm font-bold uppercase tracking-widest text-slate-400 mt-4 mb-2">City</label>
+				<input type="text" name="city" id="input-city" class="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm font-bold text-slate-900 focus:border-sky-500 focus:ring-sky-500"/>
+
+				<label for="input-postcode" class="block text-sm font-bold uppercase tracking-widest text-slate-400 mt-4 mb-2">Postcode</label>
+				<input type="text" name="postcode" id="input-postcode" class="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-sm font-bold text-slate-900 focus:border-sky-500 focus:ring-sky-500"/>
+			</div>
+		</form>
+
+
+	</div>
+
+	<div id="column-right" class="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+		<h2 class="mb-6 text-2xl font-black tracking-tight text-slate-900">Order Summary</h2>
+		{# Rows with products, one row contains - tumbnail, name, quantity(under quantity add buttons + and - and label between them for count how much are the products and also icon for delete current product), price, after total price and under table button confirm #}
+
+		<div class="overflow-x-auto">
+			<div class="space-y-6">
+				{% for product in products %}
+					<div x-data="{
+						            count: {{ product.quantity }},
+						            price: {{ product.price }},
+						            cart_id: '{{ product.cart_id }}'
+						         }" class="grid grid-cols-12 items-start gap-4 border-b border-slate-100 pb-6 last:border-0 relative">
+
+						<div class="col-span-2">
+							<div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border border-slate-100 p-1 bg-white">
+								<img src="{{ product.thumb }}" alt="{{ product.name }}" class="h-full w-full object-contain"/>
+							</div>
+						</div>
+
+						<div class="col-span-6 space-y-1">
+							<h3 class="text-xs font-black text-slate-900 leading-tight uppercase">{{ product.name }}</h3>
+							{% if product.option %}
+								<div class="space-y-0.5">
+									{% for option in product.option %}
+										<p class="text-[10px] text-slate-500 leading-none">{{ option.name }}:
+											{{ option.value }}</p>
+									{% endfor %}
+								</div>
+							{% endif %}
+						</div>
+
+						<div class="col-span-2 pt-0.5 flex justify-center">
+							<div class="flex h-7 w-24 items-center rounded-full border border-slate-200 bg-white px-1 shadow-inner">
+								<button type="button" @click="if(count > 1) { count--; updateCart(cart_id, count); }" class="flex h-6 w-6 items-center justify-center text-slate-400 hover:text-sky-600">
+									<i class="fa fa-minus text-[10px]"></i>
+								</button>
+
+								<input type="text" x-model.number="count" class="w-full border-none bg-transparent text-center text-[11px] font-black text-slate-900 focus:ring-0 p-0" readonly/>
+
+								<button type="button" @click="count++; updateCart(cart_id, count)" class="flex h-6 w-6 items-center justify-center text-slate-400 hover:text-sky-600">
+									<i class="fa fa-plus text-[10px]"></i>
+								</button>
+							</div>
+						</div>
+
+						<div class="col-span-2 flex flex-col items-end gap-1.5 pt-0.5">
+							<div class="text-sm font-black text-slate-950">
+								<span x-text="(count * price).toFixed(2)"></span>
+								<span class="text-[10px] ml-0.5">лв.</span>
+							</div>
+
+							<button type="button" @click="updateCart(cart_id, 0);" class="group flex h-6 w-6 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-all hover:bg-rose-50 hover:text-rose-500">
+								<i class="fa fa-trash-o text-sm"></i>
+							</button>
+						</div>
+
+					</div>
+				{% endfor %}
+			</div>
+
+			 {# <div class="rounded-[2.5rem] border border-slate-900 bg-slate-900 p-8 shadow-2xl text-white">
+                    <h2 class="mb-6 text-xl font-black tracking-tight">Сума на поръчката</h2>
+                    <div class="space-y-4">
+                        {% for total in totals %}
+                            <div class="flex justify-between items-center {% if loop.last %}pt-4 border-t border-slate-800 mt-4{% endif %}">
+                                <span class="{% if loop.last %}text-lg font-bold{% else %}text-sm font-bold text-slate-400 uppercase tracking-widest{% endif %}">{{ total.title }}:</span>
+                                <span class="{% if loop.last %}text-3xl font-black text-sky-400{% else %}text-lg font-black{% endif %}">{{ total.text }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-10 space-y-3">
+                        {% if min_order_reach %}
+                            <a href="{{ checkout }}" class="flex h-16 w-full items-center justify-center rounded-2xl bg-sky-600 text-lg font-black uppercase tracking-widest text-white transition-all hover:bg-sky-500 active:scale-95 shadow-lg shadow-sky-600/30">
+                                {{ button_checkout }}
+                            </a>
+                        {% else %}
+                            <button type="button" class="w-full rounded-2xl bg-slate-800 p-4 text-xs font-bold text-slate-500 cursor-not-allowed border border-slate-700" disabled>
+                                Минималната сума за поръчка е {{ config_min_order }} $
+                            </button>
+                        {% endif %}
+                        
+                        <a href="{{ continue }}" class="flex h-14 w-full items-center justify-center rounded-2xl border border-slate-800 bg-transparent text-sm font-bold uppercase tracking-widest text-slate-400 transition-all hover:text-white hover:border-slate-600">
+                            {{ button_shopping }}
+                        </a>
+                    </div>
+                </div> #}
+
+			<div class="mt-8 flex justify-end">
+				<button type="button" class="flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-6 text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-950 active:scale-95 shadow-lg shadow-sky-600/20">
+					<i class="fa fa-check"></i>
+					<span>Confirm</span>
+				</button>
+			</div>
+
+		</div>
+
+
+	</div>
+</div>
+
+<script>
+function updateCart(cart_id, count) {
+		    fetch('index.php?route=checkout/checkout_simple/edit', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/x-www-form-urlencoded'
+                   
+		        },
+                
+		        body: new URLSearchParams({
+		            key: cart_id,
+		            quantity: count
+		        })
+               
+		    })
+		    .then(res => res.json())
+		    .then(json => {
+		        console.log(json);
+		        location.reload();
+		    });
+		}
+
+</script>{{ footer }}
